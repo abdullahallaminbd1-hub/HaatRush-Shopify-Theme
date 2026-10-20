@@ -1,4 +1,4 @@
-<section class="hero-banner" style="background: linear-gradient(135deg, {{ section.settings.background_color }} 0%, #2a5a4a 100%);">
+<section class="hero-banner"{% if section.settings.hero_image != blank %} style="background-image: url('{{ section.settings.hero_image | image_url: width: 2000 }}');"{% endif %}>
   <div class="container">
     <div class="hero-banner__grid">
       {%- comment -%} ===== LEFT CONTENT ===== {%- endcomment -%}
@@ -81,6 +81,24 @@
     padding: 60px 0;
     overflow: hidden;
     position: relative;
+    min-height: 480px;
+    display: flex;
+    align-items: center;
+    background-color: #1B3C3C;
+    background-size: cover;
+    background-position: center;
+  }
+  .hero-banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0) 100%);
+    pointer-events: none;
+  }
+  .hero-banner > .container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
   }
   .hero-banner .container {
     max-width: 1200px;
@@ -230,6 +248,7 @@
   @media (max-width: 768px) {
     .hero-banner {
       padding: 40px 0;
+      min-height: 360px;
     }
     .hero-banner__grid {
       grid-template-columns: 1fr;

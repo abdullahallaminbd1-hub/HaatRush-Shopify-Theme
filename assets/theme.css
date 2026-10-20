@@ -134,6 +134,9 @@ input, select, textarea {
    4. Product Card Styles
    ============================================ */
 .product-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   background: var(--color-body-bg);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
@@ -177,6 +180,9 @@ input, select, textarea {
 }
 
 .product-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   padding: 14px;
 }
 
@@ -189,6 +195,8 @@ input, select, textarea {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  min-height: 42px;
+  max-height: 42px;
   overflow: hidden;
 }
 
@@ -197,6 +205,25 @@ input, select, textarea {
   font-size: 13px;
   margin-bottom: 10px;
   line-height: 1.4;
+  min-height: 18.2px;
+  max-height: 18.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-card__footer {
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+}
+
+.product-card__prices {
+  display: flex;
+  align-items: baseline;
+  white-space: nowrap;
+  overflow: hidden;
+  min-height: 28px;
 }
 
 .product-card__price {
@@ -217,6 +244,11 @@ input, select, textarea {
   width: 100%;
   margin-top: 10px;
   justify-content: center;
+  transition: background-color 0.25s ease;
+}
+
+.product-card__btn:hover:not(:disabled) {
+  background-color: #16a34a;
 }
 
 /* ============================================
@@ -226,6 +258,7 @@ input, select, textarea {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
+  align-items: stretch;
 }
 
 @media (max-width: 1024px) {

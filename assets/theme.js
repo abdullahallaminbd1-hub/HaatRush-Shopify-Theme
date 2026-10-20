@@ -227,6 +227,10 @@ function addToCart(variantId, qty) {
   })
   .then(function(data) {
     updateCartCount();
+    var cartDrawer = document.getElementById('cart-drawer');
+    if (cartDrawer && cartDrawer.classList.contains('active')) {
+      fetchCartAndRender();
+    }
     showCartNotification(data.title || 'পণ্য কার্টে যোগ হয়েছে');
     return data;
   })
@@ -245,21 +249,173 @@ function updateCartCount() {
     }
   })
   .then(function(response) {
+    if (!response.ok) {
+      throw new Error('Failed to fetch cart count');
+    }
     return response.json();
   })
   .then(function(cart) {
-    var countElements = document.querySelectorAll('.cart-count');
+    var countElements = document.querySelectorAll('.cart-count, .header__cart-badge');
     countElements.forEach(function(el) {
       el.textContent = cart.item_count;
-      if (cart.item_count > 0) {
-        el.classList.add('has-items');
-      } else {
-        el.classList.remove('has-items');
-      }
+      el.classList.toggle('has-items', cart.item_count > 0);
     });
   })
   .catch(function(error) {
     console.error('Update cart count error:', error);
+  });
+}
+
+function openCartDrawer() {
+  var drawer = document.getElementById('cart-drawer');
+  var overlay = document.getElementById('cart-drawer-overlay');
+  if (!drawer || !overlay) return;
+
+  drawer.classList.add('active');
+  overlay.classList.add('active');
+  drawer.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  fetchCartAndRender();
+}
+
+function closeCartDrawer() {
+  var drawer = document.getElementById('cart-drawer');
+  var overlay = document.getElementById('cart-drawer-overlay');
+  if (!drawer || !overlay) return;
+
+  drawer.classList.remove('active');
+  overlay.classList.remove('active');
+  drawer.setAttribute('aria-hidden', 'true');
+  if (!document.getElementById('mobile-menu-drawer') ||
+      !document.getElementById('mobile-menu-drawer').classList.contains('is-active')) {
+    document.body.style.overflow = '';
+  }
+}
+
+function fetchCartAndRender() {
+  var itemsContainer = document.getElementById('cart-drawer-items');
+  var subtotalElement = document.getElementById('cart-drawer-subtotal');
+  if (!itemsContainer || !subtotalElement) return Promise.resolve();
+
+  itemsContainer.textContent = 'কার্ট লোড হচ্ছে...';
+  return fetch('/cart.js', { headers: { 'Accept': 'application/json' } })
+    .then(function(response) {
+      if (!response.ok) {
+        throw new Error('Failed to fetch cart');
+      }
+      return response.json();
+    })
+    .then(function(cart) {
+      itemsContainer.replaceChildren();
+      subtotalElement.textContent = '৳' + (cart.total_price / 100).toLocaleString('en-BD');
+
+      if (!cart.items.length) {
+        var emptyMessage = document.createElement('p');
+        emptyMessage.className = 'cart-drawer__empty';
+        emptyMessage.textContent = 'কার্ট খালি আছে';
+        itemsContainer.appendChild(emptyMessage);
+        return;
+      }
+
+      cart.items.forEach(function(item) {
+        var row = document.createElement('div');
+        row.className = 'cart-drawer__item';
+
+        if (item.image) {
+          var image = document.createElement('img');
+          image.className = 'cart-drawer__item-image';
+          image.src = item.image;
+          image.alt = item.product_title || item.title;
+          image.loading = 'lazy';
+          row.appendChild(image);
+        }
+
+        var info = document.createElement('div');
+        info.className = 'cart-drawer__item-info';
+        var title = document.createElement('span');
+        title.className = 'cart-drawer__item-title';
+        title.textContent = item.product_title || item.title;
+        info.appendChild(title);
+
+        var price = document.createElement('span');
+        price.className = 'cart-drawer__item-price';
+        price.textContent = '৳' + (item.final_line_price / 100).toLocaleString('en-BD');
+        info.appendChild(price);
+
+        var controls = document.createElement('div');
+        controls.className = 'cart-drawer__item-controls';
+        var quantity = document.createElement('span');
+        quantity.className = 'cart-drawer__quantity';
+        var decreaseButton = document.createElement('button');
+        decreaseButton.type = 'button';
+        decreaseButton.setAttribute('data-cart-action', 'decrease');
+        decreaseButton.setAttribute('aria-label', 'পরিমাণ কমান');
+        decreaseButton.textContent = '−';
+        quantity.appendChild(decreaseButton);
+        var quantityValue = document.createElement('span');
+        quantityValue.textContent = item.quantity;
+        quantity.appendChild(quantityValue);
+        var increaseButton = document.createElement('button');
+        increaseButton.type = 'button';
+        increaseButton.setAttribute('data-cart-action', 'increase');
+        increaseButton.setAttribute('aria-label', 'পরিমাণ বাড়ান');
+        increaseButton.textContent = '+';
+        quantity.appendChild(increaseButton);
+        controls.appendChild(quantity);
+        var removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.className = 'cart-drawer__remove';
+        removeButton.setAttribute('data-cart-action', 'remove');
+        removeButton.textContent = 'সরান';
+        controls.appendChild(removeButton);
+        info.appendChild(controls);
+        row.setAttribute('data-cart-key', item.key);
+        row.appendChild(info);
+        itemsContainer.appendChild(row);
+      });
+    })
+    .catch(function(error) {
+      console.error('Cart drawer load error:', error);
+      itemsContainer.textContent = '';
+      var errorMessage = document.createElement('p');
+      errorMessage.className = 'cart-drawer__error';
+      errorMessage.textContent = 'কার্ট লোড করা যায়নি। আবার চেষ্টা করুন।';
+      itemsContainer.appendChild(errorMessage);
+    });
+}
+
+function initCartDrawer() {
+  document.querySelectorAll('[data-cart-drawer-open]').forEach(function(button) {
+    button.addEventListener('click', openCartDrawer);
+  });
+  document.querySelectorAll('[data-cart-drawer-close]').forEach(function(button) {
+    button.addEventListener('click', closeCartDrawer);
+  });
+
+  var itemsContainer = document.getElementById('cart-drawer-items');
+  if (itemsContainer) {
+    itemsContainer.addEventListener('click', function(event) {
+      var button = event.target.closest('[data-cart-action]');
+      if (!button) return;
+      var row = button.closest('[data-cart-key]');
+      if (!row) return;
+
+      var key = row.getAttribute('data-cart-key');
+      var action = button.getAttribute('data-cart-action');
+      var currentQuantity = parseInt(row.querySelector('.cart-drawer__quantity span').textContent, 10) || 1;
+      var request = action === 'remove' || (action === 'decrease' && currentQuantity <= 1)
+        ? removeFromCart(key)
+        : updateCartItem(key, currentQuantity + (action === 'increase' ? 1 : -1));
+
+      request.then(fetchCartAndRender).catch(function(error) {
+        console.error('Cart drawer update error:', error);
+        itemsContainer.textContent = 'কার্ট আপডেট করা যায়নি। আবার চেষ্টা করুন।';
+      });
+    });
+  }
+
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') closeCartDrawer();
   });
 }
 
@@ -276,6 +432,9 @@ function removeFromCart(key) {
     })
   })
   .then(function(response) {
+    if (!response.ok) {
+      throw new Error('Failed to remove cart item');
+    }
     return response.json();
   })
   .then(function(cart) {
@@ -301,6 +460,9 @@ function updateCartItem(key, qty) {
     })
   })
   .then(function(response) {
+    if (!response.ok) {
+      throw new Error('Failed to update cart item');
+    }
     return response.json();
   })
   .then(function(cart) {
@@ -909,6 +1071,7 @@ document.addEventListener('DOMContentLoaded', function() {
   initAccordions();
   initNewsletterPopup();
   initCountdownTimers();
+  initCartDrawer();
   updateCartCount();
 
   var divisionSelect = document.querySelector('#division, [name="division"], select[data-location="division"]');
