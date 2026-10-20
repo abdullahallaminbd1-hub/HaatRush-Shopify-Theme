@@ -3,7 +3,6 @@
     <span>{% render 'icon', name: 'truck' %} {{ section.settings.message_one | escape }}</span>
     <span>{% render 'icon', name: 'cash' %} {{ section.settings.message_two | escape }}</span>
     <span>{% render 'icon', name: 'shield' %} {{ section.settings.message_three | escape }}</span>
-    <span>{% render 'icon', name: 'headset' %} {{ section.settings.message_four | escape }}</span>
   </div>
 </div>
 
@@ -13,8 +12,7 @@
   "settings": [
     { "type": "text", "id": "message_one", "label": "বার্তা ১", "default": "সারা দেশে ডেলিভারি" },
     { "type": "text", "id": "message_two", "label": "বার্তা ২", "default": "ক্যাশ অন ডেলিভারি" },
-    { "type": "text", "id": "message_three", "label": "বার্তা ৩", "default": "নিরাপদ কেনাকাটা" },
-    { "type": "text", "id": "message_four", "label": "বার্তা ৪", "default": "সকাল ৯টা – রাত ১০টা কাস্টমার সাপোর্ট" }
+    { "type": "text", "id": "message_three", "label": "বার্তা ৩", "default": "নিরাপদ কেনাকাটা" }
   ]
 }
 {% endschema %}

@@ -29,7 +29,7 @@
         <span class="cart-trigger__text">কার্ট</span>
       </a>
     </nav>
-    {% if section.settings.main_menu != blank %}
+    {% if section.settings.main_menu != blank and request.page_type != 'index' %}
       <nav class="header-menu" aria-label="প্রধান মেনু">
         {% for link in section.settings.main_menu.links %}
           <a href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title | escape }}</a>

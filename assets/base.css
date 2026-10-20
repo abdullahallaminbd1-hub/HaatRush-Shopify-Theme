@@ -364,6 +364,162 @@ svg { width: 1.25em; height: 1.25em; fill: none; stroke: currentColor; stroke-wi
 .drawer-view-cart { display: block; margin-top: 9px; color: var(--green); font-size: 13px; text-align: center; }
 .cart-error { padding: 8px 16px; color: #a12b20; background: #fff0ed; font-size: 13px; }
 
+.announcement__inner { min-height: 32px; gap: clamp(18px, 4vw, 44px); }
+.announcement__inner span { font-size: 12px; }
+.announcement__inner svg { width: 16px; height: 16px; }
+.announcement__inner span + span { padding-left: clamp(12px, 2vw, 22px); }
+
+.template-index .header__inner { min-height: 68px; grid-template-columns: 190px minmax(200px, 1fr) auto; gap: clamp(18px, 3vw, 36px); }
+.template-index .brand__mark { width: 38px; height: 38px; }
+.template-index .brand__mark svg { width: 38px; height: 38px; }
+.template-index .brand__copy strong { font-size: 27px; }
+.template-index .brand__logo { max-width: 190px; max-height: 48px; }
+.template-index .header-search { height: 42px; }
+.template-index .header-actions { gap: clamp(16px, 2.5vw, 30px); }
+.template-index .home-hero.page-width {
+  width: 100%;
+  min-height: clamp(310px, 36vw, 430px);
+  margin: 0;
+  grid-template-columns: minmax(0, 1fr);
+  border-radius: 0;
+  background-color: #03483f;
+  background-image: linear-gradient(90deg, rgba(0, 47, 42, .94) 0%, rgba(0, 59, 51, .82) 42%, rgba(0, 57, 49, .08) 100%), linear-gradient(135deg, #063f38, #087466 60%, #02352f);
+  isolation: isolate;
+}
+.template-index .home-hero.page-width.home-hero--image {
+  background-image: linear-gradient(90deg, rgba(0, 45, 40, .92) 0%, rgba(0, 54, 47, .78) 40%, rgba(0, 48, 42, .04) 100%), var(--hero-image);
+  background-position: center;
+  background-size: cover;
+}
+.template-index .home-hero::before,
+.template-index .home-hero::after { content: none; }
+.template-index .home-hero__copy { width: min(1240px, 100%); margin: 0 auto; padding: 48px 48px; }
+.template-index .home-hero h1 { max-width: 520px; margin: 0 0 10px; font-size: clamp(38px, 4.2vw, 56px); line-height: 1.12; }
+.template-index .home-hero h1 em { color: #ff641a; }
+.template-index .home-hero__copy > p { max-width: 430px; color: #e3efec; font-size: 17px; }
+.template-index .home-hero__buttons { gap: 14px; margin-top: 22px; }
+.template-index .home-hero__buttons .button { min-width: 142px; min-height: 46px; padding: 11px 20px; }
+.template-index .home-products { padding-top: 20px; }
+.template-index .home-products--popular { padding-top: 16px; padding-bottom: 20px; }
+.template-index .section-heading { margin-bottom: 10px; }
+.template-index .section-heading > div { gap: 10px; }
+.template-index .section-heading__icon { width: 36px; height: 36px; border-radius: 9px; font-size: 20px; }
+.template-index .section-heading h2 { font-size: 22px; }
+.template-index .section-heading > a { font-size: 13px; }
+.template-index .product-grid--home { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; align-items: stretch; }
+.template-index .product-grid--home .product-card { display: flex; flex-direction: column; min-height: 100%; border-radius: 12px; }
+.template-index .product-grid--home .product-card__image { width: 100%; aspect-ratio: 1 / 1; flex: 0 0 auto; padding: 9px; }
+.template-index .product-grid--home .product-card__image > img { width: 100%; height: 100%; object-fit: contain; }
+.template-index .product-grid--home .product-card__details { flex: 1; display: flex; flex-direction: column; padding: 10px 11px 11px; }
+.template-index .product-grid--home .product-card h3 { min-height: 2.6em; margin: 0 0 5px; font-size: 14px; line-height: 1.3; }
+.template-index .product-grid--home .product-card__price { min-height: 24px; font-size: 16px; }
+.template-index .product-grid--home .product-card__availability { min-height: 15px; margin: 2px 0 9px; }
+.template-index .product-grid--home .product-card__form { margin-top: auto; }
+.template-index .product-grid--home .product-card__form .button { min-height: 38px; padding: 8px 10px; border-radius: 7px; font-size: 13px; }
+.template-index .product-grid--home .product-card__badge { top: 10px; left: 10px; }
+.template-index .home-empty-state { margin: 0; padding: 14px 16px; color: #687977; background: #fff; border: 1px solid #e8eded; border-radius: 10px; font-size: 14px; }
+.template-index .benefits-strip { margin-top: 0; margin-bottom: 20px; padding: 15px 20px; border-radius: 12px; }
+.template-index .benefit { gap: 11px; padding: 0 13px; }
+.template-index .benefit > svg { width: 32px; height: 32px; }
+.template-index .benefit strong { font-size: 14px; }
+.template-index .benefit span { font-size: 11px; }
+
+.template-index .site-footer { margin-top: 0; background: #033b34; }
+.template-index .footer-main { grid-template-columns: minmax(210px, 1.2fr) minmax(140px, .8fr) minmax(160px, .9fr) minmax(190px, 1fr); gap: clamp(20px, 3vw, 42px); padding-top: 30px; padding-bottom: 27px; }
+.template-index .footer-about { min-width: 0; }
+.template-index .footer-about p { max-width: 290px; margin: 12px 0 14px; color: #d5e5e1; font-size: 13px; line-height: 1.6; }
+.template-index .brand--footer .brand__copy strong { font-size: 25px; }
+.template-index .footer-column { min-width: 0; gap: 9px; padding-left: 0; border: 0; }
+.template-index .footer-column h2 { margin: 0; font-size: 16px; }
+.template-index .footer-links-box { display: flex; flex-direction: column; gap: 3px; padding: 7px; border: 1px solid rgba(225, 243, 238, .19); border-radius: 9px; }
+.template-index .footer-links-box a { min-width: 0; padding: 5px 8px; color: #e0ece9; border-radius: 5px; font-size: 12px; line-height: 1.45; overflow-wrap: anywhere; }
+.template-index .footer-links-box a:hover { color: #fff; background: rgba(255,255,255,.08); }
+.template-index .footer-contact__details { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.template-index .footer-contact__details > a:not(.footer-whatsapp) { display: inline-flex; align-items: center; gap: 8px; color: #e0ece9; font-size: 12px; overflow-wrap: anywhere; }
+.template-index .footer-contact__details > a svg { flex: 0 0 auto; width: 17px; height: 17px; }
+.template-index .footer-contact__details .footer-whatsapp { display: inline-flex; align-items: center; justify-content: center; gap: 8px; max-width: 100%; min-height: 40px; padding: 8px 12px; color: #fff; background: var(--orange); border-radius: 7px; font-size: 12px; font-weight: 600; text-align: center; }
+.template-index .footer-contact__details .footer-whatsapp:hover { background: var(--orange-dark); }
+.template-index .footer-contact__details .footer-whatsapp svg { width: 19px; height: 19px; }
+.template-index .social-links { gap: 9px; }
+.template-index .social-links a { width: 28px; height: 28px; color: #fff; background: transparent; border: 1px solid rgba(255,255,255,.3); }
+.template-index .social-links a:hover { color: #fff; background: var(--orange); border-color: var(--orange); }
+.template-index .social-links svg { width: 14px; height: 14px; }
+.template-index .footer-bottom__inner { min-height: 42px; font-size: 11px; }
+
+@media (max-width: 1020px) {
+  .template-index .header__inner { grid-template-columns: 175px minmax(160px,1fr) auto; gap: 16px; }
+  .template-index .footer-main { grid-template-columns: 1.15fr .8fr .9fr; }
+  .template-index .footer-contact { grid-column: auto; display: flex; padding: 0; border: 0; }
+  .template-index .footer-contact h2 { grid-column: auto; }
+}
+
+@media (max-width: 760px) {
+  .announcement__inner { min-height: 31px; gap: 10px; }
+  .announcement__inner span { font-size: 10px; }
+  .announcement__inner span + span { padding-left: 9px; }
+  .announcement__inner svg { width: 14px; height: 14px; }
+  .template-index .header__inner { min-height: auto; grid-template-columns: minmax(0,1fr) auto; gap: 9px 14px; padding-top: 8px; padding-bottom: 9px; }
+  .template-index .brand__mark { width: 34px; height: 34px; }
+  .template-index .brand__mark svg { width: 34px; height: 34px; }
+  .template-index .brand__copy strong { font-size: 23px; }
+  .template-index .brand__logo { max-width: 160px; max-height: 42px; }
+  .template-index .header-search { grid-column: 1 / -1; grid-row: 2; height: 40px; }
+  .template-index .header-actions { gap: 14px; }
+  .template-index .header-account { display: inline-flex; }
+  .template-index .header-account > svg { width: 22px; height: 22px; }
+  .template-index .header-account strong { font-size: 11px; }
+  .template-index .header-account small { font-size: 9px; }
+  .template-index .cart-trigger__text { display: none; }
+  .template-index .home-hero.page-width { min-height: 330px; background-position: 62% center; }
+  .template-index .home-hero.page-width.home-hero--image { background-image: linear-gradient(90deg, rgba(0, 42, 37, .9), rgba(0, 49, 43, .66) 54%, rgba(0, 47, 41, .18)), var(--hero-image); }
+  .template-index .home-hero__copy { padding: 35px 22px; }
+  .template-index .home-hero h1 { max-width: 400px; margin-bottom: 8px; font-size: clamp(34px, 8vw, 45px); }
+  .template-index .home-hero__copy > p { max-width: 330px; font-size: 14px; }
+  .template-index .home-hero__buttons { gap: 10px; margin-top: 17px; }
+  .template-index .home-hero__buttons .button { min-width: 125px; min-height: 42px; padding: 9px 14px; font-size: 13px; }
+  .template-index .home-products { padding-top: 17px; }
+  .template-index .home-products--popular { padding-top: 15px; padding-bottom: 17px; }
+  .template-index .section-heading { margin-bottom: 9px; }
+  .template-index .section-heading > div { gap: 8px; }
+  .template-index .section-heading__icon { width: 32px; height: 32px; font-size: 18px; }
+  .template-index .section-heading h2 { font-size: 19px; }
+  .template-index .section-heading > a { font-size: 11px; }
+  .template-index .product-grid--home { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .template-index .product-grid--home .product-card { border-radius: 10px; }
+  .template-index .product-grid--home .product-card__image { padding: 6px; }
+  .template-index .product-grid--home .product-card__details { padding: 8px; }
+  .template-index .product-grid--home .product-card h3 { font-size: 12px; }
+  .template-index .product-grid--home .product-card__price { font-size: 14px; }
+  .template-index .product-grid--home .product-card__price s { font-size: 10px; }
+  .template-index .product-grid--home .product-card__form .button { min-height: 35px; padding: 7px 5px; font-size: 11px; }
+  .template-index .benefits-strip { margin-bottom: 16px; padding: 13px 8px; }
+  .template-index .benefit { gap: 7px; padding: 0 6px; }
+  .template-index .benefit > svg { width: 25px; height: 25px; }
+  .template-index .benefit strong { font-size: 11px; }
+  .template-index .benefit span { font-size: 9px; }
+  .template-index .footer-main { grid-template-columns: 1fr 1fr; gap: 20px 14px; padding-top: 23px; padding-bottom: 21px; }
+  .template-index .footer-about { grid-column: 1 / -1; }
+  .template-index .footer-about p { max-width: 420px; margin: 9px 0 11px; font-size: 12px; }
+  .template-index .brand--footer .brand__copy strong { font-size: 23px; }
+  .template-index .footer-column { gap: 7px; }
+  .template-index .footer-column h2 { font-size: 14px; }
+  .template-index .footer-links-box { gap: 2px; padding: 6px; }
+  .template-index .footer-links-box a { padding: 5px 7px; font-size: 11px; }
+  .template-index .footer-contact { grid-column: 1 / -1; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.16); }
+  .template-index .footer-contact__details { gap: 9px; }
+  .template-index .footer-bottom__inner { min-height: 40px; justify-content: space-between; gap: 8px; font-size: 10px; }
+}
+
+@media (max-width: 390px) {
+  .template-index .header-account { display: none; }
+  .template-index .home-hero.page-width { min-height: 310px; }
+  .template-index .home-hero__copy { padding-inline: 16px; }
+  .template-index .home-hero h1 { font-size: 32px; }
+  .template-index .home-hero__buttons .button { min-width: 0; padding-inline: 11px; font-size: 12px; }
+  .template-index .footer-main { gap: 18px 10px; }
+  .template-index .footer-bottom__inner { flex-wrap: wrap; justify-content: center; }
+}
+
 @media (max-width: 1020px) {
   .header__inner { grid-template-columns: 190px minmax(160px,1fr) auto; gap: 18px; }
   .header-actions { gap: 13px; }

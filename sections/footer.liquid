@@ -9,48 +9,59 @@
           <span class="brand__copy"><strong>Haat<span>Rush</span></strong><small>{{ settings.store_tagline | escape }}</small></span>
         {% endif %}
       </a>
-      <p>বাংলাদেশের বিশ্বস্ত ইলেকট্রনিক্স শপ। আপনার প্রয়োজনীয় পণ্য সহজে খুঁজুন, ঘরে বসে অর্ডার করুন।</p>
+      <p>বাংলাদেশের বিশ্বস্ত ইলেকট্রনিক্স শপ। আপনার দৈনন্দিন প্রয়োজনের পণ্য ঘরে বসেই কিনুন।</p>
       <div class="social-links" aria-label="সামাজিক যোগাযোগ">
         {% if section.settings.facebook_url != blank %}<a href="{{ section.settings.facebook_url }}" aria-label="Facebook" rel="noopener">{% render 'icon', name: 'facebook' %}</a>{% endif %}
         {% if section.settings.instagram_url != blank %}<a href="{{ section.settings.instagram_url }}" aria-label="Instagram" rel="noopener">{% render 'icon', name: 'instagram' %}</a>{% endif %}
-        {% if settings.whatsapp_url != blank %}<a href="{{ settings.whatsapp_url }}" aria-label="WhatsApp" rel="noopener">{% render 'icon', name: 'whatsapp' %}</a>{% endif %}
       </div>
     </div>
     <div class="footer-column">
       <h2>দ্রুত লিংক</h2>
-      <a href="{{ routes.root_url }}">হোম</a>
-      <a href="{{ routes.all_products_collection_url }}">সকল পণ্য</a>
-      {% if section.settings.footer_menu != blank %}
-        {% for link in section.settings.footer_menu.links %}
-          <a href="{{ link.url }}">{{ link.title | escape }}</a>
-        {% endfor %}
-      {% endif %}
+      <div class="footer-links-box">
+        {% if section.settings.footer_menu != blank %}
+          {% for link in section.settings.footer_menu.links %}
+            <a href="{{ link.url }}">{{ link.title | escape }}</a>
+          {% endfor %}
+        {% else %}
+          <a href="{{ routes.root_url }}">হোম</a>
+          <a href="{{ routes.all_products_collection_url }}">সকল পণ্য</a>
+        {% endif %}
+      </div>
     </div>
     <div class="footer-column">
       <h2>সহায়তা ও নীতি</h2>
-      {% if section.settings.policy_menu != blank %}
-        {% for link in section.settings.policy_menu.links %}
-          <a href="{{ link.url }}">{{ link.title | escape }}</a>
-        {% endfor %}
-      {% else %}
-        <a href="/pages/contact">যোগাযোগ</a>
-        <a href="/policies/refund-policy">রিটার্ন ও রিফান্ড নীতি</a>
-        <a href="/policies/privacy-policy">গোপনীয়তা নীতি</a>
-        <a href="/policies/terms-of-service">শর্তাবলি</a>
-      {% endif %}
+      <div class="footer-links-box">
+        {% if section.settings.policy_menu != blank %}
+          {% for link in section.settings.policy_menu.links %}
+            <a href="{{ link.url }}">{{ link.title | escape }}</a>
+          {% endfor %}
+        {% else %}
+          <a href="/policies/shipping-policy">ডেলিভারি নীতি</a>
+          <a href="/policies/refund-policy">রিটার্ন ও রিফান্ড</a>
+          <a href="/policies/privacy-policy">গোপনীয়তা নীতি</a>
+          <a href="/policies/terms-of-service">শর্তাবলি</a>
+        {% endif %}
+      </div>
     </div>
     <div class="footer-column footer-contact">
       <h2>যোগাযোগ</h2>
-      <a href="mailto:{{ settings.support_email | escape }}">{% render 'icon', name: 'mail' %} {{ settings.support_email | escape }}</a>
-      {% if settings.support_phone != blank %}<a href="tel:{{ settings.support_phone | remove: ' ' | escape }}">{% render 'icon', name: 'phone' %} {{ settings.support_phone | escape }}</a>{% endif %}
-      <span>{% render 'icon', name: 'pin' %} ঢাকা, বাংলাদেশ</span>
-      <span>{% render 'icon', name: 'clock' %} সকাল ৯টা – রাত ১০টা</span>
+      <div class="footer-contact__details">
+        {% if settings.support_email != blank %}
+          <a href="mailto:{{ settings.support_email | escape }}">{% render 'icon', name: 'mail' %} {{ settings.support_email | escape }}</a>
+        {% endif %}
+        {% if settings.support_phone != blank %}
+          <a href="tel:{{ settings.support_phone | remove: ' ' | escape }}">{% render 'icon', name: 'phone' %} {{ settings.support_phone | escape }}</a>
+        {% endif %}
+        {% if settings.whatsapp_url != blank %}
+          <a class="footer-whatsapp" href="{{ settings.whatsapp_url }}" rel="noopener">{% render 'icon', name: 'whatsapp' %} WhatsApp-এ যোগাযোগ করুন</a>
+        {% endif %}
+      </div>
     </div>
   </div>
   <div class="footer-bottom">
     <div class="page-width footer-bottom__inner">
       <span>© {{ 'now' | date: '%Y' }} HaatRush. {{ settings.footer_note | escape }}</span>
-      <span class="footer-payment">ক্যাশ অন ডেলিভারি <span aria-hidden="true">·</span> নিরাপদ পেমেন্ট</span>
+      <span class="footer-payment">ক্যাশ অন ডেলিভারি (COD)</span>
     </div>
   </div>
 </footer>

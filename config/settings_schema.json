@@ -42,7 +42,7 @@
         "type": "text",
         "id": "support_email",
         "label": "সাপোর্ট ইমেইল",
-        "default": "support@haatrush.com"
+        "default": ""
       },
       {
         "type": "text",

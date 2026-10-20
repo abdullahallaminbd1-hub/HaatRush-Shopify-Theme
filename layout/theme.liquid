@@ -18,7 +18,7 @@
     {{ 'base.css' | asset_url | stylesheet_tag }}
     <script src="{{ 'theme.js' | asset_url }}" defer></script>
   </head>
-  <body style="--green: {{ settings.color_primary | escape }}; --orange: {{ settings.color_accent | escape }};">
+  <body class="template-{{ request.page_type }}" style="--green: {{ settings.color_primary | escape }}; --orange: {{ settings.color_accent | escape }};">
     <a class="skip-link" href="#MainContent">মূল কনটেন্টে যান</a>
     {% sections 'header-group' %}
     <main id="MainContent" role="main">
