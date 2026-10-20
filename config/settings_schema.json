@@ -90,7 +90,13 @@
       {
         "type": "text",
         "id": "whatsapp_number",
-        "label": "হোয়াটসঅ্যাপ নম্বর"
+        "label": "হোয়াটসঅ্যাপ নম্বর",
+        "default": "8801875126006"
+      },
+      {
+        "type": "url",
+        "id": "x_url",
+        "label": "X / টুইটার URL"
       }
     ]
   },

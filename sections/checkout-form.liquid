@@ -1,6 +1,5 @@
 {%- comment -%}
-  HaatRush Theme - Checkout / Cart Form Section
-  60/40 responsive checkout with Bangladesh location cascade & Cash on Delivery (COD)
+  HaatRush Theme - Cart review with Shopify-native checkout
 {%- endcomment -%}
 
 <section class="checkout-page-section" id="checkoutPageSection">
@@ -9,130 +8,20 @@
 
     <div class="checkout-header-block">
       <h1 class="checkout-page-title">চেকআউট</h1>
-      <p class="checkout-page-subtitle">আপনার অর্ডার নিশ্চিত করতে নিচের তথ্যগুলো পূরণ করুন</p>
+      <p class="checkout-page-subtitle">আপনার কার্ট পর্যালোচনা করুন, এরপর Shopify চেকআউটে ঠিকানা ও পেমেন্ট সম্পন্ন করুন।</p>
     </div>
 
     {%- if cart.item_count > 0 -%}
       <div class="checkout-layout">
-        <!-- LEFT COLUMN: DELIVERY & CUSTOMER INFO (60%) -->
+        <!-- LEFT COLUMN: CHECKOUT DETAILS -->
         <div class="checkout-form-column">
           <div class="checkout-card">
             <div class="checkout-card__header">
-              <div class="checkout-card__icon-box">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1B3C3C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-              </div>
               <div class="checkout-card__title-box">
-                <h2 class="checkout-card__title">ডেলিভারি ও গ্রাহকের তথ্য</h2>
-                <p class="checkout-card__subtitle">সঠিক তথ্য দিন, যাতে আমরা আপনার অর্ডার দ্রুত পৌঁছে দিতে পারি</p>
+                <h2 class="checkout-card__title">চেকআউটের পরবর্তী ধাপ</h2>
+                <p class="checkout-card__subtitle">Shopify-এর নিরাপদ চেকআউটে যোগাযোগ, ডেলিভারি এবং উপলব্ধ পেমেন্টের তথ্য দিন।</p>
               </div>
             </div>
-
-            <form id="checkoutDeliveryForm" class="checkout-form" onsubmit="event.preventDefault(); window.submitCodOrder && window.submitCodOrder();">
-              <!-- Name -->
-              <div class="form-group">
-                <label class="form-label" for="checkout-name">
-                  <span class="form-label__icon">👤</span> নাম <span class="required">*</span>
-                </label>
-                <input 
-                  type="text" 
-                  id="checkout-name" 
-                  name="name" 
-                  class="form-input" 
-                  placeholder="আপনার পূর্ণ নাম লিখুন" 
-                  required
-                >
-              </div>
-
-              <!-- Phone -->
-              <div class="form-group">
-                <label class="form-label" for="checkout-phone">
-                  <span class="form-label__icon">📞</span> মোবাইল নম্বর <span class="required">*</span>
-                </label>
-                <input 
-                  type="tel" 
-                  id="checkout-phone" 
-                  name="phone" 
-                  class="form-input" 
-                  placeholder="01XXXXXXXXX" 
-                  pattern="^(?:\+?88)?01[3-9]\d{8}$"
-                  title="অনুগ্রহ করে একটি সঠিক ১১ ডিজিটের বাংলাদেশি মোবাইল নম্বর দিন"
-                  required
-                >
-              </div>
-
-              <!-- Division & District Row -->
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label class="form-label" for="checkout-division">
-                    <span class="form-label__icon">📋</span> বিভাগ <span class="required">*</span>
-                  </label>
-                  <select id="checkout-division" name="division" class="form-select" required>
-                    <option value="">বিভাগ নির্বাচন করুন</option>
-                    <option value="ঢাকা">ঢাকা</option>
-                    <option value="চট্টগ্রাম">চট্টগ্রাম</option>
-                    <option value="রাজশাহী">রাজশাহী</option>
-                    <option value="খুলনা">খুলনা</option>
-                    <option value="বরিশাল">বরিশাল</option>
-                    <option value="সিলেট">সিলেট</option>
-                    <option value="রংপুর">রংপুর</option>
-                    <option value="ময়মনসিংহ">ময়মনসিংহ</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label" for="checkout-district">
-                    <span class="form-label__icon">📍</span> জেলা <span class="required">*</span>
-                  </label>
-                  <select id="checkout-district" name="district" class="form-select" required disabled>
-                    <option value="">জেলা নির্বাচন করুন</option>
-                  </select>
-                </div>
-              </div>
-
-              <!-- Upazila / Thana -->
-              <div class="form-group">
-                <label class="form-label" for="checkout-upazila">
-                  <span class="form-label__icon">🏠</span> উপজেলা / থানা <span class="required">*</span>
-                </label>
-                <select id="checkout-upazila" name="upazila" class="form-select" required disabled>
-                  <option value="">উপজেলা / থানা নির্বাচন করুন</option>
-                </select>
-              </div>
-
-              <!-- Full Address -->
-              <div class="form-group">
-                <label class="form-label" for="checkout-address">
-                  <span class="form-label__icon">🏡</span> সম্পূর্ণ ঠিকানা <span class="required">*</span>
-                </label>
-                <textarea 
-                  id="checkout-address" 
-                  name="address" 
-                  class="form-textarea" 
-                  rows="3" 
-                  placeholder="বাড়ি / রোড / এলাকা / বিস্তারিত ঠিকানা লিখুন" 
-                  required
-                ></textarea>
-              </div>
-
-              <!-- Delivery Notice Banner -->
-              <div class="delivery-notice-box">
-                <div class="delivery-notice__icon">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FF6B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="1" y="3" width="15" height="13" rx="2"></rect>
-                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-                    <circle cx="5.5" cy="18.5" r="2.5"></circle>
-                    <circle cx="18.5" cy="18.5" r="2.5"></circle>
-                  </svg>
-                </div>
-                <div class="delivery-notice__text">
-                  <h4 class="delivery-notice__title">জেলা নির্বাচনের পর ডেলিভারি চার্জ স্বয়ংক্রিয়ভাবে হিসাব হবে</h4>
-                  <p class="delivery-notice__desc">আপনার নির্বাচিত জেলার উপর ভিত্তি করে ডেলিভারি চার্জ নির্ধারিত হবে। ঢাকা বিভাগে ঢাকা জেলা ৳70, অন্যান্য সব জেলায় ৳130।</p>
-                </div>
-              </div>
-            </form>
           </div>
         </div>
 
@@ -159,7 +48,7 @@
                 <div class="checkout-item" data-key="{{ item.key }}" data-line="{{ forloop.index }}">
                   <div class="checkout-item__thumb">
                     {%- if item.image -%}
-                      <img src="{{ item.image | img_url: '160x160', crop: 'center' }}" alt="{{ item.title | escape }}" width="80" height="80" loading="lazy">
+                      {{ item.image | image_url: width: 160, height: 160, crop: 'center' | image_tag: alt: item.title, width: 80, height: 80, loading: 'lazy' }}
                     {%- else -%}
                       {{ 'product-1' | placeholder_svg_tag: 'checkout-item__placeholder' }}
                     {%- endif -%}
@@ -167,7 +56,7 @@
 
                   <div class="checkout-item__info">
                     <h4 class="checkout-item__title">
-                      <a href="{{ item.url }}">{{ item.product.title }}</a>
+                      <a href="{{ item.url }}">{{ item.product.title | escape }}</a>
                     </h4>
                     {%- unless item.product.has_only_default_variant -%}
                       <span class="checkout-item__variant">{{ item.variant.title }}</span>
@@ -181,7 +70,7 @@
                       </div>
 
                       <div class="checkout-item__price">
-                        ৳{{ item.final_line_price | money_without_currency }}
+                        {{ item.final_line_price | money }}
                       </div>
 
                       <button 
@@ -206,64 +95,20 @@
             <div class="checkout-totals-box">
               <div class="checkout-total-row">
                 <span class="checkout-total-label">পণ্যের মোট (<span id="checkoutItemCount">{{ cart.item_count }}</span> টি):</span>
-                <span class="checkout-total-val" id="checkoutSubtotal">৳{{ cart.total_price | money_without_currency }}</span>
+                <span class="checkout-total-val" id="checkoutSubtotal">{{ cart.total_price | money }}</span>
               </div>
-
-              <div class="checkout-total-row">
-                <span class="checkout-total-label">
-                  ডেলিভারি চার্জ
-                  <span class="info-circle" title="ঢাকা বিভাগে ঢাকা জেলা ৳70, অন্যান্য জেলায় ৳130">ⓘ</span>:
-                </span>
-                <span class="checkout-total-val checkout-delivery-val" id="checkoutDeliveryDisplay">
-                  <span class="text-orange" id="checkoutDeliveryPrompt">জেলা নির্বাচন করুন</span>
-                </span>
-              </div>
-
-              <div class="checkout-separator"></div>
-
-              <div class="checkout-total-row checkout-total-row--final">
-                <span class="checkout-final-label">সর্বমোট:</span>
-                <span class="checkout-final-val" id="checkoutGrandTotal">৳{{ cart.total_price | money_without_currency }}</span>
-              </div>
+              <p class="checkout-page-subtitle">ডেলিভারি চার্জ ও পেমেন্ট অপশন চেকআউটে দেখানো হবে।</p>
             </div>
 
-            <!-- Payment Method Box -->
-            <div class="payment-selection-box">
-              <label class="payment-radio-card is-active">
-                <input type="radio" name="payment_method" value="cod" checked>
-                <div class="payment-radio-card__icon">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-                    <line x1="2" y1="10" x2="22" y2="10"></line>
-                    <circle cx="12" cy="15" r="2"></circle>
-                  </svg>
-                </div>
-                <div class="payment-radio-card__content">
-                  <strong class="payment-radio-card__title">ক্যাশ অন ডেলিভারি (COD)</strong>
-                  <span class="payment-radio-card__desc">পণ্য হাতে পেয়ে টাকা দিন</span>
-                </div>
-                <div class="payment-radio-card__check">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#22C55E" stroke="#FFFFFF" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M8 12l3 3 6-6"></path>
-                  </svg>
-                </div>
-              </label>
-            </div>
-
-            <!-- Submit Button -->
-            <button 
-              type="button" 
-              class="btn-primary checkout-submit-btn" 
-              id="confirmOrderBtn"
-              onclick="window.submitCodOrder && window.submitCodOrder()"
-            >
+            <form action="{{ routes.cart_url }}" method="post">
+              <button type="submit" name="checkout" class="btn-primary checkout-submit-btn">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
               </svg>
-              <span>🔒 অর্ডার নিশ্চিত করুন →</span>
-            </button>
+              <span>চেকআউটে এগিয়ে যান →</span>
+              </button>
+            </form>
 
             <!-- Trust badge -->
             <div class="checkout-security-note">
@@ -288,7 +133,7 @@
         </div>
         <h2 class="checkout-empty-state__title">আপনার কার্ট বর্তমানে খালি আছে</h2>
         <p class="checkout-empty-state__desc">আপনার পছন্দের ইলেকট্রনিক্স পণ্য বাছাই করতে আমাদের শপ ঘুরে দেখুন।</p>
-        <a href="/collections/all" class="btn-primary" style="margin-top: 20px;">
+        <a href="{{ routes.all_products_collection_url }}" class="btn-primary" style="margin-top: 20px;">
           <span>সব পণ্য দেখুন →</span>
         </a>
       </div>
@@ -296,43 +141,9 @@
   </div>
 </section>
 
-<!-- Success Modal / Order Placed Overlay -->
-<div class="order-success-modal" id="orderSuccessModal" style="display: none;">
-  <div class="order-success-modal__backdrop"></div>
-  <div class="order-success-modal__dialog">
-    <div class="order-success-modal__icon">
-      <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"></circle>
-        <polyline points="8 12 11 15 16 9"></polyline>
-      </svg>
-    </div>
-    <h3 class="order-success-modal__title">ধন্যবাদ! আপনার অর্ডারটি গ্রহণ করা হয়েছে</h3>
-    <p class="order-success-modal__desc">অর্ডার নম্বর: <strong id="successOrderNumber">#HR-{{ 'now' | date: '%y%m%d%H%M' }}</strong></p>
-    <p class="order-success-modal__note">আমাদের প্রতিনিধি শীঘ্রই আপনার সাথে ফোনে যোগাযোগ করে অর্ডার কনফার্ম করবেন।</p>
-    <div class="order-success-modal__actions">
-      <a href="/" class="btn-primary" style="width: 100%; justify-content: center;">
-        হোম পেজে ফিরে যান
-      </a>
-    </div>
-  </div>
-</div>
-
 {% schema %}
 {
-  "name": "চেকআউট ফর্ম",
-  "settings": [
-    {
-      "type": "text",
-      "id": "delivery_inside_dhaka",
-      "label": "ঢাকার ভিতরে ডেলিভারি চার্জ (৳)",
-      "default": "70"
-    },
-    {
-      "type": "text",
-      "id": "delivery_outside_dhaka",
-      "label": "ঢাকার বাহিরে ডেলিভারি চার্জ (৳)",
-      "default": "130"
-    }
-  ]
+  "name": "কার্ট পর্যালোচনা",
+  "settings": []
 }
 {% endschema %}

@@ -8,9 +8,9 @@
 
     <!-- Breadcrumb -->
     <nav class="collection-page__breadcrumb" aria-label="ব্রেডক্রাম্ব">
-      <a href="/">হোম</a>
+      <a href="{{ routes.root_url }}">হোম</a>
       <span class="collection-page__breadcrumb-sep">/</span>
-      <a href="/collections">কালেকশন</a>
+      <a href="{{ routes.collections_url }}">কালেকশন</a>
       <span class="collection-page__breadcrumb-sep">/</span>
       <span class="collection-page__breadcrumb-current">{{ collection.title }}</span>
     </nav>
@@ -568,7 +568,7 @@
   }
 </script>
 
-{{ 'filters.js' | asset_url | script_tag }}
+<script src="{{ 'filters.js' | asset_url }}" defer="defer"></script>
 
 {% schema %}
 {

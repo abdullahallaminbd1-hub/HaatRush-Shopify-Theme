@@ -3,7 +3,7 @@
     {%- comment -%} ===== DESKTOP HEADER ===== {%- endcomment -%}
     <div class="header__desktop">
       <div class="header__logo">
-        <a href="/" class="header__logo-link" aria-label="HaatRush হোম">
+        <a href="{{ routes.root_url }}" class="header__logo-link" aria-label="HaatRush হোম">
           <div class="header__logo-default">
             <svg class="header__logo-cart-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF6B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
@@ -17,7 +17,7 @@
       </div>
 
       <div class="header__search">
-        <form action="/search" method="get" role="search" class="header__search-form">
+        <form action="{{ routes.search_url }}" method="get" role="search" class="header__search-form">
           <input type="hidden" name="type" value="product">
           <input
             type="search"
@@ -36,7 +36,7 @@
       </div>
 
       <div class="header__actions">
-        <a href="/account" class="header__action-link" aria-label="আমার অ্যাকাউন্ট">
+        <a href="{{ routes.account_url }}" class="header__action-link" aria-label="আমার অ্যাকাউন্ট">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
           </svg>
@@ -62,7 +62,7 @@
         </svg>
       </button>
 
-      <a href="/" class="header__mobile-logo" aria-label="HaatRush হোম">
+      <a href="{{ routes.root_url }}" class="header__mobile-logo" aria-label="HaatRush হোম">
         <div class="header__logo-default header__logo-default--mobile">
           <svg class="header__logo-cart-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF6B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
@@ -84,7 +84,7 @@
       </button>
     </div>
     <div class="header__mobile-search">
-      <form action="/search" method="get" role="search" class="header__search-form">
+      <form action="{{ routes.search_url }}" method="get" role="search" class="header__search-form">
         <input type="hidden" name="type" value="product">
         <input type="search" name="q" placeholder="আপনার পছন্দের পণ্যটি খুঁজুন..." class="header__search-input" autocomplete="off" aria-label="পণ্য খুঁজুন">
         <button type="submit" class="header__search-btn" aria-label="সার্চ করুন">
@@ -109,7 +109,7 @@
   </div>
   <div class="cart-drawer__items" id="cart-drawer-items" aria-live="polite"></div>
   <div class="cart-drawer__footer">
-    <div class="cart-drawer__subtotal"><span>সাবটোটাল</span><strong id="cart-drawer-subtotal">৳0</strong></div>
+    <div class="cart-drawer__subtotal"><span>সাবটোটাল</span><strong id="cart-drawer-subtotal"></strong></div>
     <a href="/checkout" class="cart-drawer__checkout">🔒 চেকআউট করুন</a>
   </div>
 </aside>
@@ -127,7 +127,7 @@
   </div>
 
   <div class="mobile-menu-drawer__search">
-    <form action="/search" method="get" role="search" class="header__search-form">
+    <form action="{{ routes.search_url }}" method="get" role="search" class="header__search-form">
       <input type="hidden" name="type" value="product">
       <input
         type="search"
@@ -161,7 +161,7 @@
   </ul>
 
   <div class="mobile-menu-drawer__footer">
-    <a href="/account" class="mobile-menu-drawer__footer-link">
+    <a href="{{ routes.account_url }}" class="mobile-menu-drawer__footer-link">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
       </svg>

@@ -357,7 +357,7 @@
   }
 </script>
 
-{{ 'filters.js' | asset_url | script_tag }}
+<script src="{{ 'filters.js' | asset_url }}" defer="defer"></script>
 
 {% schema %}
 {

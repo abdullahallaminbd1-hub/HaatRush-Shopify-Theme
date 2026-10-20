@@ -1,3 +1,5 @@
+{%- assign popular_collection = collections[section.settings.collection] -%}
+{%- if popular_collection != blank and popular_collection.products_count > 0 -%}
 <section class="popular-products" style="padding: 40px 0;">
   <div class="container">
     <div class="section-title">
@@ -8,31 +10,13 @@
     </div>
 
     <div class="product-grid" style="margin-top: 24px;">
-      {%- if section.settings.collection != blank -%}
-        {%- for product in collections[section.settings.collection].products limit: section.settings.products_to_show -%}
-          {% render 'product-card', product: product, show_badge: true %}
-        {%- endfor -%}
-      {%- else -%}
-        {%- for i in (1..4) -%}
-          <div class="product-card">
-            <div class="product-card__image-wrap">
-              {{ 'product-1' | placeholder_svg_tag: 'product-card__image' }}
-            </div>
-            <div class="product-card__body">
-              <h3 class="product-card__title">পণ্যের নাম</h3>
-              <p class="product-card__subtitle">পণ্যের বিবরণ</p>
-              <div class="product-card__prices">
-                <span class="product-card__price">৳1,250</span>
-                <span class="product-card__compare">৳1,550</span>
-              </div>
-              <button class="btn-primary product-card__btn">🛒 কার্টে যোগ করুন</button>
-            </div>
-          </div>
-        {%- endfor -%}
-      {%- endif -%}
+      {%- for product in popular_collection.products limit: section.settings.products_to_show -%}
+        {% render 'product-card', product: product, show_badge: true %}
+      {%- endfor -%}
     </div>
   </div>
 </section>
+{%- endif -%}
 
 {% schema %}
 {

@@ -1,3 +1,15 @@
+{%- assign deals_collection = collections[section.settings.collection] -%}
+{%- assign has_deals = false -%}
+{%- if deals_collection != blank -%}
+  {%- for product in deals_collection.products limit: section.settings.products_to_show -%}
+    {%- assign deal_variant = product.selected_or_first_available_variant -%}
+    {%- if deal_variant.compare_at_price > deal_variant.price -%}
+      {%- assign has_deals = true -%}
+      {%- break -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+{%- if has_deals -%}
 <section class="featured-deals" style="padding: 40px 0;">
   <div class="container">
     <div class="section-title">
@@ -8,31 +20,16 @@
     </div>
     
     <div class="product-grid" style="margin-top: 24px;">
-      {%- if section.settings.collection != blank -%}
-        {%- for product in collections[section.settings.collection].products limit: section.settings.products_to_show -%}
+      {%- for product in deals_collection.products limit: section.settings.products_to_show -%}
+        {%- assign deal_variant = product.selected_or_first_available_variant -%}
+        {%- if deal_variant.compare_at_price > deal_variant.price -%}
           {% render 'product-card', product: product, show_badge: true %}
-        {%- endfor -%}
-      {%- else -%}
-        {%- for i in (1..4) -%}
-          <div class="product-card">
-            <div class="product-card__image-wrap">
-              {{ 'product-1' | placeholder_svg_tag: 'product-card__image' }}
-            </div>
-            <div class="product-card__body">
-              <h3 class="product-card__title">পণ্যের নাম</h3>
-              <p class="product-card__subtitle">পণ্যের বিবরণ</p>
-              <div class="product-card__prices">
-                <span class="product-card__price">৳1,250</span>
-                <span class="product-card__compare">৳1,550</span>
-              </div>
-              <button class="btn-primary product-card__btn">🛒 কার্টে যোগ করুন</button>
-            </div>
-          </div>
-        {%- endfor -%}
-      {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
     </div>
   </div>
 </section>
+{%- endif -%}
 
 {% schema %}
 {

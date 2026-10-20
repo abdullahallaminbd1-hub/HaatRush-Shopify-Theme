@@ -1,22 +1,17 @@
-{%- comment -%}
-  Product Description Tabs + Embedded Order Form
-  Three tabs: পণ্যের বিবরণ | স্পেসিফিকেশন | ডেলিভারি ও রিটার্ন
-  Below: order form with fields + summary
-{%- endcomment -%}
+{%- comment -%} Product description and Shopify-sourced specifications. {%- endcomment -%}
 
 <section class="product-description" id="productDescription">
   <div class="container">
 
     <!-- ===== TABS ===== -->
     <div class="product-tabs">
-      <div class="product-tabs__nav">
-        <button class="product-tabs__btn is-active" data-tab="tab-description" type="button">পণ্যের বিবরণ</button>
-        <button class="product-tabs__btn" data-tab="tab-specs" type="button">স্পেসিফিকেশন</button>
-        <button class="product-tabs__btn" data-tab="tab-delivery" type="button">ডেলিভারি ও রিটার্ন</button>
+      <div class="product-tabs__nav" role="tablist" aria-label="পণ্যের তথ্য">
+        <button class="product-tabs__btn is-active" id="tab-description-button" data-tab="tab-description" role="tab" aria-controls="tab-description" aria-selected="true" type="button">পণ্যের বিবরণ</button>
+        <button class="product-tabs__btn" id="tab-specs-button" data-tab="tab-specs" role="tab" aria-controls="tab-specs" aria-selected="false" type="button">স্পেসিফিকেশন</button>
       </div>
 
       <!-- Tab 1: বিবরণ -->
-      <div class="product-tabs__panel is-active" id="tab-description">
+      <div class="product-tabs__panel is-active" id="tab-description" role="tabpanel" aria-labelledby="tab-description-button" tabindex="0">
         <div class="product-tabs__content">
           {%- if product.description != blank -%}
             <div class="product-tabs__html rte">
@@ -42,29 +37,27 @@
             </table>
           {%- endif -%}
 
-          <!-- Feature Checklist -->
-          <h3 class="product-tabs__sub-title" style="margin-top: 24px;">বৈশিষ্ট্য সমূহ</h3>
-          <ul class="product-tabs__checklist">
-            {%- for tag in product.tags -%}
-              {%- if tag contains 'feature:' -%}
-                <li class="product-tabs__check-item">
-                  <span class="product-tabs__check-icon">✅</span>
-                  {{ tag | remove: 'feature:' | strip }}
-                </li>
-              {%- endif -%}
-            {%- endfor -%}
-            {%- if product.tags.size == 0 -%}
-              <li class="product-tabs__check-item"><span class="product-tabs__check-icon">✅</span> উচ্চ মানের পণ্য</li>
-              <li class="product-tabs__check-item"><span class="product-tabs__check-icon">✅</span> দ্রুত ডেলিভারি</li>
-              <li class="product-tabs__check-item"><span class="product-tabs__check-icon">✅</span> ওয়ারেন্টি সুবিধা</li>
-              <li class="product-tabs__check-item"><span class="product-tabs__check-icon">✅</span> ক্যাশ অন ডেলিভারি</li>
+          {%- assign feature_tag_count = 0 -%}
+          {%- for tag in product.tags -%}
+            {%- if tag contains 'feature:' -%}
+              {%- assign feature_tag_count = feature_tag_count | plus: 1 -%}
             {%- endif -%}
-          </ul>
+          {%- endfor -%}
+          {%- if feature_tag_count > 0 -%}
+            <h3 class="product-tabs__sub-title" style="margin-top: 24px;">বৈশিষ্ট্য সমূহ</h3>
+            <ul class="product-tabs__checklist">
+              {%- for tag in product.tags -%}
+                {%- if tag contains 'feature:' -%}
+                  <li class="product-tabs__check-item">{{ tag | remove: 'feature:' | strip }}</li>
+                {%- endif -%}
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
         </div>
       </div>
 
       <!-- Tab 2: স্পেসিফিকেশন -->
-      <div class="product-tabs__panel" id="tab-specs">
+      <div class="product-tabs__panel" id="tab-specs" role="tabpanel" aria-labelledby="tab-specs-button" tabindex="0">
         <div class="product-tabs__content">
           <h3 class="product-tabs__sub-title">সম্পূর্ণ স্পেসিফিকেশন</h3>
           {%- if product.metafields.custom.full_specifications != blank -%}
@@ -119,179 +112,6 @@
         </div>
       </div>
 
-      <!-- Tab 3: ডেলিভারি ও রিটার্ন -->
-      <div class="product-tabs__panel" id="tab-delivery">
-        <div class="product-tabs__content">
-          <h3 class="product-tabs__sub-title">ডেলিভারি তথ্য</h3>
-          <table class="product-tabs__spec-table">
-            <tbody>
-              <tr>
-                <td class="product-tabs__spec-label">ঢাকার ভিতরে</td>
-                <td class="product-tabs__spec-value">৳{{ section.settings.delivery_inside_dhaka }}</td>
-              </tr>
-              <tr>
-                <td class="product-tabs__spec-label">ঢাকার বাহিরে</td>
-                <td class="product-tabs__spec-value">৳{{ section.settings.delivery_outside_dhaka }}</td>
-              </tr>
-              <tr>
-                <td class="product-tabs__spec-label">ডেলিভারি সময়</td>
-                <td class="product-tabs__spec-value">ঢাকায় ১-২ দিন, ঢাকার বাহিরে ২-৫ দিন</td>
-              </tr>
-              <tr>
-                <td class="product-tabs__spec-label">পেমেন্ট</td>
-                <td class="product-tabs__spec-value">ক্যাশ অন ডেলিভারি / বিকাশ / নগদ</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <h3 class="product-tabs__sub-title" style="margin-top: 24px;">রিটার্ন পলিসি</h3>
-          <ul class="product-tabs__checklist">
-            <li class="product-tabs__check-item">
-              <span class="product-tabs__check-icon">✅</span>
-              পণ্য হাতে পেয়ে চেক করে তারপর টাকা দিন
-            </li>
-            <li class="product-tabs__check-item">
-              <span class="product-tabs__check-icon">✅</span>
-              {{ section.settings.return_days }} দিনের মধ্যে রিটার্ন/এক্সচেঞ্জ সুবিধা
-            </li>
-            <li class="product-tabs__check-item">
-              <span class="product-tabs__check-icon">✅</span>
-              ত্রুটিপূর্ণ পণ্য সম্পূর্ণ ফেরত বা বদল
-            </li>
-            <li class="product-tabs__check-item">
-              <span class="product-tabs__check-icon">⚠️</span>
-              ব্যবহৃত বা ক্ষতিগ্রস্ত পণ্য রিটার্ন গ্রহণযোগ্য নয়
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <!-- ===== EMBEDDED ORDER FORM ===== -->
-    <div class="order-form" id="orderFormSection">
-      <div class="order-form__banner">
-        <h2 class="order-form__banner-title">🛒 আপনার অর্ডার করুন</h2>
-      </div>
-
-      <div class="order-form__body">
-        <!-- Left: Form Fields -->
-        <div class="order-form__fields">
-          <div class="order-form__field">
-            <label for="order-name">আপনার নাম <span class="order-form__required">*</span></label>
-            <input type="text" id="order-name" name="name" placeholder="আপনার পুরো নাম লিখুন" required>
-          </div>
-
-          <div class="order-form__field">
-            <label for="order-phone">মোবাইল নম্বর <span class="order-form__required">*</span></label>
-            <input type="tel" id="order-phone" name="phone" placeholder="01XXXXXXXXX" required>
-          </div>
-
-          <div class="order-form__row">
-            <div class="order-form__field">
-              <label for="order-division">বিভাগ <span class="order-form__required">*</span></label>
-              <select id="order-division" name="division" required>
-                <option value="">বিভাগ নির্বাচন করুন</option>
-                <option value="ঢাকা">ঢাকা</option>
-                <option value="চট্টগ্রাম">চট্টগ্রাম</option>
-                <option value="রাজশাহী">রাজশাহী</option>
-                <option value="খুলনা">খুলনা</option>
-                <option value="বরিশাল">বরিশাল</option>
-                <option value="সিলেট">সিলেট</option>
-                <option value="রংপুর">রংপুর</option>
-                <option value="ময়মনসিংহ">ময়মনসিংহ</option>
-              </select>
-            </div>
-            <div class="order-form__field">
-              <label for="order-district">জেলা <span class="order-form__required">*</span></label>
-              <input type="text" id="order-district" name="district" placeholder="জেলার নাম" required>
-            </div>
-          </div>
-
-          <div class="order-form__field">
-            <label for="order-upazila">উপজেলা / থানা</label>
-            <input type="text" id="order-upazila" name="upazila" placeholder="উপজেলা বা থানার নাম">
-          </div>
-
-          <div class="order-form__field">
-            <label for="order-address">সম্পূর্ণ ঠিকানা <span class="order-form__required">*</span></label>
-            <textarea id="order-address" name="address" rows="3" placeholder="বাসা নম্বর, রোড, এলাকা ইত্যাদি" required></textarea>
-          </div>
-        </div>
-
-        <!-- Right: Order Summary -->
-        <div class="order-form__summary">
-          <div class="order-form__product-info">
-            {%- if product.featured_image != blank -%}
-              <img
-                class="order-form__product-img"
-                src="{{ product.featured_image | image_url: width: 200 }}"
-                alt="{{ product.title }}"
-                width="100"
-                height="100"
-                loading="lazy"
-              >
-            {%- else -%}
-              <div class="order-form__product-img-placeholder">
-                {{ 'product-1' | placeholder_svg_tag }}
-              </div>
-            {%- endif -%}
-            <div class="order-form__product-details">
-              <h4 class="order-form__product-title">{{ product.title | default: 'পণ্যের নাম' }}</h4>
-              <p class="order-form__product-price">
-                <span class="order-form__price-current">৳{{ product.price | money_without_currency | default: '0' }}</span>
-                {%- if product.compare_at_price > product.price -%}
-                  <span class="order-form__price-compare">৳{{ product.compare_at_price | money_without_currency }}</span>
-                {%- endif -%}
-              </p>
-            </div>
-          </div>
-
-          <!-- Quantity -->
-          <div class="order-form__qty">
-            <label>পরিমাণ:</label>
-            <div class="order-form__qty-controls">
-              <button type="button" class="order-form__qty-btn" id="qtyMinus">−</button>
-              <input type="number" id="orderQty" name="quantity" value="1" min="1" max="10" readonly>
-              <button type="button" class="order-form__qty-btn" id="qtyPlus">+</button>
-            </div>
-          </div>
-
-          <!-- Delivery Option -->
-          <div class="order-form__delivery-option">
-            <label>ডেলিভারি:</label>
-            <div class="order-form__delivery-radios">
-              <label class="order-form__radio">
-                <input type="radio" name="delivery" value="inside" checked data-cost="{{ section.settings.delivery_inside_dhaka }}">
-                <span>ঢাকার ভিতরে — ৳{{ section.settings.delivery_inside_dhaka }}</span>
-              </label>
-              <label class="order-form__radio">
-                <input type="radio" name="delivery" value="outside" data-cost="{{ section.settings.delivery_outside_dhaka }}">
-                <span>ঢাকার বাহিরে — ৳{{ section.settings.delivery_outside_dhaka }}</span>
-              </label>
-            </div>
-          </div>
-
-          <!-- Totals -->
-          <div class="order-form__totals">
-            <div class="order-form__totals-row">
-              <span>পণ্যের মূল্য:</span>
-              <span id="orderSubtotal">৳{{ product.price | money_without_currency | default: '0' }}</span>
-            </div>
-            <div class="order-form__totals-row">
-              <span>ডেলিভারি চার্জ:</span>
-              <span id="orderDelivery">৳{{ section.settings.delivery_inside_dhaka }}</span>
-            </div>
-            <div class="order-form__totals-row order-form__totals-total">
-              <span>সর্বমোট:</span>
-              <span id="orderTotal">৳0</span>
-            </div>
-          </div>
-
-          <button type="button" class="order-form__confirm btn-primary" id="confirmOrderBtn">
-            ✅ অর্ডার কনফার্ম করুন
-          </button>
-        </div>
-      </div>
     </div>
 
   </div>
@@ -662,135 +482,54 @@
 
 <script>
   (function() {
-    /* Tab switching */
-    var tabBtns = document.querySelectorAll('.product-tabs__btn');
-    var tabPanels = document.querySelectorAll('.product-tabs__panel');
+    var section = document.getElementById('productDescription');
+    if (!section) return;
+    var tabBtns = section.querySelectorAll('.product-tabs__btn');
+    var tabPanels = section.querySelectorAll('.product-tabs__panel');
 
-    tabBtns.forEach(function(btn) {
+    function activateTab(btn, focus) {
+      var targetId = btn.getAttribute('data-tab');
+      tabBtns.forEach(function(tab) {
+        var active = tab === btn;
+        tab.classList.toggle('is-active', active);
+        tab.setAttribute('aria-selected', active ? 'true' : 'false');
+        tab.tabIndex = active ? 0 : -1;
+      });
+      tabPanels.forEach(function(panel) {
+        var active = panel.id === targetId;
+        panel.classList.toggle('is-active', active);
+        panel.hidden = !active;
+      });
+      if (focus) btn.focus();
+    }
+
+    tabBtns.forEach(function(btn, index) {
       btn.addEventListener('click', function() {
-        tabBtns.forEach(function(b) { b.classList.remove('is-active'); });
-        tabPanels.forEach(function(p) { p.classList.remove('is-active'); });
-        btn.classList.add('is-active');
-        var target = document.getElementById(btn.getAttribute('data-tab'));
-        if (target) target.classList.add('is-active');
+        activateTab(btn, false);
+      });
+      btn.addEventListener('keydown', function(event) {
+        if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+        event.preventDefault();
+        var direction = event.key === 'ArrowRight' ? 1 : -1;
+        var nextIndex = (index + direction + tabBtns.length) % tabBtns.length;
+        activateTab(tabBtns[nextIndex], true);
       });
     });
 
-    /* Quantity controls */
-    var qtyInput = document.getElementById('orderQty');
-    var minusBtn = document.getElementById('qtyMinus');
-    var plusBtn = document.getElementById('qtyPlus');
-
-    if (minusBtn) {
-      minusBtn.addEventListener('click', function() {
-        var val = parseInt(qtyInput.value) || 1;
-        if (val > 1) { qtyInput.value = val - 1; updateOrderTotal(); }
-      });
-    }
-    if (plusBtn) {
-      plusBtn.addEventListener('click', function() {
-        var val = parseInt(qtyInput.value) || 1;
-        if (val < 10) { qtyInput.value = val + 1; updateOrderTotal(); }
-      });
-    }
-
-    /* Delivery radio change */
-    var deliveryRadios = document.querySelectorAll('input[name="delivery"]');
-    deliveryRadios.forEach(function(radio) {
-      radio.addEventListener('change', updateOrderTotal);
+    tabPanels.forEach(function(panel, index) {
+      panel.hidden = !panel.classList.contains('is-active');
+      tabBtns[index].tabIndex = tabBtns[index].classList.contains('is-active') ? 0 : -1;
     });
-
-    /* Calculate total */
-    function updateOrderTotal() {
-      var productPrice = {{ product.price | default: 0 }} / 100;
-      var qty = parseInt(qtyInput.value) || 1;
-      var checkedRadio = document.querySelector('input[name="delivery"]:checked');
-      var deliveryCost = checkedRadio ? parseInt(checkedRadio.getAttribute('data-cost')) || 0 : 0;
-      var subtotal = productPrice * qty;
-      var total = subtotal + deliveryCost;
-
-      var subtotalEl = document.getElementById('orderSubtotal');
-      var deliveryEl = document.getElementById('orderDelivery');
-      var totalEl = document.getElementById('orderTotal');
-
-      if (subtotalEl) subtotalEl.textContent = '৳' + subtotal.toLocaleString('bn-BD');
-      if (deliveryEl) deliveryEl.textContent = '৳' + deliveryCost.toLocaleString('bn-BD');
-      if (totalEl) totalEl.textContent = '৳' + total.toLocaleString('bn-BD');
-    }
-
-    /* Init */
-    updateOrderTotal();
-
-    /* Confirm order */
-    var confirmBtn = document.getElementById('confirmOrderBtn');
-    if (confirmBtn) {
-      confirmBtn.addEventListener('click', function() {
-        var name = document.getElementById('order-name').value.trim();
-        var phone = document.getElementById('order-phone').value.trim();
-        var division = document.getElementById('order-division').value;
-        var district = document.getElementById('order-district').value.trim();
-        var address = document.getElementById('order-address').value.trim();
-
-        if (!name || !phone || !division || !district || !address) {
-          alert('অনুগ্রহ করে সকল প্রয়োজনীয় তথ্য পূরণ করুন।');
-          return;
-        }
-        if (!/^01[3-9]\d{8}$/.test(phone)) {
-          alert('সঠিক মোবাইল নম্বর দিন (01XXXXXXXXX)');
-          return;
-        }
-
-        confirmBtn.disabled = true;
-        confirmBtn.textContent = '⏳ অর্ডার প্রসেস হচ্ছে...';
-
-        /* In production, submit via AJAX to a custom endpoint or Shopify cart */
-        setTimeout(function() {
-          alert('আপনার অর্ডার সফলভাবে নেওয়া হয়েছে! আমরা শীঘ্রই আপনার সাথে যোগাযোগ করবো।');
-          confirmBtn.disabled = false;
-          confirmBtn.textContent = '✅ অর্ডার কনফার্ম করুন';
-        }, 1500);
-      });
-    }
   })();
 </script>
 
 {% schema %}
 {
-  "name": "📋 পণ্যের বিবরণ ও অর্ডার",
-  "settings": [
-    {
-      "type": "range",
-      "id": "delivery_inside_dhaka",
-      "label": "ঢাকার ভিতরে ডেলিভারি চার্জ (৳)",
-      "min": 0,
-      "max": 500,
-      "step": 10,
-      "default": 70,
-      "unit": "৳"
-    },
-    {
-      "type": "range",
-      "id": "delivery_outside_dhaka",
-      "label": "ঢাকার বাহিরে ডেলিভারি চার্জ (৳)",
-      "min": 0,
-      "max": 500,
-      "step": 10,
-      "default": 130,
-      "unit": "৳"
-    },
-    {
-      "type": "range",
-      "id": "return_days",
-      "label": "রিটার্ন দিন সংখ্যা",
-      "min": 1,
-      "max": 30,
-      "step": 1,
-      "default": 7
-    }
-  ],
+  "name": "বিবরণ ও স্পেসিফিকেশন",
+  "settings": [],
   "presets": [
     {
-      "name": "📋 পণ্যের বিবরণ ও অর্ডার"
+      "name": "বিবরণ ও স্পেসিফিকেশন"
     }
   ]
 }

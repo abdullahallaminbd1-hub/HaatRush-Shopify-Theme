@@ -6,13 +6,13 @@
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
   assign has_discount = false
-  if product.compare_at_price > product.price
+  if current_variant.compare_at_price > current_variant.price
     assign has_discount = true
-    assign discount_percent = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round
+    assign discount_percent = current_variant.compare_at_price | minus: current_variant.price | times: 100.0 | divided_by: current_variant.compare_at_price | round
   endif
 -%}
 
-<section class="product-main-section" id="productMainSection" data-product-id="{{ product.id }}" data-variant-id="{{ current_variant.id }}">
+<section class="product-main-section" id="productMainSection" data-product-id="{{ product.id }}" data-variant-id="{{ current_variant.id }}" data-price-cents="{{ current_variant.price }}" data-currency="{{ cart.currency.iso_code | default: shop.currency }}">
   <div class="container">
     {%- render 'breadcrumb' -%}
 
@@ -21,22 +21,22 @@
       <div class="product-gallery">
         <div class="product-gallery__main" id="productGalleryMain">
           {%- if product.featured_image != blank -%}
-            <img 
-              id="product-main-image"
-              src="{{ product.featured_image | img_url: '700x700' }}" 
-              alt="{{ product.featured_image.alt | default: product.title | escape }}"
-              class="product-gallery__main-img"
-              width="700"
-              height="700"
-              loading="eager"
-            >
+            {{ product.featured_image | image_url: width: 1200 | image_tag:
+              id: 'product-main-image',
+              alt: product.featured_image.alt | default: product.title,
+              class: 'product-gallery__main-img',
+              widths: '480, 700, 900, 1200',
+              sizes: '(min-width: 769px) 50vw, 100vw',
+              loading: 'eager',
+              fetchpriority: 'high'
+            }}
           {%- else -%}
             {{ 'product-1' | placeholder_svg_tag: 'product-gallery__placeholder' }}
           {%- endif -%}
 
-          {%- if has_discount -%}
-            <span class="product-gallery__badge badge badge--discount">-{{ discount_percent }}%</span>
-          {%- endif -%}
+          <span class="product-gallery__badge badge badge--discount" data-discount-badge{% unless has_discount %} hidden{% endunless %}>
+            {%- if has_discount -%}-{{ discount_percent }}%{%- endif -%}
+          </span>
         </div>
 
         {%- if product.images.size > 1 -%}
@@ -45,18 +45,17 @@
               <button 
                 type="button"
                 class="product-gallery__thumb{% if forloop.first %} is-active active{% endif %}"
-                data-image-src="{{ image | img_url: '700x700' }}"
+                data-image-src="{{ image | image_url: width: 1200 }}"
                 data-thumb-index="{{ forloop.index0 }}"
                 aria-label="ছবি {{ forloop.index }}"
                 onclick="window.selectProductImage && window.selectProductImage(this)"
               >
-                <img 
-                  src="{{ image | img_url: '120x120', crop: 'center' }}" 
-                  alt="{{ image.alt | default: product.title | escape }}"
-                  width="80" 
-                  height="80" 
-                  loading="lazy"
-                >
+                {{ image | image_url: width: 160, height: 160, crop: 'center' | image_tag:
+                  alt: image.alt | default: product.title,
+                  width: 80,
+                  height: 80,
+                  loading: 'lazy'
+                }}
               </button>
             {%- endfor -%}
           </div>
@@ -67,9 +66,9 @@
       <div class="product-info">
         <!-- Badges Row -->
         <div class="product-badges">
-          {%- if has_discount -%}
-            <span class="badge badge--discount">-{{ discount_percent }}%</span>
-          {%- endif -%}
+          <span class="badge badge--discount" data-discount-badge{% unless has_discount %} hidden{% endunless %}>
+            {%- if has_discount -%}-{{ discount_percent }}%{%- endif -%}
+          </span>
 
           {%- if product.available -%}
             <span class="badge badge--stock">
@@ -94,11 +93,35 @@
           <p class="product-vendor">ব্র্যান্ড: <strong>{{ product.vendor }}</strong></p>
         {%- endif -%}
 
+        {%- unless product.has_only_default_variant -%}
+          <div class="product-variant-selector">
+            <label for="product-variant-select">ভ্যারিয়েন্ট নির্বাচন করুন</label>
+            <select id="product-variant-select" aria-label="ভ্যারিয়েন্ট নির্বাচন করুন">
+              {%- for variant in product.variants -%}
+                <option
+                  value="{{ variant.id }}"
+                  data-price-cents="{{ variant.price }}"
+                  data-compare-price-cents="{{ variant.compare_at_price | default: 0 }}"
+                  data-price="{{ variant.price | money | escape }}"
+                  data-compare-price="{{ variant.compare_at_price | money | escape }}"
+                  data-available="{{ variant.available }}"
+                  {% if variant.id == current_variant.id %}selected{% endif %}
+                  {% unless variant.available %}disabled{% endunless %}
+                >
+                  {{ variant.title | escape }}{% unless variant.available %} — {{ 'general.out_of_stock' | t }}{% endunless %}
+                </option>
+              {%- endfor -%}
+            </select>
+          </div>
+        {%- endunless -%}
+
         <!-- Price Row -->
         <div class="product-price-row">
-          <span class="product-price" id="productPriceDisplay">৳{{ current_variant.price | money_without_currency }}</span>
+          <span class="product-price" id="productPriceDisplay" data-price-cents="{{ current_variant.price }}">{{ current_variant.price | money }}</span>
           {%- if has_discount -%}
-            <span class="product-compare-price" id="productComparePriceDisplay">৳{{ current_variant.compare_at_price | money_without_currency }}</span>
+            <span class="product-compare-price" id="productComparePriceDisplay">{{ current_variant.compare_at_price | money }}</span>
+          {%- else -%}
+            <span class="product-compare-price" id="productComparePriceDisplay" hidden></span>
           {%- endif -%}
         </div>
 
@@ -116,18 +139,18 @@
           <!-- CTAs -->
           <div class="product-buttons">
             {%- if product.available -%}
-              <!-- Primary COD CTA -->
+              <!-- Primary checkout CTA -->
               <button 
                 type="button" 
-                class="btn-primary product-cta-btn product-cta--cod"
-                onclick="window.scrollToOrderForm ? window.scrollToOrderForm() : document.getElementById('orderFormSection')?.scrollIntoView({behavior: 'smooth'})"
+                class="btn-primary product-cta-btn product-cta--buy"
+                onclick="window.addProductToCart && window.addProductToCart(document.getElementById('productMainSection').dataset.variantId, true)"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect x="2" y="4" width="20" height="16" rx="2"></rect>
                   <line x1="2" y1="10" x2="22" y2="10"></line>
                   <circle cx="12" cy="15" r="2"></circle>
                 </svg>
-                <span>🛒 ক্যাশ অন ডেলিভারিতে অর্ডার করুন</span>
+                <span>এখনই কিনুন</span>
               </button>
 
               <!-- Secondary Cart CTA -->
@@ -135,7 +158,7 @@
                 type="button" 
                 class="btn-outline product-cta-btn product-cta--cart js-add-to-cart-main"
                 data-variant-id="{{ current_variant.id }}"
-                onclick="window.addProductToCart && window.addProductToCart({{ current_variant.id }})"
+                onclick="window.addProductToCart && window.addProductToCart(document.getElementById('productMainSection').dataset.variantId, false)"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="9" cy="21" r="1"></circle>
@@ -152,15 +175,9 @@
           </div>
         </div>
 
-        <!-- Quick Call / Order Hotline -->
-        <div class="product-hotline-box">
-          <span class="product-hotline-icon">📞</span>
-          <span class="product-hotline-text">ফোন বা হোয়াটসঅ্যাপে অর্ডার করতে কল করুন: <strong>{{ section.settings.hotline_number | default: '01800-000000' }}</strong></span>
-        </div>
-
         <!-- Feature Icons Row -->
-        <div class="feature-icons">
-          {%- if section.blocks.size > 0 -%}
+        {%- if section.blocks.size > 0 -%}
+          <div class="feature-icons">
             {%- for block in section.blocks -%}
               <div class="feature-icon" {{ block.shopify_attributes }}>
                 <div class="feature-icon__svg">
@@ -201,58 +218,14 @@
                 {%- endif -%}
               </div>
             {%- endfor -%}
-          {%- else -%}
-            <!-- Default 4 Feature Icons -->
-            <div class="feature-icon">
-              <div class="feature-icon__svg">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1B3C3C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 2v10m0 0l3-3m-3 3l-3-3M7 14v3a2 2 0 002 2h6a2 2 0 002-2v-3"></path>
-                </svg>
-              </div>
-              <span class="feature-icon__label">USB Powered</span>
-              <span class="feature-icon__sublabel">5V সাপোর্ট</span>
-            </div>
-
-            <div class="feature-icon">
-              <div class="feature-icon__svg">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1B3C3C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"></path>
-                </svg>
-              </div>
-              <span class="feature-icon__label">Waterproof</span>
-              <span class="feature-icon__sublabel">IP65 ওয়াটারপ্রুফ</span>
-            </div>
-
-            <div class="feature-icon">
-              <div class="feature-icon__svg">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1B3C3C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="5"></circle>
-                  <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
-                </svg>
-              </div>
-              <span class="feature-icon__label">ARGB Color</span>
-              <span class="feature-icon__sublabel">১৬M+ কালার</span>
-            </div>
-
-            <div class="feature-icon">
-              <div class="feature-icon__svg">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1B3C3C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="5" y="2" width="14" height="20" rx="2"></rect>
-                  <circle cx="12" cy="14" r="2"></circle>
-                  <line x1="12" y1="6" x2="12" y2="6"></line>
-                </svg>
-              </div>
-              <span class="feature-icon__label">App & Remote</span>
-              <span class="feature-icon__sublabel">সহজ কন্ট্রোল</span>
-            </div>
-          {%- endif -%}
-        </div>
+          </div>
+        {%- endif -%}
       </div>
     </div>
   </div>
 </section>
 
-{{ 'product-form.js' | asset_url | script_tag }}
+<script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
 
 {% schema %}
 {
@@ -262,13 +235,13 @@
       "type": "checkbox",
       "id": "show_authenticity_badge",
       "label": "১০০% অরিজিনাল ব্যাজ দেখান",
-      "default": true
+      "default": false
     },
     {
       "type": "text",
       "id": "hotline_number",
       "label": "হটলাইন নম্বর",
-      "default": "01800-000000"
+      "default": ""
     }
   ],
   "blocks": [
@@ -306,13 +279,7 @@
   ],
   "presets": [
     {
-      "name": "পণ্যের মূল তথ্য",
-      "blocks": [
-        { "type": "feature", "settings": { "icon_type": "usb", "label": "USB Powered", "sublabel": "5V সাপোর্ট" } },
-        { "type": "feature", "settings": { "icon_type": "waterproof", "label": "Waterproof", "sublabel": "IP65 ওয়াটারপ্রুফ" } },
-        { "type": "feature", "settings": { "icon_type": "rgb", "label": "ARGB Color", "sublabel": "১৬M+ কালার" } },
-        { "type": "feature", "settings": { "icon_type": "remote", "label": "App & Remote", "sublabel": "সহজ কন্ট্রোল" } }
-      ]
+      "name": "পণ্যের মূল তথ্য"
     }
   ]
 }

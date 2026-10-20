@@ -31,7 +31,7 @@
         "view_all_url": ""
       }
     },
-    "popular": {
+    "popular-products": {
       "type": "popular-products",
       "settings": {
         "title": "জনপ্রিয় পণ্য",
@@ -39,11 +39,11 @@
         "products_to_show": 4,
         "view_all_url": ""
       }
+    },
+    "trust-badges": {
+      "type": "trust-badges",
+      "settings": {}
     }
   },
-  "order": [
-    "hero",
-    "deals",
-    "popular"
-  ]
+  "order": ["hero", "deals", "popular-products", "trust-badges"]
 }

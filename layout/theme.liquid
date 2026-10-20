@@ -8,6 +8,7 @@
   {{ 'theme.css' | asset_url | stylesheet_tag }}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
   {%- section 'announcement-bar' -%}
@@ -15,8 +16,33 @@
   <main id="main-content">
     {{ content_for_layout }}
   </main>
-  {%- section 'trust-badges' -%}
   {%- section 'footer' -%}
-  {{ 'theme.js' | asset_url | script_tag }}
+  <script src="{{ 'theme.js' | asset_url }}" defer="defer"></script>
+  <div class="cart-drawer" id="cart-drawer" role="dialog" aria-modal="true" aria-label="শপিং কার্ট">
+    <div class="cart-drawer__overlay" id="cart-drawer-overlay"></div>
+    <div class="cart-drawer__wrapper">
+      <div class="cart-drawer__header">
+        <h2 class="cart-drawer__title">আপনার কার্ট</h2>
+        <button type="button" class="cart-drawer__close" data-cart-drawer-close aria-label="কার্ট বন্ধ করুন">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="cart-drawer__content">
+        <div class="cart-drawer__items" id="cart-drawer-items"></div>
+        <div class="cart-drawer__footer">
+          <div class="cart-drawer__totals">
+            <span class="cart-drawer__total-label">মোট:</span>
+            <span class="cart-drawer__total-price" id="cart-drawer-subtotal">৳০</span>
+          </div>
+          <a href="/cart" class="cart-drawer__checkout-btn btn-primary">
+            চেকআউটে এগিয়ে যান →
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>

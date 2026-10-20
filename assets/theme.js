@@ -307,7 +307,7 @@ function fetchCartAndRender() {
     })
     .then(function(cart) {
       itemsContainer.replaceChildren();
-      subtotalElement.textContent = '৳' + (cart.total_price / 100).toLocaleString('en-BD');
+      subtotalElement.textContent = formatCartMoney(cart.total_price, cart.currency);
 
       if (!cart.items.length) {
         var emptyMessage = document.createElement('p');
@@ -339,7 +339,7 @@ function fetchCartAndRender() {
 
         var price = document.createElement('span');
         price.className = 'cart-drawer__item-price';
-        price.textContent = '৳' + (item.final_line_price / 100).toLocaleString('en-BD');
+        price.textContent = formatCartMoney(item.final_line_price, cart.currency);
         info.appendChild(price);
 
         var controls = document.createElement('div');
@@ -384,6 +384,13 @@ function fetchCartAndRender() {
     });
 }
 
+function formatCartMoney(amountInCents, currencyCode) {
+  return new Intl.NumberFormat('bn-BD', {
+    style: 'currency',
+    currency: currencyCode
+  }).format(amountInCents / 100);
+}
+
 function initCartDrawer() {
   document.querySelectorAll('[data-cart-drawer-open]').forEach(function(button) {
     button.addEventListener('click', openCartDrawer);
@@ -391,6 +398,12 @@ function initCartDrawer() {
   document.querySelectorAll('[data-cart-drawer-close]').forEach(function(button) {
     button.addEventListener('click', closeCartDrawer);
   });
+
+  // Close drawer when clicking overlay
+  var overlay = document.getElementById('cart-drawer-overlay');
+  if (overlay) {
+    overlay.addEventListener('click', closeCartDrawer);
+  }
 
   var itemsContainer = document.getElementById('cart-drawer-items');
   if (itemsContainer) {
@@ -418,6 +431,56 @@ function initCartDrawer() {
     if (event.key === 'Escape') closeCartDrawer();
   });
 }
+
+/* ============================================
+   AJAX ADD TO CART - PRODUCT CARDS
+   ============================================ */
+
+function initAjaxAddToCart() {
+  var pendingRequests = new Map();
+
+  document.addEventListener('click', function(event) {
+    var btn = event.target.closest('.js-ajax-add-to-cart');
+    if (!btn) return;
+
+    var variantId = btn.getAttribute('data-variant-id');
+    if (!variantId) return;
+
+    // Prevent duplicate submissions
+    if (pendingRequests.has(variantId)) return;
+
+    // UI feedback: show adding state
+    var originalHTML = btn.innerHTML;
+    btn.setAttribute('aria-busy', 'true');
+    btn.disabled = true;
+    btn.innerHTML = '<span>যায়ে রহছে…</span>';
+
+    event.preventDefault();
+
+    addToCart(variantId, 1)
+      .then(function() {
+        updateCartCount();
+        openCartDrawer();
+      })
+      .catch(function(error) {
+        console.error('Add to cart failed:', error);
+        // Show small inline error
+        var errorMsg = document.createElement('span');
+        errorMsg.className = 'add-to-cart-error';
+        errorMsg.textContent = 'সঠিকভাবে যোগ করা যায়নি। আবার চেষ্টা করুন।';
+        errorMsg.style.cssText = 'color: #EF4444; font-size: 12px; display: block; margin-top: 6px;';
+        btn.parentNode.insertBefore(errorMsg, btn.nextSibling);
+        setTimeout(function() { errorMsg.remove(); }, 4000);
+      })
+      .finally(function() {
+        pendingRequests.delete(variantId);
+        btn.removeAttribute('aria-busy');
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+      });
+  });
+}
+
 
 function removeFromCart(key) {
   return fetch('/cart/change.js', {
@@ -1072,6 +1135,7 @@ document.addEventListener('DOMContentLoaded', function() {
   initNewsletterPopup();
   initCountdownTimers();
   initCartDrawer();
+  initAjaxAddToCart();
   updateCartCount();
 
   var divisionSelect = document.querySelector('#division, [name="division"], select[data-location="division"]');
@@ -1185,155 +1249,17 @@ window.changeCartLineQty = function(lineKey, newQuantity) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   })
-  .then(function(res) { return res.json(); })
-  .then(function(cart) {
+  .then(function(response) {
+    if (!response.ok) {
+      throw new Error('Failed to update cart item');
+    }
+    return response.json();
+  })
+  .then(function() {
     window.location.reload();
   })
   .catch(function(err) {
     console.error('Error updating cart line:', err);
-    window.location.reload();
+    showCartNotification('কার্ট আপডেট করা যায়নি। আবার চেষ্টা করুন।', true);
   });
 };
-
-window.submitCodOrder = function() {
-  var nameEl = document.getElementById('checkout-name');
-  var phoneEl = document.getElementById('checkout-phone');
-  var divEl = document.getElementById('checkout-division');
-  var distEl = document.getElementById('checkout-district');
-  var upaEl = document.getElementById('checkout-upazila');
-  var addrEl = document.getElementById('checkout-address');
-
-  if (!nameEl || !nameEl.value.trim()) {
-    alert('অনুগ্রহ করে আপনার পূর্ণ নাম লিখুন।');
-    if (nameEl) nameEl.focus();
-    return;
-  }
-
-  if (!phoneEl || !phoneEl.value.trim()) {
-    alert('অনুগ্রহ করে আপনার ১১ ডিজিটের মোবাইল নম্বর লিখুন।');
-    if (phoneEl) phoneEl.focus();
-    return;
-  }
-
-  var phone = phoneEl.value.trim().replace(/[\s\-\+]/g, '');
-  if (!/^(?:88)?01[3-9]\d{8}$/.test(phone)) {
-    alert('অনুগ্রহ করে একটি সঠিক বাংলাদেশি মোবাইল নম্বর লিখুন (যেমন: 01XXXXXXXXX)।');
-    if (phoneEl) phoneEl.focus();
-    return;
-  }
-
-  if (!divEl || !divEl.value.trim()) {
-    alert('অনুগ্রহ করে আপনার বিভাগ নির্বাচন করুন।');
-    if (divEl) divEl.focus();
-    return;
-  }
-
-  if (!distEl || !distEl.value.trim()) {
-    alert('অনুগ্রহ করে আপনার জেলা নির্বাচন করুন।');
-    if (distEl) distEl.focus();
-    return;
-  }
-
-  if (!addrEl || !addrEl.value.trim()) {
-    alert('অনুগ্রহ করে সম্পূর্ণ ঠিকানা লিখুন।');
-    if (addrEl) addrEl.focus();
-    return;
-  }
-
-  var btn = document.getElementById('confirmOrderBtn');
-  if (btn) {
-    btn.disabled = true;
-    btn.innerHTML = 'অর্ডার প্রসেস হচ্ছে...';
-  }
-
-  // Clear cart & show success modal
-  fetch('/cart/clear.js', { method: 'POST' })
-    .then(function() {
-      var modal = document.getElementById('orderSuccessModal');
-      if (modal) {
-        modal.style.display = 'flex';
-      } else {
-        alert('ধন্যবাদ! আপনার ক্যাশ অন ডেলিভারি অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে।');
-        window.location.href = '/';
-      }
-    })
-    .catch(function() {
-      var modal = document.getElementById('orderSuccessModal');
-      if (modal) {
-        modal.style.display = 'flex';
-      } else {
-        alert('ধন্যবাদ! আপনার অর্ডারটি গ্রহণ করা হয়েছে।');
-        window.location.href = '/';
-      }
-    });
-};
-
-// Auto wire checkout location select
-document.addEventListener('DOMContentLoaded', function() {
-  var chkDiv = document.getElementById('checkout-division');
-  var chkDist = document.getElementById('checkout-district');
-  var chkUpa = document.getElementById('checkout-upazila');
-
-  if (chkDiv && chkDist && chkUpa && typeof BD_LOCATIONS !== 'undefined') {
-    chkDiv.addEventListener('change', function() {
-      var selDiv = this.value;
-      chkDist.innerHTML = '<option value="">জেলা নির্বাচন করুন</option>';
-      chkUpa.innerHTML = '<option value="">উপজেলা / থানা নির্বাচন করুন</option>';
-      chkUpa.disabled = true;
-
-      if (selDiv && BD_LOCATIONS[selDiv]) {
-        chkDist.disabled = false;
-        Object.keys(BD_LOCATIONS[selDiv]).forEach(function(dist) {
-          var opt = document.createElement('option');
-          opt.value = dist;
-          opt.textContent = dist;
-          chkDist.appendChild(opt);
-        });
-      } else {
-        chkDist.disabled = true;
-      }
-      updateCheckoutDelivery();
-    });
-
-    chkDist.addEventListener('change', function() {
-      var selDiv = chkDiv.value;
-      var selDist = this.value;
-      chkUpa.innerHTML = '<option value="">উপজেলা / থানা নির্বাচন করুন</option>';
-
-      if (selDiv && selDist && BD_LOCATIONS[selDiv] && BD_LOCATIONS[selDiv][selDist]) {
-        chkUpa.disabled = false;
-        BD_LOCATIONS[selDiv][selDist].forEach(function(upa) {
-          var opt = document.createElement('option');
-          opt.value = upa;
-          opt.textContent = upa;
-          chkUpa.appendChild(opt);
-        });
-      } else {
-        chkUpa.disabled = true;
-      }
-      updateCheckoutDelivery();
-    });
-  }
-
-  function updateCheckoutDelivery() {
-    var selDiv = chkDiv ? chkDiv.value : '';
-    var selDist = chkDist ? chkDist.value : '';
-    var deliveryPrompt = document.getElementById('checkoutDeliveryPrompt');
-    var deliveryDisplay = document.getElementById('checkoutDeliveryDisplay');
-    var grandTotalEl = document.getElementById('checkoutGrandTotal');
-    var subtotalEl = document.getElementById('checkoutSubtotal');
-
-    if (!selDiv || !selDist) return;
-
-    var charge = (selDiv === 'ঢাকা' && selDist === 'ঢাকা') ? 70 : 130;
-    if (deliveryDisplay) {
-      deliveryDisplay.innerHTML = '৳' + charge;
-    }
-
-    if (subtotalEl && grandTotalEl) {
-      var subVal = parseInt(subtotalEl.textContent.replace(/[^0-9]/g, ''), 10) || 0;
-      var total = subVal + charge;
-      grandTotalEl.textContent = '৳' + total.toLocaleString('bn-BD');
-    }
-  }
-});
