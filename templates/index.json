@@ -1,13 +1,44 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero": {
-      "type": "hero-banner"
+      "type": "hero-banner",
+      "settings": {
+        "heading_line1": "সেরা দামে অরিজিনাল",
+        "heading_line2": "ইলেকট্রনিক্স ও গ্যাজেট",
+        "subtext": "হেডফোন, চার্জার, স্মার্ট গ্যাজেট সহ হাজারো প্রোডাক্ট এখন আপনার হাতের নাগালে। ক্যাশ অন ডেলিভারিতে অর্ডার করুন আজই!",
+        "btn1_label": "এখনই কিনুন",
+        "btn1_url": "",
+        "btn2_label": "সব পণ্য দেখুন",
+        "btn2_url": "",
+        "background_color": "#1b3c3c"
+      }
     },
     "deals": {
-      "type": "featured-deals"
+      "type": "featured-deals",
+      "settings": {
+        "title": "আজকের সেরা ডিল",
+        "collection": "frontpage",
+        "products_to_show": 4,
+        "view_all_url": ""
+      }
     },
     "popular": {
-      "type": "popular-products"
+      "type": "popular-products",
+      "settings": {
+        "title": "জনপ্রিয় পণ্য",
+        "collection": "frontpage",
+        "products_to_show": 4,
+        "view_all_url": ""
+      }
     }
   },
   "order": [
