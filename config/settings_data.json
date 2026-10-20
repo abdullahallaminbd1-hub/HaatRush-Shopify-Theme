@@ -1,0 +1,19 @@
+{
+  "current": {
+    "logo_text": "HaatRush",
+    "tagline": "বিশ্বস্ত ইলেকট্রনিক্স সঙ্গী",
+    "primary_color": "#FF6B00",
+    "header_color": "#1B3C3C",
+    "support_phone": "01XXXXXXXXX",
+    "support_email": "support@haatrush.com",
+    "address": "ঢাকা, বাংলাদেশ",
+    "delivery_inside_dhaka": "70",
+    "delivery_outside_dhaka": "130",
+    "sections": {
+      "announcement-bar": { "type": "announcement-bar", "disabled": false },
+      "header": { "type": "header", "disabled": false },
+      "footer": { "type": "footer", "disabled": false },
+      "trust-badges": { "type": "trust-badges", "disabled": false }
+    }
+  }
+}

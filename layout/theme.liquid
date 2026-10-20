@@ -1,30 +1,22 @@
 <!doctype html>
 <html lang="bn">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="theme-color" content="#06483f">
-    <link rel="canonical" href="{{ canonical_url }}">
-    <title>
-      {{ page_title }}
-      {% if current_tags %} — {{ current_tags | join: ', ' }}{% endif %}
-      {% if current_page != 1 %} — পৃষ্ঠা {{ current_page }}{% endif %}
-      {% unless page_title contains shop.name %} — {{ shop.name }}{% endunless %}
-    </title>
-    {% if page_description %}
-      <meta name="description" content="{{ page_description | escape }}">
-    {% endif %}
-    {{ content_for_header }}
-    {{ 'base.css' | asset_url | stylesheet_tag }}
-    <script src="{{ 'theme.js' | asset_url }}" defer></script>
-  </head>
-  <body class="template-{{ request.page_type }}" style="--green: {{ settings.color_primary | escape }}; --orange: {{ settings.color_accent | escape }};">
-    <a class="skip-link" href="#MainContent">মূল কনটেন্টে যান</a>
-    {% sections 'header-group' %}
-    <main id="MainContent" role="main">
-      {{ content_for_layout }}
-    </main>
-    {% sections 'footer-group' %}
-    {% render 'cart-drawer' %}
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page_title }} — HaatRush</title>
+  {{ content_for_header }}
+  {{ 'theme.css' | asset_url | stylesheet_tag }}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+  {%- section 'announcement-bar' -%}
+  {%- section 'header' -%}
+  <main id="main-content">
+    {{ content_for_layout }}
+  </main>
+  {%- section 'trust-badges' -%}
+  {%- section 'footer' -%}
+  {{ 'theme.js' | asset_url | script_tag }}
+</body>
 </html>

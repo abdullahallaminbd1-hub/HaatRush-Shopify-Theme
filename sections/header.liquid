@@ -1,50 +1,502 @@
-<header class="site-header">
-  <div class="page-width header__inner">
-    <a class="brand" href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
-      {% if settings.logo != blank %}
-        {{ settings.logo | image_url: width: 460 | image_tag: class: 'brand__logo', widths: '180, 300, 460', alt: shop.name }}
-      {% else %}
-        <span class="brand__mark">{% render 'icon', name: 'cart' %}</span>
-        <span class="brand__copy"><strong>Haat<span>Rush</span></strong><small>{{ settings.store_tagline | escape }}</small></span>
-      {% endif %}
-    </a>
-
-    <form class="header-search" action="{{ routes.search_url }}" method="get" role="search">
-      <label class="visually-hidden" for="HeaderSearch">পণ্য খুঁজুন</label>
-      <input id="HeaderSearch" type="search" name="q" value="{{ search.terms | escape }}" placeholder="আপনার পছন্দের পণ্য খুঁজুন..." autocomplete="off">
-      <input type="hidden" name="options[prefix]" value="last">
-      <button type="submit" aria-label="খুঁজুন">{% render 'icon', name: 'search' %}</button>
-    </form>
-
-    <nav class="header-actions" aria-label="অ্যাকাউন্ট ও কার্ট">
-      {% if section.settings.show_account and shop.customer_accounts_enabled %}
-        <a class="header-action header-account" href="{{ routes.account_url }}">
-          {% render 'icon', name: 'user' %}
-          <span><strong>আমার অ্যাকাউন্ট</strong><small>লগইন / রেজিস্টার</small></span>
+<header class="header" id="site-header" data-sticky-header>
+  <div class="container">
+    {%- comment -%} ===== DESKTOP HEADER ===== {%- endcomment -%}
+    <div class="header__desktop">
+      <div class="header__logo">
+        <a href="/" class="header__logo-link" aria-label="HaatRush হোম">
+          {%- if section.settings.logo != blank -%}
+            {{ section.settings.logo | image_url: width: 180 | image_tag: alt: section.settings.logo_text, class: 'header__logo-img', loading: 'eager' }}
+          {%- else -%}
+            <div class="header__logo-default">
+              <svg class="header__logo-cart-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF6B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+              </svg>
+              <div class="header__logo-text-wrap">
+                <span class="header__logo-name">{{ section.settings.logo_text }}</span>
+                <span class="header__logo-tagline">তোমার হাতের বাজার</span>
+              </div>
+            </div>
+          {%- endif -%}
         </a>
-      {% endif %}
-      <a class="header-action cart-trigger" href="{{ routes.cart_url }}" data-cart-open aria-label="কার্ট, {{ cart.item_count }} টি পণ্য">
-        {% render 'icon', name: 'cart' %}
-        <span class="cart-count" data-cart-count>{{ cart.item_count }}</span>
-        <span class="cart-trigger__text">কার্ট</span>
+      </div>
+
+      <div class="header__search">
+        <form action="/search" method="get" role="search" class="header__search-form">
+          <input type="hidden" name="type" value="product">
+          <input
+            type="search"
+            name="q"
+            placeholder="আপনি কি খুঁজছেন? যেমন: হেডফোন, চার্জার..."
+            class="header__search-input"
+            autocomplete="off"
+            aria-label="পণ্য খুঁজুন"
+          >
+          <button type="submit" class="header__search-btn" aria-label="সার্চ করুন">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </button>
+        </form>
+      </div>
+
+      <div class="header__actions">
+        <a href="/account" class="header__action-link" aria-label="আমার অ্যাকাউন্ট">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+          <span class="header__action-label">অ্যাকাউন্ট</span>
+        </a>
+        <a href="/cart" class="header__action-link header__cart-link" aria-label="কার্ট">
+          <div class="header__cart-icon-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            {%- if cart.item_count > 0 -%}
+              <span class="header__cart-badge">{{ cart.item_count }}</span>
+            {%- endif -%}
+          </div>
+          <span class="header__action-label">কার্ট</span>
+        </a>
+      </div>
+    </div>
+
+    {%- comment -%} ===== MOBILE HEADER ===== {%- endcomment -%}
+    <div class="header__mobile">
+      <button class="header__hamburger" id="menu-toggle" aria-label="মেনু খুলুন" aria-expanded="false" aria-controls="mobile-menu-drawer">
+        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+
+      <a href="/" class="header__mobile-logo" aria-label="HaatRush হোম">
+        {%- if section.settings.logo != blank -%}
+          {{ section.settings.logo | image_url: width: 140 | image_tag: alt: section.settings.logo_text, class: 'header__logo-img', loading: 'eager' }}
+        {%- else -%}
+          <div class="header__logo-default header__logo-default--mobile">
+            <svg class="header__logo-cart-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF6B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            <span class="header__logo-name">{{ section.settings.logo_text }}</span>
+          </div>
+        {%- endif -%}
       </a>
-    </nav>
-    {% if section.settings.main_menu != blank and request.page_type != 'index' %}
-      <nav class="header-menu" aria-label="প্রধান মেনু">
-        {% for link in section.settings.main_menu.links %}
-          <a href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title | escape }}</a>
-        {% endfor %}
-      </nav>
-    {% endif %}
+
+      <a href="/cart" class="header__mobile-cart" aria-label="কার্ট">
+        <div class="header__cart-icon-wrap">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          </svg>
+          {%- if cart.item_count > 0 -%}
+            <span class="header__cart-badge">{{ cart.item_count }}</span>
+          {%- endif -%}
+        </div>
+      </a>
+    </div>
   </div>
 </header>
 
+{%- comment -%} ===== MOBILE MENU DRAWER ===== {%- endcomment -%}
+<div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
+<nav class="mobile-menu-drawer" id="mobile-menu-drawer" aria-label="মোবাইল মেনু">
+  <div class="mobile-menu-drawer__header">
+    <span class="mobile-menu-drawer__title">মেনু</span>
+    <button class="mobile-menu-drawer__close" id="menu-close" aria-label="মেনু বন্ধ করুন">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="mobile-menu-drawer__search">
+    <form action="/search" method="get" role="search" class="header__search-form">
+      <input type="hidden" name="type" value="product">
+      <input
+        type="search"
+        name="q"
+        placeholder="পণ্য খুঁজুন..."
+        class="header__search-input"
+        autocomplete="off"
+        aria-label="পণ্য খুঁজুন"
+      >
+      <button type="submit" class="header__search-btn" aria-label="সার্চ করুন">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </button>
+    </form>
+  </div>
+
+  <ul class="mobile-menu-drawer__nav">
+    {%- for link in linklists.main-menu.links -%}
+      <li class="mobile-menu-drawer__nav-item">
+        <a href="{{ link.url }}" class="mobile-menu-drawer__nav-link">{{ link.title }}</a>
+        {%- if link.links.size > 0 -%}
+          <ul class="mobile-menu-drawer__subnav">
+            {%- for child_link in link.links -%}
+              <li><a href="{{ child_link.url }}">{{ child_link.title }}</a></li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      </li>
+    {%- endfor -%}
+  </ul>
+
+  <div class="mobile-menu-drawer__footer">
+    <a href="/account" class="mobile-menu-drawer__footer-link">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+      </svg>
+      আমার অ্যাকাউন্ট
+    </a>
+  </div>
+</nav>
+
+<style>
+  /* ===== HEADER BASE ===== */
+  .header {
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    transition: box-shadow 0.25s ease;
+  }
+  .header.is-scrolled {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .header .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  /* ===== DESKTOP ===== */
+  .header__desktop {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 12px 0;
+  }
+  .header__logo-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+  }
+  .header__logo-default {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .header__logo-text-wrap {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+  .header__logo-name {
+    font-size: 22px;
+    font-weight: 800;
+    color: #1B3C3C;
+    letter-spacing: -0.5px;
+  }
+  .header__logo-tagline {
+    font-size: 11px;
+    color: #888;
+    font-weight: 400;
+  }
+  .header__logo-img {
+    max-height: 44px;
+    width: auto;
+  }
+
+  /* Search */
+  .header__search {
+    flex: 1;
+    max-width: 520px;
+  }
+  .header__search-form {
+    display: flex;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .header__search-form:focus-within {
+    border-color: #FF6B00;
+  }
+  .header__search-input {
+    flex: 1;
+    border: none;
+    padding: 10px 14px;
+    font-size: 14px;
+    outline: none;
+    background: #f9f9f9;
+    color: #333;
+  }
+  .header__search-input::placeholder {
+    color: #aaa;
+  }
+  .header__search-btn {
+    background: #FF6B00;
+    border: none;
+    padding: 10px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+  .header__search-btn:hover {
+    background: #e55e00;
+  }
+
+  /* Actions */
+  .header__actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+  }
+  .header__action-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    text-decoration: none;
+    color: #333;
+    transition: color 0.2s;
+  }
+  .header__action-link:hover {
+    color: #FF6B00;
+  }
+  .header__action-label {
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .header__cart-icon-wrap {
+    position: relative;
+    display: inline-flex;
+  }
+  .header__cart-badge {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    background: #FF6B00;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  /* ===== MOBILE ===== */
+  .header__mobile {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+  }
+  .header__hamburger {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: #333;
+  }
+  .header__mobile-logo {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+  }
+  .header__logo-default--mobile .header__logo-name {
+    font-size: 18px;
+  }
+  .header__mobile-cart {
+    color: #333;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+  }
+
+  @media (max-width: 768px) {
+    .header__desktop {
+      display: none;
+    }
+    .header__mobile {
+      display: flex;
+    }
+  }
+
+  /* ===== MOBILE DRAWER ===== */
+  .mobile-menu-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+  }
+  .mobile-menu-overlay.is-active {
+    opacity: 1;
+    visibility: visible;
+  }
+  .mobile-menu-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 300px;
+    max-width: 85vw;
+    background: #fff;
+    z-index: 2001;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .mobile-menu-drawer.is-active {
+    transform: translateX(0);
+  }
+  .mobile-menu-drawer__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+  }
+  .mobile-menu-drawer__title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1B3C3C;
+  }
+  .mobile-menu-drawer__close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #333;
+    padding: 4px;
+  }
+  .mobile-menu-drawer__search {
+    padding: 12px 16px;
+    border-bottom: 1px solid #eee;
+  }
+  .mobile-menu-drawer__search .header__search-form {
+    border-radius: 6px;
+  }
+  .mobile-menu-drawer__nav {
+    list-style: none;
+    padding: 8px 0;
+    margin: 0;
+    flex: 1;
+  }
+  .mobile-menu-drawer__nav-item {
+    border-bottom: 1px solid #f5f5f5;
+  }
+  .mobile-menu-drawer__nav-link {
+    display: block;
+    padding: 14px 16px;
+    color: #333;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    transition: background 0.15s;
+  }
+  .mobile-menu-drawer__nav-link:hover {
+    background: #f9f9f9;
+    color: #FF6B00;
+  }
+  .mobile-menu-drawer__subnav {
+    list-style: none;
+    padding: 0 0 8px 0;
+    margin: 0;
+  }
+  .mobile-menu-drawer__subnav li a {
+    display: block;
+    padding: 8px 16px 8px 32px;
+    color: #666;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  .mobile-menu-drawer__subnav li a:hover {
+    color: #FF6B00;
+  }
+  .mobile-menu-drawer__footer {
+    padding: 16px;
+    border-top: 1px solid #eee;
+  }
+  .mobile-menu-drawer__footer-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .mobile-menu-drawer__footer-link:hover {
+    color: #FF6B00;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var header = document.getElementById('site-header');
+    var toggle = document.getElementById('menu-toggle');
+    var close = document.getElementById('menu-close');
+    var drawer = document.getElementById('mobile-menu-drawer');
+    var overlay = document.getElementById('mobile-menu-overlay');
+
+    /* Sticky scroll shadow */
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 10) {
+        header.classList.add('is-scrolled');
+      } else {
+        header.classList.remove('is-scrolled');
+      }
+    });
+
+    /* Mobile menu open/close */
+    function openMenu() {
+      drawer.classList.add('is-active');
+      overlay.classList.add('is-active');
+      toggle.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMenu() {
+      drawer.classList.remove('is-active');
+      overlay.classList.remove('is-active');
+      toggle.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+    if (toggle) toggle.addEventListener('click', openMenu);
+    if (close) close.addEventListener('click', closeMenu);
+    if (overlay) overlay.addEventListener('click', closeMenu);
+  });
+</script>
+
 {% schema %}
 {
-  "name": "হেডার",
+  "name": "🛒 হেডার",
   "settings": [
-    { "type": "link_list", "id": "main_menu", "label": "প্রধান মেনু" },
-    { "type": "checkbox", "id": "show_account", "label": "অ্যাকাউন্ট লিংক দেখান", "default": true }
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "লোগো ইমেজ"
+    },
+    {
+      "type": "text",
+      "id": "logo_text",
+      "label": "লোগো টেক্সট",
+      "default": "HaatRush"
+    }
   ]
 }
 {% endschema %}

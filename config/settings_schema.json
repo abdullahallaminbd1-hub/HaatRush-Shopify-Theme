@@ -4,11 +4,11 @@
     "theme_name": "HaatRush",
     "theme_version": "1.0.0",
     "theme_author": "HaatRush",
-    "theme_documentation_url": "https://help.shopify.com/en/manual/online-store/themes",
-    "theme_support_url": "https://help.shopify.com/"
+    "theme_documentation_url": "https://haatrush.com/docs",
+    "theme_support_url": "https://haatrush.com/support"
   },
   {
-    "name": "ব্র্যান্ড",
+    "name": "Logo & Branding",
     "settings": [
       {
         "type": "image_picker",
@@ -17,49 +17,97 @@
       },
       {
         "type": "text",
-        "id": "store_tagline",
-        "label": "লোগোর নিচের লেখা",
-        "default": "ইলেকট্রনিক্স এখন আরও সহজে"
+        "id": "logo_text",
+        "label": "লোগো টেক্সট",
+        "default": "HaatRush"
       },
       {
-        "type": "color",
-        "id": "color_primary",
-        "label": "প্রধান সবুজ",
-        "default": "#06483f"
-      },
-      {
-        "type": "color",
-        "id": "color_accent",
-        "label": "কমলা",
-        "default": "#ff5a0a"
+        "type": "text",
+        "id": "tagline",
+        "label": "ট্যাগলাইন",
+        "default": "বিশ্বস্ত ইলেকট্রনিক্স সঙ্গী"
       }
     ]
   },
   {
-    "name": "যোগাযোগ ও ফুটার",
+    "name": "Colors",
     "settings": [
       {
-        "type": "text",
-        "id": "support_email",
-        "label": "সাপোর্ট ইমেইল",
-        "default": ""
+        "type": "color",
+        "id": "primary_color",
+        "label": "প্রাইমারি কালার",
+        "default": "#FF6B00"
       },
+      {
+        "type": "color",
+        "id": "header_color",
+        "label": "হেডার কালার",
+        "default": "#1B3C3C"
+      }
+    ]
+  },
+  {
+    "name": "Contact Information",
+    "settings": [
       {
         "type": "text",
         "id": "support_phone",
         "label": "সাপোর্ট ফোন",
-        "default": ""
-      },
-      {
-        "type": "url",
-        "id": "whatsapp_url",
-        "label": "WhatsApp লিংক"
+        "default": "01XXXXXXXXX"
       },
       {
         "type": "text",
-        "id": "footer_note",
-        "label": "ফুটারের কপিরাইট",
-        "default": "সর্বস্বত্ব সংরক্ষিত।"
+        "id": "support_email",
+        "label": "সাপোর্ট ইমেইল",
+        "default": "support@haatrush.com"
+      },
+      {
+        "type": "textarea",
+        "id": "address",
+        "label": "ঠিকানা",
+        "default": "ঢাকা, বাংলাদেশ"
+      }
+    ]
+  },
+  {
+    "name": "Social Media",
+    "settings": [
+      {
+        "type": "url",
+        "id": "facebook_url",
+        "label": "ফেসবুক URL"
+      },
+      {
+        "type": "url",
+        "id": "youtube_url",
+        "label": "ইউটিউব URL"
+      },
+      {
+        "type": "url",
+        "id": "instagram_url",
+        "label": "ইনস্টাগ্রাম URL"
+      },
+      {
+        "type": "text",
+        "id": "whatsapp_number",
+        "label": "হোয়াটসঅ্যাপ নম্বর"
+      }
+    ]
+  },
+  {
+    "name": "Delivery Settings",
+    "settings": [
+      {
+        "type": "text",
+        "id": "delivery_inside_dhaka",
+        "label": "ঢাকার ভিতরে ডেলিভারি চার্জ (৳)",
+        "default": "70"
+      },
+      {
+        "type": "text",
+        "id": "delivery_outside_dhaka",
+        "label": "ঢাকার বাহিরে ডেলিভারি চার্জ (৳)",
+        "default": "130"
       }
     ]
   }

@@ -1,8 +1,6 @@
 {
   "sections": {
-    "main": {
-      "type": "main-cart"
-    }
+    "main": { "type": "checkout-form", "settings": {} }
   },
   "order": ["main"]
 }

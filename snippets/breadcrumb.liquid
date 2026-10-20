@@ -1,0 +1,55 @@
+{%- comment -%}
+  HaatRush Theme - Breadcrumb Snippet
+{%- endcomment -%}
+
+<nav class="breadcrumb" aria-label="ব্রেডক্রাম্ব নেভিগেশন">
+  <div class="container">
+    <div class="breadcrumb__list">
+      <a href="/" class="breadcrumb__link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        হোম
+      </a>
+
+      {%- if template.name == 'collection' and collection.handle -%}
+        <span class="breadcrumb__separator">›</span>
+        {%- if current_tags -%}
+          {%- capture url %}/collections/{{ collection.handle }}{% endcapture -%}
+          {{ collection.title | link_to: url, class: 'breadcrumb__link' }}
+          <span class="breadcrumb__separator">›</span>
+          <span class="breadcrumb__current">{{ current_tags | join: " + " }}</span>
+        {%- else -%}
+          <span class="breadcrumb__current">{{ collection.title }}</span>
+        {%- endif -%}
+
+      {%- elsif template.name == 'product' -%}
+        {%- if collection.url -%}
+          <span class="breadcrumb__separator">›</span>
+          {{ collection.title | link_to: collection.url, class: 'breadcrumb__link' }}
+        {%- elsif product.collections.size > 0 -%}
+          <span class="breadcrumb__separator">›</span>
+          <a href="{{ product.collections.first.url }}" class="breadcrumb__link">{{ product.collections.first.title }}</a>
+        {%- else -%}
+          <span class="breadcrumb__separator">›</span>
+          <a href="/collections/all" class="breadcrumb__link">সব পণ্য</a>
+        {%- endif -%}
+        <span class="breadcrumb__separator">›</span>
+        <span class="breadcrumb__current">{{ product.title }}</span>
+
+      {%- elsif template.name == 'cart' -%}
+        <span class="breadcrumb__separator">›</span>
+        <span class="breadcrumb__current">কার্ট ও চেকআউট</span>
+
+      {%- elsif template.name == 'page' -%}
+        <span class="breadcrumb__separator">›</span>
+        <span class="breadcrumb__current">{{ page.title }}</span>
+
+      {%- else -%}
+        <span class="breadcrumb__separator">›</span>
+        <span class="breadcrumb__current">{{ page_title }}</span>
+      {%- endif -%}
+    </div>
+  </div>
+</nav>

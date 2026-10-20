@@ -1,31 +1,18 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
-    "main": {
-      "type": "main-index",
-      "settings": {
-        "hero_title": "ঘরে বসেই কিনুন <em>প্রয়োজনীয়</em> ইলেকট্রনিক্স",
-        "hero_text": "বিশ্বস্ত ব্র্যান্ড, সেরা দামে—আপনার দৈনন্দিন জীবনের জন্য।",
-        "hero_button_label": "এখনই কিনুন",
-        "hero_button_link": "",
-        "secondary_button_label": "সব পণ্য দেখুন",
-        "featured_collection": "frontpage",
-        "featured_heading": "আজকের সেরা ডিল",
-        "popular_collection": "frontpage",
-        "popular_heading": "জনপ্রিয় পণ্য",
-        "products_to_show": 4
-      }
+    "hero": {
+      "type": "hero-banner"
+    },
+    "deals": {
+      "type": "featured-deals"
+    },
+    "popular": {
+      "type": "popular-products"
     }
   },
   "order": [
-    "main"
+    "hero",
+    "deals",
+    "popular"
   ]
 }

@@ -1,28 +1,202 @@
-{% assign related_collection = product.collections.first %}
-{% if related_collection != blank and related_collection.products_count > 1 %}
-  <section class="page-width related-products">
-    <div class="section-heading">
-      <div><span class="section-heading__icon">✦</span><div><h2>{{ section.settings.heading | escape }}</h2><p>আপনার জন্য আরও কিছু পণ্য</p></div></div>
-      <a href="{{ related_collection.url }}">সব পণ্য দেখুন <span aria-hidden="true">→</span></a>
+{%- comment -%}
+  Related Products – horizontal scrollable row with arrow navigation
+{%- endcomment -%}
+
+<section class="related-products" style="padding: 40px 0;">
+  <div class="container">
+    <div class="related-products__header">
+      <h2 class="related-products__title">🔥 {{ section.settings.title }}</h2>
+      <p class="related-products__subtitle">এ ধরনের আরো কিছু দেখুন</p>
     </div>
-    <div class="product-grid product-grid--home">
-      {% assign shown = 0 %}
-      {% for related_product in related_collection.products %}
-        {% unless related_product.id == product.id %}
-          {% render 'product-card', product: related_product %}
-          {% assign shown = shown | plus: 1 %}
-          {% if shown >= section.settings.products_to_show %}{% break %}{% endif %}
-        {% endunless %}
-      {% endfor %}
+
+    <div class="related-products__wrapper">
+      <button class="related-products__arrow related-products__arrow--left" id="relatedArrowLeft" aria-label="আগের পণ্য">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <div class="related-products__track" id="relatedTrack">
+        {%- if recommendations.products.size > 0 -%}
+          {%- for product in recommendations.products limit: section.settings.max_products -%}
+            <div class="related-products__slide">
+              {% render 'product-card', product: product, show_badge: true %}
+            </div>
+          {%- endfor -%}
+        {%- elsif product.collections.first != blank -%}
+          {%- assign related_collection = product.collections.first -%}
+          {%- for related_product in related_collection.products limit: section.settings.max_products -%}
+            {%- if related_product.id != product.id -%}
+              <div class="related-products__slide">
+                {% render 'product-card', product: related_product, show_badge: true %}
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- else -%}
+          {%- for i in (1..6) -%}
+            <div class="related-products__slide">
+              <div class="product-card">
+                <div class="product-card__image-wrap">
+                  {{ 'product-1' | placeholder_svg_tag: 'product-card__image' }}
+                </div>
+                <div class="product-card__body">
+                  <h3 class="product-card__title">সম্পর্কিত পণ্য</h3>
+                  <p class="product-card__subtitle">পণ্যের বিবরণ</p>
+                  <div class="product-card__prices">
+                    <span class="product-card__price">৳1,250</span>
+                    <span class="product-card__compare">৳1,550</span>
+                  </div>
+                  <button class="btn-primary product-card__btn">🛒 কার্টে যোগ করুন</button>
+                </div>
+              </div>
+            </div>
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+
+      <button class="related-products__arrow related-products__arrow--right" id="relatedArrowRight" aria-label="পরের পণ্য">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
     </div>
-  </section>
-{% endif %}
+  </div>
+</section>
+
+<style>
+  .related-products__header {
+    margin-bottom: 24px;
+  }
+  .related-products__title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #1a1a2e;
+    margin: 0 0 4px;
+  }
+  .related-products__subtitle {
+    font-size: 15px;
+    color: #888;
+    margin: 0;
+  }
+
+  .related-products__wrapper {
+    position: relative;
+  }
+
+  .related-products__track {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 4px 0;
+  }
+  .related-products__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .related-products__slide {
+    flex: 0 0 calc(25% - 15px);
+    min-width: 220px;
+  }
+
+  .related-products__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #1a1a2e;
+    transition: all 0.2s;
+  }
+  .related-products__arrow:hover {
+    background: var(--color-primary, #f60);
+    color: #fff;
+    border-color: var(--color-primary, #f60);
+  }
+  .related-products__arrow--left {
+    left: -22px;
+  }
+  .related-products__arrow--right {
+    right: -22px;
+  }
+
+  @media (max-width: 992px) {
+    .related-products__slide {
+      flex: 0 0 calc(33.333% - 14px);
+    }
+  }
+  @media (max-width: 768px) {
+    .related-products__slide {
+      flex: 0 0 calc(50% - 10px);
+    }
+    .related-products__arrow--left {
+      left: 4px;
+    }
+    .related-products__arrow--right {
+      right: 4px;
+    }
+  }
+  @media (max-width: 480px) {
+    .related-products__slide {
+      flex: 0 0 80%;
+    }
+  }
+</style>
+
+<script>
+  (function() {
+    var track = document.getElementById('relatedTrack');
+    var leftBtn = document.getElementById('relatedArrowLeft');
+    var rightBtn = document.getElementById('relatedArrowRight');
+
+    if (!track) return;
+
+    var scrollAmount = 300;
+
+    if (leftBtn) {
+      leftBtn.addEventListener('click', function() {
+        track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      });
+    }
+    if (rightBtn) {
+      rightBtn.addEventListener('click', function() {
+        track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      });
+    }
+  })();
+</script>
+
 {% schema %}
 {
-  "name": "সম্পর্কিত পণ্য",
+  "name": "🔥 সম্পর্কিত পণ্য",
   "settings": [
-    { "type": "text", "id": "heading", "label": "শিরোনাম", "default": "সম্পর্কিত পণ্য" },
-    { "type": "range", "id": "products_to_show", "label": "পণ্যের সংখ্যা", "min": 2, "max": 8, "step": 2, "default": 4 }
+    {
+      "type": "text",
+      "id": "title",
+      "label": "শিরোনাম",
+      "default": "সম্পর্কিত পণ্য"
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "label": "সর্বোচ্চ পণ্য সংখ্যা",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    }
+  ],
+  "presets": [
+    {
+      "name": "🔥 সম্পর্কিত পণ্য"
+    }
   ]
 }
 {% endschema %}

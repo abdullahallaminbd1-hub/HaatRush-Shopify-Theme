@@ -1,0 +1,51 @@
+{%- comment -%}
+  HaatRush Theme - Pagination Snippet
+  Accepts:
+  - paginate: {Object} Shopify Paginate Object
+{%- endcomment -%}
+
+{%- if paginate.pages > 1 -%}
+  <nav class="pagination" role="navigation" aria-label="পৃষ্ঠা নেভিগেশন">
+    <div class="pagination__inner">
+      {%- if paginate.previous -%}
+        <a href="{{ paginate.previous.url }}" class="pagination__item pagination__arrow" aria-label="পূর্ববর্তী পৃষ্ঠা">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </a>
+      {%- else -%}
+        <span class="pagination__item pagination__arrow is-disabled" aria-disabled="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </span>
+      {%- endif -%}
+
+      {%- for part in paginate.parts -%}
+        {%- if part.is_link -%}
+          <a href="{{ part.url }}" class="pagination__item" aria-label="পৃষ্ঠা {{ part.title }}">{{ part.title }}</a>
+        {%- else -%}
+          {%- if part.title == paginate.current_page -%}
+            <span class="pagination__item is-active" aria-current="page">{{ part.title }}</span>
+          {%- else -%}
+            <span class="pagination__item pagination__ellipsis">{{ part.title }}</span>
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- if paginate.next -%}
+        <a href="{{ paginate.next.url }}" class="pagination__item pagination__arrow" aria-label="পরবর্তী পৃষ্ঠা">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </a>
+      {%- else -%}
+        <span class="pagination__item pagination__arrow is-disabled" aria-disabled="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </span>
+      {%- endif -%}
+    </div>
+  </nav>
+{%- endif -%}

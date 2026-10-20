@@ -1,18 +1,110 @@
-<div class="announcement">
-  <div class="page-width announcement__inner">
-    <span>{% render 'icon', name: 'truck' %} {{ section.settings.message_one | escape }}</span>
-    <span>{% render 'icon', name: 'cash' %} {{ section.settings.message_two | escape }}</span>
-    <span>{% render 'icon', name: 'shield' %} {{ section.settings.message_three | escape }}</span>
+{%- if section.settings.show_announcement -%}
+<div class="announcement-bar">
+  <div class="container">
+    <div class="announcement-bar__inner">
+      <div class="announcement-bar__item">
+        <span>🚚</span>
+        <span>{{ section.settings.item_1 }}</span>
+      </div>
+      <span class="announcement-bar__divider">|</span>
+      <div class="announcement-bar__item">
+        <span>💵</span>
+        <span>{{ section.settings.item_2 }}</span>
+      </div>
+      <span class="announcement-bar__divider">|</span>
+      <div class="announcement-bar__item">
+        <span>🛡️</span>
+        <span>{{ section.settings.item_3 }}</span>
+      </div>
+      <span class="announcement-bar__divider">|</span>
+      <div class="announcement-bar__item">
+        <span>🎧</span>
+        <span>{{ section.settings.item_4 }}</span>
+      </div>
+    </div>
   </div>
 </div>
+{%- endif -%}
+
+<style>
+  .announcement-bar {
+    background-color: #1B3C3C;
+    color: #fff;
+    font-size: 13px;
+    padding: 8px 0;
+    overflow: hidden;
+  }
+  .announcement-bar .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+  .announcement-bar__inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .announcement-bar__inner::-webkit-scrollbar {
+    display: none;
+  }
+  .announcement-bar__item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .announcement-bar__divider {
+    color: rgba(255,255,255,0.3);
+    flex-shrink: 0;
+  }
+  @media (max-width: 768px) {
+    .announcement-bar__inner {
+      justify-content: flex-start;
+      padding-right: 16px;
+    }
+  }
+</style>
 
 {% schema %}
 {
-  "name": "ঘোষণা বার",
+  "name": "📢 অ্যানাউন্সমেন্ট বার",
   "settings": [
-    { "type": "text", "id": "message_one", "label": "বার্তা ১", "default": "সারা দেশে ডেলিভারি" },
-    { "type": "text", "id": "message_two", "label": "বার্তা ২", "default": "ক্যাশ অন ডেলিভারি" },
-    { "type": "text", "id": "message_three", "label": "বার্তা ৩", "default": "নিরাপদ কেনাকাটা" }
+    {
+      "type": "checkbox",
+      "id": "show_announcement",
+      "label": "অ্যানাউন্সমেন্ট বার দেখান",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "item_1",
+      "label": "আইটেম ১",
+      "default": "সারাদেশে ডেলিভারি"
+    },
+    {
+      "type": "text",
+      "id": "item_2",
+      "label": "আইটেম ২",
+      "default": "ক্যাশ অন ডেলিভারি"
+    },
+    {
+      "type": "text",
+      "id": "item_3",
+      "label": "আইটেম ৩",
+      "default": "নিরাপদ কেনাকাটা"
+    },
+    {
+      "type": "text",
+      "id": "item_4",
+      "label": "আইটেম ৪",
+      "default": "সকাল ৯টা - রাত ১০টা কাস্টমার সাপোর্ট"
+    }
   ]
 }
 {% endschema %}

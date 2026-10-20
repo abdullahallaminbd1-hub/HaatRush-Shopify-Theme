@@ -1,0 +1,319 @@
+<section class="hero-banner" style="background: linear-gradient(135deg, {{ section.settings.background_color }} 0%, #2a5a4a 100%);">
+  <div class="container">
+    <div class="hero-banner__grid">
+      {%- comment -%} ===== LEFT CONTENT ===== {%- endcomment -%}
+      <div class="hero-banner__content">
+        <div class="hero-banner__badge">
+          <span>বাংলাদেশের বিশ্বস্ত ইলেকট্রনিক্স স্টোর</span>
+        </div>
+
+        <h1 class="hero-banner__heading">
+          <span class="hero-banner__heading-line1">{{ section.settings.heading_line1 }}</span>
+          <span class="hero-banner__heading-line2">{{ section.settings.heading_line2 }}</span>
+        </h1>
+
+        {%- if section.settings.subtext != blank -%}
+          <p class="hero-banner__subtext">{{ section.settings.subtext }}</p>
+        {%- endif -%}
+
+        <div class="hero-banner__cta">
+          {%- if section.settings.btn1_label != blank -%}
+            <a href="{{ section.settings.btn1_url }}" class="hero-banner__btn hero-banner__btn--primary">
+              {{ section.settings.btn1_label }}
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </a>
+          {%- endif -%}
+          {%- if section.settings.btn2_label != blank -%}
+            <a href="{{ section.settings.btn2_url }}" class="hero-banner__btn hero-banner__btn--outline">
+              {{ section.settings.btn2_label }}
+            </a>
+          {%- endif -%}
+        </div>
+
+        <div class="hero-banner__trust-row">
+          <div class="hero-banner__trust-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span>নিরাপদ পেমেন্ট</span>
+          </div>
+          <div class="hero-banner__trust-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+            </svg>
+            <span>দ্রুত ডেলিভারি</span>
+          </div>
+          <div class="hero-banner__trust-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span>অথেন্টিক প্রোডাক্ট</span>
+          </div>
+        </div>
+      </div>
+
+      {%- comment -%} ===== RIGHT IMAGE ===== {%- endcomment -%}
+      <div class="hero-banner__image-wrap">
+        <div class="hero-banner__circle-decor"></div>
+        {%- if section.settings.hero_image != blank -%}
+          {{ section.settings.hero_image | image_url: width: 700 | image_tag:
+            alt: section.settings.heading_line1,
+            class: 'hero-banner__image',
+            loading: 'eager',
+            sizes: '(max-width: 768px) 90vw, 45vw'
+          }}
+        {%- else -%}
+          <div class="hero-banner__image-placeholder">
+            <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+            </svg>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero-banner {
+    padding: 60px 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .hero-banner .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+  .hero-banner__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+
+  /* Badge */
+  .hero-banner__badge {
+    display: inline-block;
+    margin-bottom: 16px;
+  }
+  .hero-banner__badge span {
+    display: inline-block;
+    padding: 6px 16px;
+    border: 1.5px solid #FF6B00;
+    border-radius: 50px;
+    color: #FF6B00;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  /* Heading */
+  .hero-banner__heading {
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1.3;
+    margin: 0 0 16px;
+  }
+  .hero-banner__heading-line1 {
+    display: block;
+    color: #fff;
+  }
+  .hero-banner__heading-line2 {
+    display: block;
+    color: #FF6B00;
+  }
+
+  /* Subtext */
+  .hero-banner__subtext {
+    color: rgba(255,255,255,0.8);
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0 0 24px;
+    max-width: 480px;
+  }
+
+  /* CTA Buttons */
+  .hero-banner__cta {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+  .hero-banner__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.25s;
+    cursor: pointer;
+  }
+  .hero-banner__btn--primary {
+    background: #FF6B00;
+    color: #fff;
+    border: 2px solid #FF6B00;
+  }
+  .hero-banner__btn--primary:hover {
+    background: #e55e00;
+    border-color: #e55e00;
+    transform: translateY(-1px);
+  }
+  .hero-banner__btn--outline {
+    background: transparent;
+    color: #fff;
+    border: 2px solid rgba(255,255,255,0.5);
+  }
+  .hero-banner__btn--outline:hover {
+    border-color: #fff;
+    background: rgba(255,255,255,0.1);
+  }
+
+  /* Trust Row */
+  .hero-banner__trust-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .hero-banner__trust-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255,255,255,0.85);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  /* Image */
+  .hero-banner__image-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero-banner__circle-decor {
+    position: absolute;
+    width: 380px;
+    height: 380px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .hero-banner__image {
+    position: relative;
+    z-index: 1;
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+  }
+  .hero-banner__image-placeholder {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .hero-banner {
+      padding: 40px 0;
+    }
+    .hero-banner__grid {
+      grid-template-columns: 1fr;
+      gap: 32px;
+      text-align: center;
+    }
+    .hero-banner__heading {
+      font-size: 28px;
+    }
+    .hero-banner__subtext {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero-banner__cta {
+      justify-content: center;
+    }
+    .hero-banner__trust-row {
+      justify-content: center;
+    }
+    .hero-banner__image-wrap {
+      order: -1;
+    }
+    .hero-banner__circle-decor {
+      width: 260px;
+      height: 260px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "🎯 হিরো ব্যানার",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading_line1",
+      "label": "শিরোনাম লাইন ১",
+      "default": "সেরা দামে অরিজিনাল"
+    },
+    {
+      "type": "text",
+      "id": "heading_line2",
+      "label": "শিরোনাম লাইন ২",
+      "default": "ইলেকট্রনিক্স ও গ্যাজেট"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "সাবটেক্সট",
+      "default": "হেডফোন, চার্জার, স্মার্ট গ্যাজেট সহ হাজারো প্রোডাক্ট এখন আপনার হাতের নাগালে। ক্যাশ অন ডেলিভারিতে অর্ডার করুন আজই!"
+    },
+    {
+      "type": "text",
+      "id": "btn1_label",
+      "label": "বাটন ১ টেক্সট",
+      "default": "এখনই কিনুন"
+    },
+    {
+      "type": "url",
+      "id": "btn1_url",
+      "label": "বাটন ১ লিংক"
+    },
+    {
+      "type": "text",
+      "id": "btn2_label",
+      "label": "বাটন ২ টেক্সট",
+      "default": "সব পণ্য দেখুন"
+    },
+    {
+      "type": "url",
+      "id": "btn2_url",
+      "label": "বাটন ২ লিংক"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "হিরো ইমেজ"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "ব্যাকগ্রাউন্ড রঙ",
+      "default": "#1B3C3C"
+    }
+  ]
+}
+{% endschema %}

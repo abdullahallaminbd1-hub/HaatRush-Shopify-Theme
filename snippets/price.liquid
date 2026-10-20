@@ -1,10 +1,36 @@
-{% assign current_variant = product.selected_or_first_available_variant %}
-<div class="price{% if current_variant.compare_at_price > current_variant.price %} price--sale{% endif %}" data-product-price>
-  <span class="price__current">{{ current_variant.price | money }}</span>
-  {% if current_variant.compare_at_price > current_variant.price %}
-    <s class="price__compare">{{ current_variant.compare_at_price | money }}</s>
-    {% assign savings = current_variant.compare_at_price | minus: current_variant.price %}
-    {% assign discount = savings | times: 100.0 | divided_by: current_variant.compare_at_price | round %}
-    <span class="discount-badge">-{{ discount }}%</span>
-  {% endif %}
+{%- comment -%}
+  HaatRush Theme - Price Snippet
+  Accepts:
+  - product: {Object} Product drop
+  - use_variant: {Boolean} Whether to use current variant price
+  - large: {Boolean} Larger typography for PDP
+  - show_badge: {Boolean} Show discount pill badge
+{%- endcomment -%}
+
+{%- liquid
+  if use_variant
+    assign target = product.selected_or_first_available_variant
+  else
+    assign target = product
+  endif
+
+  assign price = target.price | default: 0
+  assign compare_at_price = target.compare_at_price | default: 0
+  assign available = target.available | default: false
+  assign on_sale = false
+  if compare_at_price > price
+    assign on_sale = true
+    assign discount_percent = compare_at_price | minus: price | times: 100.0 | divided_by: compare_at_price | round
+  endif
+-%}
+
+<div class="price-box{% if large %} price-box--large{% endif %}">
+  <span class="price-box__current">৳{{ price | money_without_currency }}</span>
+  
+  {%- if on_sale -%}
+    <span class="price-box__compare">৳{{ compare_at_price | money_without_currency }}</span>
+    {%- if show_badge -%}
+      <span class="badge badge--discount">-{{ discount_percent }}%</span>
+    {%- endif -%}
+  {%- endif -%}
 </div>
