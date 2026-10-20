@@ -1,0 +1,50 @@
+<header class="site-header">
+  <div class="page-width header__inner">
+    <a class="brand" href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
+      {% if settings.logo != blank %}
+        {{ settings.logo | image_url: width: 460 | image_tag: class: 'brand__logo', widths: '180, 300, 460', alt: shop.name }}
+      {% else %}
+        <span class="brand__mark">{% render 'icon', name: 'cart' %}</span>
+        <span class="brand__copy"><strong>Haat<span>Rush</span></strong><small>{{ settings.store_tagline | escape }}</small></span>
+      {% endif %}
+    </a>
+
+    <form class="header-search" action="{{ routes.search_url }}" method="get" role="search">
+      <label class="visually-hidden" for="HeaderSearch">পণ্য খুঁজুন</label>
+      <input id="HeaderSearch" type="search" name="q" value="{{ search.terms | escape }}" placeholder="আপনার পছন্দের পণ্য খুঁজুন..." autocomplete="off">
+      <input type="hidden" name="options[prefix]" value="last">
+      <button type="submit" aria-label="খুঁজুন">{% render 'icon', name: 'search' %}</button>
+    </form>
+
+    <nav class="header-actions" aria-label="অ্যাকাউন্ট ও কার্ট">
+      {% if section.settings.show_account and shop.customer_accounts_enabled %}
+        <a class="header-action header-account" href="{{ routes.account_url }}">
+          {% render 'icon', name: 'user' %}
+          <span><strong>আমার অ্যাকাউন্ট</strong><small>লগইন / রেজিস্টার</small></span>
+        </a>
+      {% endif %}
+      <a class="header-action cart-trigger" href="{{ routes.cart_url }}" data-cart-open aria-label="কার্ট, {{ cart.item_count }} টি পণ্য">
+        {% render 'icon', name: 'cart' %}
+        <span class="cart-count" data-cart-count>{{ cart.item_count }}</span>
+        <span class="cart-trigger__text">কার্ট</span>
+      </a>
+    </nav>
+    {% if section.settings.main_menu != blank %}
+      <nav class="header-menu" aria-label="প্রধান মেনু">
+        {% for link in section.settings.main_menu.links %}
+          <a href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title | escape }}</a>
+        {% endfor %}
+      </nav>
+    {% endif %}
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "হেডার",
+  "settings": [
+    { "type": "link_list", "id": "main_menu", "label": "প্রধান মেনু" },
+    { "type": "checkbox", "id": "show_account", "label": "অ্যাকাউন্ট লিংক দেখান", "default": true }
+  ]
+}
+{% endschema %}

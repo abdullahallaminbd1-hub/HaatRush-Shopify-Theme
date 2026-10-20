@@ -1,0 +1,62 @@
+<section class="page-width checkout-page" data-checkout-page data-cart-total="{{ cart.total_price }}" data-currency="{{ cart.currency.iso_code | default: shop.currency }}">
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ routes.root_url }}">হোম</a><span>›</span><a href="{{ routes.cart_url }}">কার্ট</a><span>›</span><span>চেকআউট</span></nav>
+  <div class="checkout-title"><h1>চেকআউট</h1><p>আপনার অর্ডার নিশ্চিত করতে নিচের তথ্যগুলো পূরণ করুন</p></div>
+  {% if cart.item_count == 0 %}
+    <div class="empty-collection checkout-empty"><h2>আপনার কার্ট এখন খালি</h2><p>চেকআউট করতে আগে কার্টে পণ্য যোগ করুন।</p><a class="button button--primary" href="{{ routes.all_products_collection_url }}">পণ্য দেখুন</a></div>
+  {% else %}
+    <form class="checkout-layout" data-checkout-form>
+      <div class="checkout-customer checkout-panel">
+        <div class="panel-heading"><span>{% render 'icon', name: 'user' %}</span><div><h2>ডেলিভারি ও গ্রাহকের তথ্য</h2><p>সঠিক তথ্য দিন, যাতে অর্ডারটি দ্রুত পৌঁছে দিতে পারি</p></div></div>
+        <div class="checkout-fields">
+          <label class="checkout-field checkout-field--full"><span>{% render 'icon', name: 'user' %} নাম <b>*</b></span><input name="name" type="text" autocomplete="name" placeholder="আপনার পূর্ণ নাম লিখুন" required></label>
+          <label class="checkout-field checkout-field--full"><span>{% render 'icon', name: 'phone' %} মোবাইল নম্বর <b>*</b></span><input name="phone" type="tel" autocomplete="tel" inputmode="tel" pattern="[0-9+০-৯ -]{8,18}" placeholder="01XXXXXXXXX" required></label>
+          <label class="checkout-field"><span>{% render 'icon', name: 'pin' %} বিভাগ <b>*</b></span><select name="division" data-division required><option value="">বিভাগ নির্বাচন করুন</option></select></label>
+          <label class="checkout-field"><span>{% render 'icon', name: 'pin' %} জেলা <b>*</b></span><select name="district" data-district required disabled><option value="">জেলা নির্বাচন করুন</option></select></label>
+          <label class="checkout-field checkout-field--full"><span>{% render 'icon', name: 'pin' %} উপজেলা / থানা <b>*</b></span><input name="upazila" type="text" autocomplete="address-level3" placeholder="উপজেলা / থানা লিখুন" required></label>
+          <label class="checkout-field checkout-field--full"><span>{% render 'icon', name: 'pin' %} সম্পূর্ণ ঠিকানা <b>*</b></span><textarea name="address" autocomplete="street-address" rows="3" placeholder="বাড়ি / রোড / এলাকা / বিস্তারিত ঠিকানা লিখুন" required></textarea></label>
+        </div>
+        <div class="delivery-notice">
+          {% render 'icon', name: 'truck' %}
+          <div><strong>জেলা নির্বাচনের পর ডেলিভারি চার্জ দেখানো হবে</strong><p>ঢাকা বিভাগ + ঢাকা জেলা: ৳৭০। অন্যান্য সব জেলার জন্য: ৳১৩০। চূড়ান্ত চার্জ Shopify চেকআউটে আপনার ডেলিভারি ঠিকানা অনুযায়ী নির্ধারিত হবে।</p></div>
+        </div>
+      </div>
+      <aside class="checkout-order checkout-panel">
+        <div class="panel-heading"><span>{% render 'icon', name: 'cart' %}</span><div><h2>আপনার অর্ডার</h2><p>নির্বাচিত পণ্যগুলো দেখে নিন</p></div></div>
+        <div class="checkout-order__items">
+          {% for item in cart.items %}
+            <div class="checkout-line">
+              <a class="checkout-line__image" href="{{ item.url }}">
+                {% if item.image %}{{ item.image | image_url: width: 180 | image_tag: loading: 'lazy', alt: item.product.title }}{% endif %}
+                <span>{{ item.quantity }}</span>
+              </a>
+              <div class="checkout-line__info"><a href="{{ item.url }}">{{ item.product.title | escape }}</a>{% unless item.product.has_only_default_variant %}<small>{{ item.variant.title | escape }}</small>{% endunless %}<strong>{{ item.final_line_price | money }}</strong></div>
+              <a href="{{ item.url_to_remove }}" class="remove-line" aria-label="{{ item.product.title | escape }} সরান">×</a>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="checkout-totals">
+          <p><span>পণ্যের মোট ({{ cart.item_count }} টি)</span><strong>{{ cart.total_price | money }}</strong></p>
+          <p><span>ডেলিভারি চার্জ</span><strong class="delivery-estimate" data-delivery-charge aria-live="polite">জেলা নির্বাচন করুন</strong></p>
+          <p class="checkout-grand-total"><span>সর্বমোট</span><strong data-checkout-total>—</strong></p>
+        </div>
+        <div class="cod-presentation"><span class="cod-presentation__icon">{% render 'icon', name: 'cash' %}</span><span><strong>ক্যাশ অন ডেলিভারি (COD)</strong><small>পণ্য হাতে পেয়ে মূল্য দিন</small></span><span class="cod-check" aria-label="নির্বাচিত">✓</span></div>
+        <button class="button button--primary checkout-submit" type="submit">Shopify চেকআউটে এগিয়ে যান <span aria-hidden="true">→</span></button>
+        <p class="checkout-disclaimer">পরবর্তী ধাপে Shopify-র নিরাপদ চেকআউটে ঠিকানা যাচাই ও উপলভ্য পেমেন্ট অপশন নির্বাচন করুন। COD সক্রিয় করতে Shopify অ্যাডমিনে Cash on Delivery পেমেন্ট পদ্ধতি চালু করুন।</p>
+        <a class="back-to-cart" href="{{ routes.cart_url }}">← কার্টে ফিরে যান</a>
+      </aside>
+    </form>
+  {% endif %}
+  <div class="benefits-strip benefits-strip--checkout">
+    <div class="benefit">{% render 'icon', name: 'truck' %}<div><strong>সারা দেশে ডেলিভারি</strong><span>বাংলাদেশের সব জেলায়</span></div></div>
+    <div class="benefit">{% render 'icon', name: 'cash' %}<div><strong>ক্যাশ অন ডেলিভারি</strong><span>পণ্য হাতে পেয়ে মূল্য দিন</span></div></div>
+    <div class="benefit">{% render 'icon', name: 'shield' %}<div><strong>নিরাপদ কেনাকাটা</strong><span>আপনার তথ্য সুরক্ষিত</span></div></div>
+    <div class="benefit">{% render 'icon', name: 'headset' %}<div><strong>কাস্টমার সাপোর্ট</strong><span>আমরা আপনার পাশে</span></div></div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "চেকআউট পৃষ্ঠা",
+  "settings": []
+}
+{% endschema %}

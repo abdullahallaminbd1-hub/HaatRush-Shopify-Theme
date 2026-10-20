@@ -1,0 +1,39 @@
+<section class="page-width cart-page">
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ routes.root_url }}">হোম</a><span>›</span><span>কার্ট</span></nav>
+  <h1>আপনার কার্ট</h1>
+  {% if cart.item_count == 0 %}
+    <div class="empty-collection cart-empty-page"><h2>আপনার কার্ট এখন খালি</h2><p>আপনার পছন্দের পণ্য খুঁজে অর্ডার শুরু করুন।</p><a class="button button--primary" href="{{ routes.all_products_collection_url }}">সকল পণ্য দেখুন</a></div>
+  {% else %}
+    <form action="{{ routes.cart_url }}" method="post" class="cart-page__form">
+      <div class="cart-lines">
+        {% for item in cart.items %}
+          <article class="cart-line">
+            <a href="{{ item.url }}" class="cart-line__image">{% if item.image %}{{ item.image | image_url: width: 300 | image_tag: loading: 'lazy', alt: item.product.title }}{% endif %}</a>
+            <div class="cart-line__content">
+              <a href="{{ item.url }}" class="cart-line__title">{{ item.product.title | escape }}</a>
+              {% unless item.product.has_only_default_variant %}<span>{{ item.variant.title | escape }}</span>{% endunless %}
+              <strong>{{ item.final_line_price | money }}</strong>
+            </div>
+            <label class="cart-line__quantity">পরিমাণ<input type="number" name="updates[]" value="{{ item.quantity }}" min="0" aria-label="{{ item.product.title | escape }} পরিমাণ"></label>
+            <a href="{{ item.url_to_remove }}" class="cart-line__remove">সরান</a>
+          </article>
+        {% endfor %}
+      </div>
+      <aside class="cart-summary">
+        <h2>অর্ডারের সারাংশ</h2>
+        <p><span>পণ্যের মোট</span><strong>{{ cart.total_price | money }}</strong></p>
+        <p><span>ডেলিভারি চার্জ</span><span>ঠিকানা অনুযায়ী</span></p>
+        <small>ডেলিভারি চার্জ ঠিকানা নির্বাচন করার পর চেকআউটে নির্ধারিত হবে।</small>
+        <p class="cart-summary__total"><span>মোট</span><strong>{{ cart.total_price | money }}</strong></p>
+        <button type="submit" name="update" class="button button--outline">কার্ট আপডেট করুন</button>
+        <a href="/pages/checkout" class="button button--primary">চেকআউটে এগিয়ে যান <span aria-hidden="true">→</span></a>
+      </aside>
+    </form>
+  {% endif %}
+</section>
+{% schema %}
+{
+  "name": "কার্ট",
+  "settings": []
+}
+{% endschema %}

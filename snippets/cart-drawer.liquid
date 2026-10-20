@@ -1,0 +1,36 @@
+<div class="drawer-backdrop" data-cart-close></div>
+<aside class="cart-drawer" id="CartDrawer" role="dialog" aria-modal="true" aria-labelledby="CartDrawerTitle" aria-hidden="true">
+  <div class="cart-drawer__header">
+    <h2 id="CartDrawerTitle">আপনার কার্ট <span data-drawer-count>{{ cart.item_count }}</span></h2>
+    <button type="button" class="icon-button" data-cart-close aria-label="কার্ট বন্ধ করুন">×</button>
+  </div>
+  <div class="cart-drawer__items" data-cart-items>
+    {% if cart.item_count == 0 %}
+      <p class="cart-empty">আপনার কার্টে এখনো কোনো পণ্য নেই।</p>
+    {% else %}
+      {% for item in cart.items %}
+        <div class="drawer-item" data-line="{{ forloop.index }}">
+          <a href="{{ item.url }}" class="drawer-item__image">
+            {% if item.image %}{{ item.image | image_url: width: 180 | image_tag: loading: 'lazy', alt: item.product.title }}{% endif %}
+          </a>
+          <div class="drawer-item__info">
+            <a href="{{ item.url }}">{{ item.product.title | escape }}</a>
+            <span>{{ item.final_line_price | money }}</span>
+            <div class="quantity-control">
+              <button type="button" data-quantity-change="-1" data-line="{{ forloop.index }}" aria-label="পরিমাণ কমান">−</button>
+              <span>{{ item.quantity }}</span>
+              <button type="button" data-quantity-change="1" data-line="{{ forloop.index }}" aria-label="পরিমাণ বাড়ান">+</button>
+            </div>
+          </div>
+          <button class="remove-line" type="button" data-remove-line="{{ forloop.index }}" aria-label="পণ্য সরান">×</button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+  <div class="cart-drawer__footer">
+    <p><span>সাবটোটাল</span><strong data-cart-total>{{ cart.total_price | money }}</strong></p>
+    <small>ডেলিভারি চার্জ ঠিকানার ভিত্তিতে চেকআউটে নির্ধারণ হবে।</small>
+    <a href="/pages/checkout" class="button button--primary drawer-checkout"{% if cart.item_count == 0 %} aria-disabled="true"{% endif %}>চেকআউটে যান <span aria-hidden="true">→</span></a>
+    <a href="{{ routes.cart_url }}" class="drawer-view-cart">কার্ট দেখুন</a>
+  </div>
+</aside>

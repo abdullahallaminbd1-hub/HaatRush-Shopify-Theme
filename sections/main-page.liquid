@@ -1,0 +1,8 @@
+<section class="page-width content-page">
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ routes.root_url }}">হোম</a><span>›</span><span>{{ page.title | escape }}</span></nav>
+  <h1>{{ page.title | escape }}</h1>
+  <div class="rte">{{ page.content }}</div>
+</section>
+{% schema %}
+{ "name": "সাধারণ পৃষ্ঠা", "settings": [] }
+{% endschema %}

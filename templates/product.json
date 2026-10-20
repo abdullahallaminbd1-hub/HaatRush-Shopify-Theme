@@ -1,0 +1,15 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product"
+    },
+    "related": {
+      "type": "related-products",
+      "settings": {
+        "heading": "সম্পর্কিত পণ্য",
+        "products_to_show": 4
+      }
+    }
+  },
+  "order": ["main", "related"]
+}

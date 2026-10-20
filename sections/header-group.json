@@ -1,0 +1,22 @@
+{
+  "type": "header",
+  "name": "Header group",
+  "sections": {
+    "announcement": {
+      "type": "announcement-bar",
+      "settings": {
+        "message_one": "সারা দেশে ডেলিভারি",
+        "message_two": "ক্যাশ অন ডেলিভারি",
+        "message_three": "নিরাপদ কেনাকাটা",
+        "message_four": "সকাল ৯টা – রাত ১০টা কাস্টমার সাপোর্ট"
+      }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "show_account": true
+      }
+    }
+  },
+  "order": ["announcement", "header"]
+}

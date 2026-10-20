@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="bn">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#06483f">
+    <link rel="canonical" href="{{ canonical_url }}">
+    <title>
+      {{ page_title }}
+      {% if current_tags %} — {{ current_tags | join: ', ' }}{% endif %}
+      {% if current_page != 1 %} — পৃষ্ঠা {{ current_page }}{% endif %}
+      {% unless page_title contains shop.name %} — {{ shop.name }}{% endunless %}
+    </title>
+    {% if page_description %}
+      <meta name="description" content="{{ page_description | escape }}">
+    {% endif %}
+    {{ content_for_header }}
+    {{ 'base.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'theme.js' | asset_url }}" defer></script>
+  </head>
+  <body style="--green: {{ settings.color_primary | escape }}; --orange: {{ settings.color_accent | escape }};">
+    <a class="skip-link" href="#MainContent">মূল কনটেন্টে যান</a>
+    {% sections 'header-group' %}
+    <main id="MainContent" role="main">
+      {{ content_for_layout }}
+    </main>
+    {% sections 'footer-group' %}
+    {% render 'cart-drawer' %}
+  </body>
+</html>

@@ -1,0 +1,33 @@
+<article class="product-card">
+  <a class="product-card__image" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
+    {% if product.featured_image %}
+      {{ product.featured_image | image_url: width: 720 | image_tag: loading: 'lazy', widths: '240, 360, 540, 720', sizes: '(min-width: 990px) 25vw, (min-width: 600px) 50vw, 50vw', alt: product.featured_image.alt | default: product.title }}
+    {% else %}
+      {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+    {% endif %}
+    {% if product.compare_at_price > product.price %}
+      {% assign discount = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round %}
+      <span class="product-card__badge">-{{ discount }}%</span>
+    {% endif %}
+  </a>
+  <div class="product-card__details">
+    <h3><a href="{{ product.url }}">{{ product.title | escape }}</a></h3>
+    <div class="product-card__price">
+      <span>{{ product.price | money }}</span>
+      {% if product.compare_at_price > product.price %}<s>{{ product.compare_at_price | money }}</s>{% endif %}
+    </div>
+    <p class="product-card__availability">
+      {% if product.available %}<span aria-hidden="true">●</span> স্টকে আছে{% else %}<span class="sold-out-dot" aria-hidden="true">●</span> স্টক শেষ{% endif %}
+    </p>
+    {% if product.available %}
+      {% assign card_variant = product.selected_or_first_available_variant %}
+      <form action="{{ routes.cart_add_url }}" method="post" class="product-card__form" data-cart-add-form>
+        <input type="hidden" name="id" value="{{ card_variant.id }}">
+        <input type="hidden" name="quantity" value="1">
+        <button class="button button--primary button--small" type="submit">{% render 'icon', name: 'cart' %} কার্টে যোগ করুন</button>
+      </form>
+    {% else %}
+      <button class="button button--disabled button--small" type="button" disabled>স্টক শেষ</button>
+    {% endif %}
+  </div>
+</article>

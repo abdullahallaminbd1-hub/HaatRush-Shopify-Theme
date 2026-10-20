@@ -1,0 +1,16 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-index",
+      "settings": {
+        "hero_eyebrow": "বাংলাদেশের বিশ্বস্ত ইলেকট্রনিক্স স্টোর",
+        "hero_title": "ঘরে বসেই কিনুন <em>অরিজিনাল</em> ইলেকট্রনিক্স",
+        "hero_text": "আপনার প্রতিদিনের প্রয়োজনীয় স্মার্ট গ্যাজেট—সহজে, নিশ্চিন্তে, HaatRush-এ।",
+        "featured_heading": "আজকের সেরা পণ্য",
+        "popular_heading": "জনপ্রিয় পণ্য",
+        "products_to_show": 4
+      }
+    }
+  },
+  "order": ["main"]
+}

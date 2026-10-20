@@ -1,0 +1,20 @@
+<section class="page-width search-page">
+  <div class="collection-title"><div><h1>পণ্য খুঁজুন</h1><p>{% if search.performed %}“{{ search.terms | escape }}” অনুসন্ধানের ফলাফল{% else %}আপনার পছন্দের পণ্য খুঁজুন{% endif %}</p></div></div>
+  <form class="search-page__form" action="{{ routes.search_url }}" method="get" role="search">
+    <label class="visually-hidden" for="SearchPageInput">পণ্য খুঁজুন</label><input id="SearchPageInput" type="search" name="q" value="{{ search.terms | escape }}" placeholder="পণ্যের নাম লিখুন..."><button class="button button--primary" type="submit">{% render 'icon', name: 'search' %} খুঁজুন</button>
+  </form>
+  {% if search.performed %}
+    {% paginate search.results by 16 %}
+      {% assign product_results = search.results | where: 'object_type', 'product' %}
+      {% if product_results.size > 0 %}
+        <div class="product-grid product-grid--collection">{% for product in product_results %}{% render 'product-card', product: product %}{% endfor %}</div>
+      {% else %}
+        <div class="empty-collection"><h2>কোনো পণ্য পাওয়া যায়নি</h2><p>অন্য শব্দ দিয়ে আবার খুঁজে দেখুন।</p></div>
+      {% endif %}
+      {% if paginate.pages > 1 %}<nav class="pagination" role="navigation" aria-label="Pagination">{% if paginate.previous %}<a href="{{ paginate.previous.url }}">‹</a>{% endif %}{% for part in paginate.parts %}{% if part.is_link %}<a href="{{ part.url }}">{{ part.title }}</a>{% else %}<span>{{ part.title }}</span>{% endif %}{% endfor %}{% if paginate.next %}<a href="{{ paginate.next.url }}">›</a>{% endif %}</nav>{% endif %}
+    {% endpaginate %}
+  {% endif %}
+</section>
+{% schema %}
+{ "name": "অনুসন্ধান", "settings": [] }
+{% endschema %}

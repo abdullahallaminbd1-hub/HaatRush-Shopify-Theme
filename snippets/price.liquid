@@ -1,0 +1,10 @@
+{% assign current_variant = product.selected_or_first_available_variant %}
+<div class="price{% if current_variant.compare_at_price > current_variant.price %} price--sale{% endif %}" data-product-price>
+  <span class="price__current">{{ current_variant.price | money }}</span>
+  {% if current_variant.compare_at_price > current_variant.price %}
+    <s class="price__compare">{{ current_variant.compare_at_price | money }}</s>
+    {% assign savings = current_variant.compare_at_price | minus: current_variant.price %}
+    {% assign discount = savings | times: 100.0 | divided_by: current_variant.compare_at_price | round %}
+    <span class="discount-badge">-{{ discount }}%</span>
+  {% endif %}
+</div>

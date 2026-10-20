@@ -1,0 +1,99 @@
+{% assign featured_collection = section.settings.featured_collection | default: collections.all %}
+{% assign popular_collection = section.settings.popular_collection | default: collections.all %}
+<section class="home-hero page-width">
+  <div class="home-hero__copy">
+    {% if section.settings.hero_eyebrow != blank %}<span class="eyebrow">{{ section.settings.hero_eyebrow | escape }}</span>{% endif %}
+    <h1>{{ section.settings.hero_title }}</h1>
+    <p>{{ section.settings.hero_text | escape }}</p>
+    <div class="home-hero__buttons">
+      <a class="button button--primary" href="{{ section.settings.hero_button_link | default: routes.all_products_collection_url }}">{{ section.settings.hero_button_label | escape }} <span aria-hidden="true">→</span></a>
+      <a class="button button--outline-light" href="{{ routes.all_products_collection_url }}">সব পণ্য দেখুন</a>
+    </div>
+    <div class="hero-assurances">
+      <span>{% render 'icon', name: 'truck' %} সারা দেশে ডেলিভারি</span>
+      <span>{% render 'icon', name: 'cash' %} ক্যাশ অন ডেলিভারি</span>
+      <span>{% render 'icon', name: 'shield' %} নিরাপদ কেনাকাটা</span>
+    </div>
+  </div>
+  <div class="home-hero__visual">
+    {% if section.settings.hero_image != blank %}
+      {{ section.settings.hero_image | image_url: width: 1300 | image_tag: loading: 'eager', widths: '500, 800, 1100, 1300', sizes: '(min-width: 750px) 52vw, 100vw', alt: section.settings.hero_image.alt }}
+    {% elsif section.settings.hero_product != blank %}
+      {% assign hero_product = section.settings.hero_product %}
+      {% if hero_product.featured_image %}
+        {{ hero_product.featured_image | image_url: width: 1000 | image_tag: loading: 'eager', widths: '400, 700, 1000', sizes: '(min-width: 750px) 48vw, 100vw', alt: hero_product.title }}
+      {% endif %}
+      <a class="hero-product-label" href="{{ hero_product.url }}">{{ hero_product.title | escape }} <span>{{ hero_product.price | money }}</span></a>
+    {% else %}
+      <div class="hero-orbit hero-orbit--one"></div>
+      <div class="hero-orbit hero-orbit--two"></div>
+      <div class="hero-device">
+        <span class="hero-device__screen"></span>
+        <span class="hero-device__lens hero-device__lens--one"></span>
+        <span class="hero-device__lens hero-device__lens--two"></span>
+        <span class="hero-device__lens hero-device__lens--three"></span>
+      </div>
+      <div class="hero-pedestal"></div>
+      <span class="hero-spark hero-spark--one">✦</span><span class="hero-spark hero-spark--two">✦</span>
+    {% endif %}
+  </div>
+</section>
+
+<section class="page-width home-products">
+  <div class="section-heading">
+    <div><span class="section-heading__icon">✦</span><div><h2>{{ section.settings.featured_heading | escape }}</h2><p>আপনার পছন্দের পণ্য এক জায়গায়</p></div></div>
+    <a href="{{ featured_collection.url | default: routes.all_products_collection_url }}">সব পণ্য দেখুন <span aria-hidden="true">→</span></a>
+  </div>
+  {% if featured_collection.products_count > 0 %}
+    <div class="product-grid product-grid--home">
+      {% for product in featured_collection.products limit: section.settings.products_to_show %}
+        {% render 'product-card', product: product %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-collection"><h3>পণ্য আসছে শীঘ্রই</h3><p>আপনার Shopify অ্যাডমিন থেকে পণ্য যোগ করলে এখানে দেখা যাবে।</p></div>
+  {% endif %}
+</section>
+
+{% if popular_collection.products_count > section.settings.products_to_show %}
+<section class="page-width home-products home-products--popular">
+  <div class="section-heading">
+    <div><span class="section-heading__icon">★</span><div><h2>{{ section.settings.popular_heading | escape }}</h2><p>দৈনন্দিন ব্যবহারের জন্য বাছাইকৃত গ্যাজেট</p></div></div>
+    <a href="{{ popular_collection.url | default: routes.all_products_collection_url }}">সব পণ্য দেখুন <span aria-hidden="true">→</span></a>
+  </div>
+  {% if popular_collection.products_count > 0 %}
+    <div class="product-grid product-grid--home">
+      {% for product in popular_collection.products limit: section.settings.products_to_show offset: section.settings.products_to_show %}
+        {% render 'product-card', product: product %}
+      {% endfor %}
+    </div>
+  {% endif %}
+</section>
+{% endif %}
+
+<section class="page-width benefits-strip" aria-label="আমাদের সুবিধা">
+  <div class="benefit">{% render 'icon', name: 'truck' %}<div><strong>সারা দেশে ডেলিভারি</strong><span>বাংলাদেশের সব জেলায়</span></div></div>
+  <div class="benefit">{% render 'icon', name: 'cash' %}<div><strong>ক্যাশ অন ডেলিভারি</strong><span>পণ্য হাতে পেয়ে মূল্য দিন</span></div></div>
+  <div class="benefit">{% render 'icon', name: 'shield' %}<div><strong>নিরাপদ কেনাকাটা</strong><span>নিশ্চিন্তে অর্ডার করুন</span></div></div>
+  <div class="benefit">{% render 'icon', name: 'headset' %}<div><strong>কাস্টমার সাপোর্ট</strong><span>আমরা আপনার পাশে</span></div></div>
+</section>
+
+{% schema %}
+{
+  "name": "হোমপেজ",
+  "settings": [
+    { "type": "text", "id": "hero_eyebrow", "label": "হিরো লেবেল", "default": "বাংলাদেশের বিশ্বস্ত ইলেকট্রনিক্স স্টোর" },
+    { "type": "inline_richtext", "id": "hero_title", "label": "হিরো শিরোনাম", "default": "ঘরে বসেই কিনুন <em>অরিজিনাল</em> ইলেকট্রনিক্স" },
+    { "type": "textarea", "id": "hero_text", "label": "হিরো বিবরণ", "default": "আপনার প্রতিদিনের প্রয়োজনীয় স্মার্ট গ্যাজেট—সহজে, নিশ্চিন্তে, HaatRush-এ।" },
+    { "type": "image_picker", "id": "hero_image", "label": "হিরো ব্যানার ছবি" },
+    { "type": "product", "id": "hero_product", "label": "বিকল্প হিরো পণ্য" },
+    { "type": "text", "id": "hero_button_label", "label": "প্রধান বাটনের লেখা", "default": "এখনই কিনুন" },
+    { "type": "url", "id": "hero_button_link", "label": "প্রধান বাটনের লিংক" },
+    { "type": "collection", "id": "featured_collection", "label": "প্রথম পণ্যের সংগ্রহ" },
+    { "type": "text", "id": "featured_heading", "label": "প্রথম সংগ্রহের শিরোনাম", "default": "আজকের সেরা পণ্য" },
+    { "type": "collection", "id": "popular_collection", "label": "দ্বিতীয় পণ্যের সংগ্রহ" },
+    { "type": "text", "id": "popular_heading", "label": "দ্বিতীয় সংগ্রহের শিরোনাম", "default": "জনপ্রিয় পণ্য" },
+    { "type": "range", "id": "products_to_show", "min": 2, "max": 8, "step": 2, "default": 4, "label": "প্রতি সংগ্রহে পণ্য" }
+  ]
+}
+{% endschema %}
