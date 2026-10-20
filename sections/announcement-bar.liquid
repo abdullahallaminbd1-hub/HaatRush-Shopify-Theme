@@ -2,18 +2,15 @@
 <div class="announcement-bar">
   <div class="container">
     <div class="announcement-bar__inner">
-      {%- for copy in (1..2) -%}
-        <div class="announcement-bar__group"{% if copy == 2 %} aria-hidden="true"{% endif %}>
-          <div class="announcement-bar__item"><span>🚚</span><span>{{ section.settings.item_1 }}</span></div>
-          <span class="announcement-bar__divider">|</span>
-          <div class="announcement-bar__item"><span>💵</span><span>{{ section.settings.item_2 }}</span></div>
-          <span class="announcement-bar__divider">|</span>
-          <div class="announcement-bar__item"><span>🛡️</span><span>{{ section.settings.item_3 }}</span></div>
-          <span class="announcement-bar__divider">|</span>
-          <div class="announcement-bar__item"><span>🎧</span><span>{{ section.settings.item_4 }}</span></div>
-          <span class="announcement-bar__divider">|</span>
-        </div>
-      {%- endfor -%}
+      <div class="announcement-bar__group">
+        <div class="announcement-bar__item"><span>🚚</span><span>{{ section.settings.item_1 }}</span></div>
+        <span class="announcement-bar__divider">|</span>
+        <div class="announcement-bar__item"><span>💵</span><span>{{ section.settings.item_2 }}</span></div>
+        <span class="announcement-bar__divider">|</span>
+        <div class="announcement-bar__item"><span>🛡️</span><span>{{ section.settings.item_3 }}</span></div>
+        <span class="announcement-bar__divider">|</span>
+        <div class="announcement-bar__item"><span>🎧</span><span>{{ section.settings.item_4 }}</span></div>
+      </div>
     </div>
   </div>
 </div>
@@ -24,34 +21,29 @@
     background-color: #1B3C3C;
     color: #fff;
     font-size: 13px;
-    padding: 8px 0;
-    overflow: hidden;
+    padding: 7px 0;
     font-family: var(--font-bengali, 'Hind Siliguri', sans-serif);
   }
   .announcement-bar .container {
-    max-width: none;
+    max-width: 1280px;
     margin: 0 auto;
-    padding: 0;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
   }
   .announcement-bar__inner {
     display: flex;
     align-items: center;
-    width: max-content;
-    flex-wrap: nowrap;
-    animation: announcement-marquee 32s linear infinite;
-  }
-  .announcement-bar:hover .announcement-bar__inner {
-    animation-play-state: paused;
+    flex-wrap: wrap;
+    gap: 24px;
   }
   .announcement-bar__group {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding-right: 16px;
+    gap: 24px;
     flex-shrink: 0;
-  }
-  @keyframes announcement-marquee {
-    to { transform: translateX(-50%); }
   }
   .announcement-bar__item {
     display: flex;
@@ -63,10 +55,35 @@
   .announcement-bar__divider {
     color: rgba(255,255,255,0.3);
     flex-shrink: 0;
+    padding: 0 4px;
   }
-  @media (prefers-reduced-motion: reduce) {
+  /* Mobile: stack items vertically, full width */
+  @media (max-width: 640px) {
+    .announcement-bar .container {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+      padding: 0 16px;
+    }
     .announcement-bar__inner {
-      animation-duration: 80s;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+    }
+    .announcement-bar__group {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+    .announcement-bar__divider {
+      display: none;
+    }
+    .announcement-bar__item {
+      justify-content: space-between;
+      width: 100%;
+    }
+    .announcement-bar__item span:last-child {
+      flex: 1;
     }
   }
 </style>

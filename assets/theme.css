@@ -2225,6 +2225,10 @@ input, select, textarea {
   z-index: 1000;
 }
 
+.cart-drawer.active {
+  display: flex;
+}
+
 .cart-drawer__overlay {
   position: absolute;
   inset: 0;

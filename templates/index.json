@@ -19,7 +19,8 @@
         "btn1_url": "",
         "btn2_label": "সব পণ্য দেখুন",
         "btn2_url": "",
-        "background_color": "#1b3c3c"
+        "background_color": "#1b3c3c",
+        "hero_image": ""
       }
     },
     "deals": {

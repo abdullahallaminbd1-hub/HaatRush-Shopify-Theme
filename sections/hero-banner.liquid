@@ -1,4 +1,4 @@
-<section class="hero-banner"{% if section.settings.hero_image != blank %} style="background-image: url('{{ section.settings.hero_image | image_url: width: 1600 }}');"{% endif %}>
+<section class="hero-banner"{% if section.settings.hero_image != blank %} style="background-image: url('{{ section.settings.hero_image | image_url: width: 1600 }}');"{% else %} style="background-color: {{ section.settings.background_color }};"{% endif %}>
   <div class="container">
     <div class="hero-banner__content">
       <div class="hero-banner__badge">
