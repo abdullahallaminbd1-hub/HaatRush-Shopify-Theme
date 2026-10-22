@@ -1334,7 +1334,10 @@ html[lang^="bn"] .lf-section-title,html[lang^="bn"] .hero h1,html[lang^="bn"] .n
 .hr-checkout__field textarea{min-height:92px;resize:vertical;}
 .hr-checkout__field input::placeholder,.hr-checkout__field textarea::placeholder{color:#8490A8;opacity:1;}
 .hr-checkout__field input:focus,.hr-checkout__field textarea:focus,.hr-checkout__field select:focus{outline:2px solid #7628D7;outline-offset:1px;border-color:#7628D7;}
+.hr-checkout__field select:disabled{background:#F8F6FB;color:#8490A8;cursor:not-allowed;}
 .hr-checkout__cod{display:flex;align-items:center;gap:13px;margin:2px 0 18px;padding:14px 16px;border:1px solid #7628D7;border-radius:12px;background:#FBF8FF;}
+.hr-checkout__address{margin-bottom:16px;}
+.hr-checkout__service-notice{margin:0 0 14px;padding:12px 14px;border:1px solid #EBDFFF;border-radius:10px;background:#F8F3FF;color:#5A1EB0;font-size:14px;line-height:1.6;}
 .hr-checkout__cod-icon{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:50%;background:#7628D7;color:#fff;font-size:20px;font-weight:700;}
 .hr-checkout__cod>span:nth-child(2){display:grid;gap:2px;flex:1;min-width:0;}
 .hr-checkout__cod strong{font-size:16px;font-weight:700;}

@@ -4,7 +4,9 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 const {
+  DIVISIONS,
   DISTRICTS,
+  UPAZILAS,
   buildOrderInput,
   buildQuote,
   createQuoteToken,
@@ -27,30 +29,47 @@ function fixtureVariant(id, price, title) {
   };
 }
 
-test('district list contains 64 districts and delivery is based on Dhaka district', () => {
+test('location data contains the administrative hierarchy and delivery follows the selected district', () => {
+  assert.equal(DIVISIONS.length, 8);
   assert.equal(DISTRICTS.length, 64);
+  assert.equal(UPAZILAS.length, 500);
+  assert.ok(UPAZILAS.some((upazila) => upazila.value === 'Dhamrai' && upazila.district === 'Dhaka'));
+  assert.ok([
+    ['Mokamtola', 'Bogura'],
+    ['Matamuhuri', "Cox's Bazar"],
+    ['Chandraganj', 'Lakshmipur'],
+    ['Ruhia', 'Thakurgaon'],
+    ['Bhully', 'Thakurgaon']
+  ].every(([value, district]) => UPAZILAS.some((upazila) => upazila.value === value && upazila.district === district)));
+  assert.ok([...DIVISIONS, ...DISTRICTS, ...UPAZILAS].every((entry) => entry.value && entry.label));
+  assert.equal(new Set(UPAZILAS.map((upazila) => `${upazila.district}\0${upazila.value.toLowerCase()}`)).size, UPAZILAS.length);
+  assert.ok(DISTRICTS.every((district) =>
+    DIVISIONS.some((division) => division.value === district.division)
+    && UPAZILAS.some((upazila) => upazila.district === district.value)
+  ));
   const lines = normalizeLines([{ variantId: '101', quantity: 1 }]);
   const variants = [fixtureVariant('101', '500.00', 'পণ্য')];
-  assert.equal(buildQuote(lines, variants, 'Dhaka').shipping, '70.00');
-  assert.equal(buildQuote(lines, variants, 'Chattogram').shipping, '130.00');
+  assert.equal(buildQuote(lines, variants, 'Dhaka', 'Dhaka').shipping, '70.00');
+  assert.equal(buildQuote(lines, variants, 'Chattogram', 'Chattogram').shipping, '130.00');
+  assert.throws(() => buildQuote(lines, variants, 'Dhaka', 'Chattogram'), /জেলা/);
 });
 
 test('free shipping requires subtotal to exceed ৳1,000', () => {
   const lines = normalizeLines([{ variantId: '101', quantity: 1 }]);
-  assert.equal(buildQuote(lines, [fixtureVariant('101', '1000.00', 'পণ্য')], 'Dhaka').shippingFree, false);
-  assert.equal(buildQuote(lines, [fixtureVariant('101', '1000.01', 'পণ্য')], 'Dhaka').shippingFree, true);
+  assert.equal(buildQuote(lines, [fixtureVariant('101', '1000.00', 'পণ্য')], 'Dhaka', 'Dhaka').shippingFree, false);
+  assert.equal(buildQuote(lines, [fixtureVariant('101', '1000.01', 'পণ্য')], 'Dhaka', 'Dhaka').shippingFree, true);
 });
 
 test('bundle discount is absent for one item and applied for two eligible units', () => {
   const variants = [fixtureVariant('101', '100.00', 'পণ্য')];
-  const one = buildQuote(normalizeLines([{ variantId: '101', quantity: 1 }]), variants, 'Dhaka');
-  const two = buildQuote(normalizeLines([{ variantId: '101', quantity: 2 }]), variants, 'Dhaka');
+  const one = buildQuote(normalizeLines([{ variantId: '101', quantity: 1 }]), variants, 'Dhaka', 'Dhaka');
+  const two = buildQuote(normalizeLines([{ variantId: '101', quantity: 2 }]), variants, 'Dhaka', 'Dhaka');
   assert.equal(one.bundleDiscount, '0.00');
   assert.equal(two.bundleDiscount, '4.00');
   const order = buildOrderInput({
     quote: two,
     lines: [],
-    customer: { name: 'রহিম', phone: '01712345678', address: 'বাড়ি ১, সড়ক ২', upazila: 'ধানমন্ডি' },
+    customer: { name: 'রহিম', phone: '01712345678', address: 'বাড়ি ১, সড়ক ২', division: 'Dhaka', district: 'Dhaka', upazila: 'Dhamrai' },
     submissionId: '93d93088-1903-4aa2-bf20-80cb5b169c78'
   }).order;
   assert.deepEqual(order.discountCode, {
@@ -59,7 +78,7 @@ test('bundle discount is absent for one item and applied for two eligible units'
   const singleOrder = buildOrderInput({
     quote: one,
     lines: [],
-    customer: { name: 'রহিম', phone: '01712345678', address: 'বাড়ি ১, সড়ক ২', upazila: 'ধানমন্ডি' },
+    customer: { name: 'রহিম', phone: '01712345678', address: 'বাড়ি ১, সড়ক ২', division: 'Dhaka', district: 'Dhaka', upazila: 'Dhamrai' },
     submissionId: '93d93088-1903-4aa2-bf20-80cb5b169c78'
   }).order;
   assert.equal('discountCode' in singleOrder, false);
@@ -75,17 +94,18 @@ test('rejects unavailable and understocked variants and unknown districts', () =
   const lines = normalizeLines([{ variantId: '101', quantity: 2 }]);
   const understocked = fixtureVariant('101', '10.00', 'পণ্য');
   understocked.inventoryQuantity = 1;
-  assert.throws(() => buildQuote(lines, [understocked], 'Dhaka'), /স্টক/);
+  assert.throws(() => buildQuote(lines, [understocked], 'Dhaka', 'Dhaka'), /স্টক/);
   const unavailable = fixtureVariant('101', '10.00', 'পণ্য');
   unavailable.availableForSale = false;
-  assert.throws(() => buildQuote(lines, [unavailable], 'Dhaka'), /উপলভ্য নয়/);
-  assert.throws(() => buildQuote(lines, [fixtureVariant('101', '10.00', 'পণ্য')], 'Unknown'), /জেলা/);
+  assert.throws(() => buildQuote(lines, [unavailable], 'Dhaka', 'Dhaka'), /উপলভ্য নয়/);
+  assert.throws(() => buildQuote(lines, [fixtureVariant('101', '10.00', 'পণ্য')], 'Unknown', 'Dhaka'), /জেলা/);
 });
 
 test('signed quote token expires and cannot be modified', () => {
   const quote = buildQuote(
     normalizeLines([{ variantId: '101', quantity: 1 }]),
     [fixtureVariant('101', '500.00', 'পণ্য')],
+    'Dhaka',
     'Dhaka'
   );
   const token = createQuoteToken(quote, 'a'.repeat(32), 1000000);
@@ -125,14 +145,28 @@ test('validates required Bengali checkout customer fields', () => {
     name: 'রহিম উদ্দিন',
     phone: '01712345678',
     address: 'বাড়ি ১, সড়ক ২',
-    upazila: 'ধানমন্ডি',
+    division: 'Dhaka',
+    upazila: 'Dhamrai',
     district: 'Dhaka'
   }).name, 'রহিম উদ্দিন');
   assert.throws(() => validateCustomer({
     name: 'রহিম',
     phone: '0212345678',
     address: 'বাড়ি ১, সড়ক ২',
-    upazila: 'ধানমন্ডি',
+    division: 'Dhaka',
     district: 'Dhaka'
   }), /মোবাইল/);
+});
+
+test('rejects a district from the wrong division and an Upazila outside that district', () => {
+  const customer = {
+    name: 'রহিম উদ্দিন',
+    phone: '01712345678',
+    address: 'বাড়ি ১, সড়ক ২',
+    division: 'Dhaka',
+    district: 'Dhaka',
+    upazila: 'Dhamrai'
+  };
+  assert.throws(() => validateCustomer({ ...customer, division: 'Chattogram' }), /জেলা/);
+  assert.throws(() => validateCustomer({ ...customer, upazila: 'Mokamtola' }), /উপজেলা/);
 });

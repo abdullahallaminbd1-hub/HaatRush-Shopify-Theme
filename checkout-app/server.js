@@ -6,7 +6,9 @@ const path = require('node:path');
 const express = require('express');
 const { Pool } = require('pg');
 const {
+  DIVISIONS,
   DISTRICTS,
+  UPAZILAS,
   buildOrderInput,
   buildQuote,
   createQuoteToken,
@@ -102,7 +104,8 @@ function sameLines(left, right) {
 }
 
 function sameQuote(snapshot, fresh) {
-  return snapshot.district === fresh.district
+  return snapshot.division === fresh.division
+    && snapshot.district === fresh.district
     && snapshot.subtotal === fresh.subtotal
     && snapshot.bundleDiscount === fresh.bundleDiscount
     && snapshot.shipping === fresh.shipping
@@ -180,7 +183,7 @@ function createApp({ config, pool, fetchImpl = fetch, now = Date.now }) {
   app.use('/proxy', proxyOnly);
 
   app.get('/proxy/config', (_req, res) => {
-    res.json({ districts: DISTRICTS });
+    res.json({ divisions: DIVISIONS, districts: DISTRICTS, upazilas: UPAZILAS });
   });
 
   app.post('/proxy/quote', async (req, res) => {
@@ -198,7 +201,7 @@ function createApp({ config, pool, fetchImpl = fetch, now = Date.now }) {
       return safeError(res, 503, 'quote_unavailable', 'দাম ও স্টক যাচাই করা যাচ্ছে না। কিছুক্ষণ পর আবার চেষ্টা করুন।');
     }
     try {
-      const quote = buildQuote(lines, variants, req.body && req.body.district);
+      const quote = buildQuote(lines, variants, req.body && req.body.district, req.body && req.body.division);
       return res.json({
         ...quote,
         quoteToken: createQuoteToken(quote, config.quoteSecret, now())
@@ -224,7 +227,7 @@ function createApp({ config, pool, fetchImpl = fetch, now = Date.now }) {
     } catch (error) {
       return safeError(res, 422, 'invalid_checkout', error.message, { retryable: true });
     }
-    if (!snapshot || snapshot.district !== customer.district || !sameLines(snapshot.lines, lines)) {
+    if (!snapshot || snapshot.division !== customer.division || snapshot.district !== customer.district || !sameLines(snapshot.lines, lines)) {
       return safeError(res, 409, 'quote_expired', 'দাম বা কার্টের তথ্য বদলেছে। অর্ডার দেওয়ার আগে সারাংশটি আবার যাচাই করুন।', { retryable: true });
     }
 
@@ -270,7 +273,7 @@ function createApp({ config, pool, fetchImpl = fetch, now = Date.now }) {
     let freshQuote;
     try {
       variants = await loadCatalog(lines);
-      freshQuote = buildQuote(lines, variants, customer.district);
+      freshQuote = buildQuote(lines, variants, customer.district, customer.division);
       if (!sameQuote(snapshot, freshQuote)) {
         await pool.query(
           `UPDATE checkout_submissions

@@ -4,6 +4,10 @@ This service creates real, unpaid Cash-on-Delivery orders through Shopify's Admi
 
 The service re-queries current variant availability, stock, and BDT prices before every quote and again before order creation. Shopify claims inventory using `DECREMENT_OBEYING_POLICY`. It computes delivery from the selected district, gives free shipping only when the product subtotal is strictly greater than ৳1,000, and passes a 2% item percentage discount only when the cart contains at least two units. The discount uses the documented `orderCreate.discountCode.itemPercentageDiscountCode` input; automatic Shopify discounts are not assumed to run.
 
+## Bangladesh location data
+
+`locations.json` supplies the Bengali-labeled 8 divisions, 64 districts, and 500 Upazilas used by the dependent checkout dropdowns. Its base hierarchy is adapted from [bangladesh-geo-json](https://github.com/iqbalhasandev/bangladesh-geo-json), which compiles [bd-apis](https://github.com/SudipMHX/bd-apis) and [Bangladesh GEOJSON](https://github.com/ifahimreza/bangladesh-geojson). Because the database incorporates ODbL-licensed source data, the compiled location database is made available under the [Open Data Commons Open Database License (ODbL) 1.0](https://opendatacommons.org/licenses/odbl/1-0/). The five Upazilas approved in May 2026 are included from the bilingual records in the [Bangladesh Locations Dataset](https://github.com/HedaetShahriar/bangladesh-locations-dataset). Please update this data when official administrative boundaries or names change.
+
 ## Required Shopify setup
 
 Create and install a Shopify app for the HaatRush store. Configure:
@@ -49,7 +53,7 @@ npm start
 1. Deploy and install the app, grant the scopes, set the app proxy, and configure the backend secrets/database.
 2. In Shopify Admin, create a page with handle `checkout` and assign the `page.checkout` template.
 3. Publish the theme changes. Cart and product pages now direct customers to this Bengali COD checkout.
-4. Confirm that `https://<store>/apps/haatrush-checkout/config` returns the district list through the configured app proxy.
+4. Confirm that `https://<store>/apps/haatrush-checkout/config` returns the division, district, and Upazila lists through the configured app proxy.
 
 If the app proxy is unavailable, the form disables submission and reports that no order was placed. It never falls back to a simulated success or the standard Shopify checkout.
 

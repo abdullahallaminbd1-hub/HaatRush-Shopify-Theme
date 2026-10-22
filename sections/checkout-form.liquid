@@ -29,19 +29,23 @@
                 <span>মোবাইল নম্বর <b aria-hidden="true">*</b></span>
                 <input name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="24" placeholder="০১XXXXXXXXX" required>
               </label>
-              <label class="hr-checkout__field hr-checkout__field--wide">
-                <span>সম্পূর্ণ ঠিকানা <b aria-hidden="true">*</b></span>
-                <textarea name="address" autocomplete="street-address" rows="3" maxlength="500" placeholder="বাড়ি/রোড নম্বর, এলাকা ও বিস্তারিত ঠিকানা" required></textarea>
+              <label class="hr-checkout__field">
+                <span>বিভাগ <b aria-hidden="true">*</b></span>
+                <select name="division" autocomplete="address-level1" required disabled>
+                  <option value="">বিভাগ নির্বাচন করুন</option>
+                </select>
               </label>
               <label class="hr-checkout__field">
                 <span>জেলা <b aria-hidden="true">*</b></span>
-                <select name="district" autocomplete="address-level1" required>
+                <select name="district" autocomplete="address-level2" required disabled>
                   <option value="">জেলা নির্বাচন করুন</option>
                 </select>
               </label>
               <label class="hr-checkout__field">
                 <span>উপজেলা/থানা <b aria-hidden="true">*</b></span>
-                <input name="upazila" type="text" autocomplete="address-level2" maxlength="100" placeholder="উপজেলা বা থানার নাম" required>
+                <select name="upazila" autocomplete="address-level3" required disabled>
+                  <option value="">উপজেলা/থানা নির্বাচন করুন</option>
+                </select>
               </label>
             </div>
             <div class="hr-checkout__cod">
@@ -49,12 +53,19 @@
               <span><strong>ক্যাশ অন ডেলিভারি</strong><small>পণ্য হাতে পেয়ে টাকা পরিশোধ করুন</small></span>
               <span class="hr-checkout__cod-selected" aria-label="নির্বাচিত">✓</span>
             </div>
+            <label class="hr-checkout__field hr-checkout__field--wide hr-checkout__address">
+              <span>সম্পূর্ণ ঠিকানা <b aria-hidden="true">*</b></span>
+              <textarea name="address" autocomplete="street-address" rows="3" maxlength="500" placeholder="বাড়ি/রোড নম্বর, এলাকা ও বিস্তারিত ঠিকানা" required></textarea>
+            </label>
+            <p class="hr-checkout__service-notice" data-checkout-service-notice role="status" aria-live="polite" hidden>
+              দুঃখিত, এই মুহূর্তে অর্ডার নেওয়া যাচ্ছে না। আপনার কার্ট সংরক্ষিত আছে—কিছুক্ষণ পর আবার চেষ্টা করুন।
+            </p>
             <p class="hr-checkout__notice" data-checkout-error role="alert" hidden></p>
             <button type="submit" class="btn-primary checkout-submit-btn hr-checkout__submit" data-checkout-submit disabled>
               <span data-checkout-submit-label>অর্ডার যাচাই হচ্ছে…</span>
               <span aria-hidden="true">→</span>
             </button>
-            <p class="hr-checkout__privacy">অর্ডার সফল হলে আপনার তথ্য ডেলিভারির জন্য Shopify-তে সংরক্ষিত হবে।</p>
+            <p class="hr-checkout__privacy">অর্ডার সম্পন্ন হলে আপনার তথ্য ডেলিভারির জন্য ব্যবহার করা হবে।</p>
           </form>
         </div>
 
@@ -89,7 +100,7 @@
               <div class="checkout-total-row hr-checkout__discount"><span class="checkout-total-label">বান্ডেল সেভিংস (২%)</span><span class="checkout-total-val" data-checkout-discount>—</span></div>
               <div class="checkout-total-row"><span class="checkout-total-label">ডেলিভারি চার্জ</span><span class="checkout-total-val" data-checkout-shipping-total>জেলা নির্বাচন করুন</span></div>
               <div class="checkout-total-row hr-checkout__grand-total"><strong>সর্বমোট</strong><strong data-checkout-total>—</strong></div>
-              <p class="hr-checkout__tax-note">অর্ডার জমার আগে Shopify-তে বর্তমান মূল্য ও স্টক পুনরায় যাচাই করা হবে।</p>
+              <p class="hr-checkout__tax-note">অর্ডার নিশ্চিত করার আগে পণ্যের মূল্য ও প্রাপ্যতা আবার মিলিয়ে নেওয়া হবে।</p>
             </div>
 
             <div class="hr-checkout__confirmation" data-checkout-confirmation role="status" aria-live="assertive" hidden>
@@ -98,9 +109,23 @@
               <p data-confirmation-message></p>
               <p>ক্যাশ অন ডেলিভারি — পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন।</p>
             </div>
-            <p class="checkout-security-note">Shopify অর্ডার সফলভাবে তৈরি হলেই নিশ্চিতকরণ দেখানো হবে।</p>
+            <p class="checkout-security-note">অর্ডার সফলভাবে জমা হলে নিশ্চিতকরণ দেখানো হবে।</p>
           </div>
         </div>
+      </div>
+      <div class="checkout-empty-state" data-checkout-empty hidden>
+        <div class="checkout-empty-state__icon" aria-hidden="true">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#5A1EB0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+        </div>
+        <h2 class="checkout-empty-state__title">আপনার কার্ট বর্তমানে খালি আছে</h2>
+        <p class="checkout-empty-state__desc">আপনার পছন্দের পণ্য বেছে নিতে আমাদের শপ ঘুরে দেখুন।</p>
+        <a href="{{ routes.all_products_collection_url }}" class="btn-primary hr-checkout__empty-link">
+          <span>কেনাকাটা চালিয়ে যান →</span>
+        </a>
       </div>
     {%- else -%}
       <!-- Empty Cart State -->

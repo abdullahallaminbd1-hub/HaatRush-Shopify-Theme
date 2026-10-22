@@ -6,74 +6,11 @@ const FREE_SHIPPING_THRESHOLD = 100000n;
 const BUNDLE_MINIMUM_ITEMS = 2;
 const BUNDLE_PERCENTAGE = 2;
 const BUNDLE_DISCOUNT_CODE = 'HAATRUSH-BUNDLE-2';
-const DISTRICTS = [
-  ['ঢাকা', 'Dhaka'],
-  ['ফরিদপুর', 'Faridpur'],
-  ['গাজীপুর', 'Gazipur'],
-  ['গোপালগঞ্জ', 'Gopalganj'],
-  ['কিশোরগঞ্জ', 'Kishoreganj'],
-  ['মাদারীপুর', 'Madaripur'],
-  ['মানিকগঞ্জ', 'Manikganj'],
-  ['মুন্সিগঞ্জ', 'Munshiganj'],
-  ['নারায়ণগঞ্জ', 'Narayanganj'],
-  ['নরসিংদী', 'Narsingdi'],
-  ['রাজবাড়ী', 'Rajbari'],
-  ['শরীয়তপুর', 'Shariatpur'],
-  ['টাঙ্গাইল', 'Tangail'],
-  ['জামালপুর', 'Jamalpur'],
-  ['ময়মনসিংহ', 'Mymensingh'],
-  ['নেত্রকোণা', 'Netrokona'],
-  ['শেরপুর', 'Sherpur'],
-  ['বান্দরবান', 'Bandarban'],
-  ['ব্রাহ্মণবাড়িয়া', 'Brahmanbaria'],
-  ['চাঁদপুর', 'Chandpur'],
-  ['চট্টগ্রাম', 'Chattogram'],
-  ['কুমিল্লা', 'Cumilla'],
-  ['কক্সবাজার', "Cox's Bazar"],
-  ['ফেনী', 'Feni'],
-  ['খাগড়াছড়ি', 'Khagrachhari'],
-  ['লক্ষ্মীপুর', 'Lakshmipur'],
-  ['নোয়াখালী', 'Noakhali'],
-  ['রাঙ্গামাটি', 'Rangamati'],
-  ['বাগেরহাট', 'Bagerhat'],
-  ['চুয়াডাঙ্গা', 'Chuadanga'],
-  ['যশোর', 'Jashore'],
-  ['ঝিনাইদহ', 'Jhenaidah'],
-  ['খুলনা', 'Khulna'],
-  ['কুষ্টিয়া', 'Kushtia'],
-  ['মাগুরা', 'Magura'],
-  ['মেহেরপুর', 'Meherpur'],
-  ['নড়াইল', 'Narail'],
-  ['সাতক্ষীরা', 'Satkhira'],
-  ['বরগুনা', 'Barguna'],
-  ['বরিশাল', 'Barishal'],
-  ['ভোলা', 'Bhola'],
-  ['ঝালকাঠি', 'Jhalokati'],
-  ['পটুয়াখালী', 'Patuakhali'],
-  ['পিরোজপুর', 'Pirojpur'],
-  ['বগুড়া', 'Bogura'],
-  ['চাঁপাইনবাবগঞ্জ', 'Chapainawabganj'],
-  ['জয়পুরহাট', 'Joypurhat'],
-  ['নওগাঁ', 'Naogaon'],
-  ['নাটোর', 'Natore'],
-  ['পাবনা', 'Pabna'],
-  ['রাজশাহী', 'Rajshahi'],
-  ['সিরাজগঞ্জ', 'Sirajganj'],
-  ['দিনাজপুর', 'Dinajpur'],
-  ['গাইবান্ধা', 'Gaibandha'],
-  ['কুড়িগ্রাম', 'Kurigram'],
-  ['লালমনিরহাট', 'Lalmonirhat'],
-  ['নীলফামারী', 'Nilphamari'],
-  ['পঞ্চগড়', 'Panchagarh'],
-  ['রংপুর', 'Rangpur'],
-  ['ঠাকুরগাঁও', 'Thakurgaon'],
-  ['হবিগঞ্জ', 'Habiganj'],
-  ['মৌলভীবাজার', 'Moulvibazar'],
-  ['সুনামগঞ্জ', 'Sunamganj'],
-  ['সিলেট', 'Sylhet']
-].map(([label, value]) => ({ label, value }));
-
-const DISTRICT_VALUES = new Set(DISTRICTS.map((district) => district.value));
+const { divisions: DIVISIONS, districts: DISTRICTS, upazilas: UPAZILAS } = require('./locations.json');
+const DIVISION_VALUES = new Set(DIVISIONS.map((division) => division.value));
+const DISTRICT_BY_VALUE = new Map(DISTRICTS.map((district) => [district.value, district]));
+const DISTRICT_VALUES = new Set(DISTRICT_BY_VALUE.keys());
+const UPAZILA_VALUES = new Set(UPAZILAS.map((upazila) => `${upazila.district}\0${upazila.value}`));
 const BANGLA_DIGITS = '০১২৩৪৫৬৭৮৯';
 
 function toMinorUnits(value) {
@@ -143,8 +80,11 @@ function normalizeLines(lines) {
   });
 }
 
-function buildQuote(lines, variants, district) {
-  if (district && !DISTRICT_VALUES.has(district)) {
+function buildQuote(lines, variants, district, division) {
+  if (division && !DIVISION_VALUES.has(division)) {
+    throw new Error('বিভাগ নির্বাচন করুন।');
+  }
+  if (district && (!DISTRICT_VALUES.has(district) || !division || DISTRICT_BY_VALUE.get(district).division !== division)) {
     throw new Error('জেলা নির্বাচন করুন।');
   }
 
@@ -196,6 +136,7 @@ function buildQuote(lines, variants, district) {
   const total = shipping === null ? null : subtotal - bundleDiscount + shipping;
 
   return {
+    division: division || '',
     district,
     itemCount,
     subtotal: fromMinorUnits(subtotal),
@@ -250,6 +191,7 @@ function verifyAppProxy({ originalUrl, secret, shopDomain, now = Date.now() }) {
 
 function createQuoteToken(quote, secret, now = Date.now()) {
   const payload = {
+    division: quote.division,
     district: quote.district,
     exp: Math.floor(now / 1000) + 600,
     lines: quote.lines.map((line) => ({
@@ -347,6 +289,7 @@ function buildOrderInput({ quote, lines, customer, submissionId }) {
     note: `HaatRush COD checkout submission ${submissionId}`,
     customAttributes: [
       { key: 'checkout_submission_id', value: submissionId },
+      { key: 'delivery_division', value: customer.division },
       { key: 'delivery_district', value: quote.district },
       { key: 'upazila_thana', value: customer.upazila }
     ],
@@ -371,6 +314,7 @@ function validateCustomer(input) {
   const phone = typeof input.phone === 'string' ? input.phone.trim() : '';
   const address = typeof input.address === 'string' ? input.address.trim() : '';
   const upazila = typeof input.upazila === 'string' ? input.upazila.trim() : '';
+  const division = typeof input.division === 'string' ? input.division : '';
   const district = typeof input.district === 'string' ? input.district : '';
 
   if (name.length < 2 || name.length > 120) {
@@ -385,19 +329,27 @@ function validateCustomer(input) {
   if (upazila.length < 2 || upazila.length > 100) {
     throw new Error('উপজেলা বা থানা লিখুন।');
   }
-  if (!DISTRICT_VALUES.has(district)) {
+  if (!DIVISION_VALUES.has(division)) {
+    throw new Error('বিভাগ নির্বাচন করুন।');
+  }
+  if (!DISTRICT_VALUES.has(district) || DISTRICT_BY_VALUE.get(district).division !== division) {
     throw new Error('জেলা নির্বাচন করুন।');
   }
+  if (!UPAZILA_VALUES.has(`${district}\0${upazila}`)) {
+    throw new Error('নির্বাচিত জেলার সঠিক উপজেলা বা থানা নির্বাচন করুন।');
+  }
 
-  return { name, phone, address, upazila, district };
+  return { name, phone, address, upazila, division, district };
 }
 
 module.exports = {
   BUNDLE_DISCOUNT_CODE,
   BUNDLE_MINIMUM_ITEMS,
   BUNDLE_PERCENTAGE,
+  DIVISIONS,
   DISTRICTS,
   FREE_SHIPPING_THRESHOLD,
+  UPAZILAS,
   buildOrderInput,
   buildQuote,
   createQuoteToken,

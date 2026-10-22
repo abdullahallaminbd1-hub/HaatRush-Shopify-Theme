@@ -120,10 +120,17 @@ test('mocked Admin API order creation is pending COD and idempotent', async (t) 
   const headers = { 'Content-Type': 'application/json', Accept: 'application/json' };
   const lines = [{ variantId: '101', quantity: 2, properties: {} }];
 
+  const configResponse = await fetch(`${base}/proxy/config${proxyQuery()}`);
+  assert.equal(configResponse.status, 200);
+  const locations = await configResponse.json();
+  assert.equal(locations.divisions.length, 8);
+  assert.equal(locations.districts.length, 64);
+  assert.ok(locations.upazilas.some((upazila) => upazila.value === 'Dhamrai' && upazila.district === 'Dhaka'));
+
   const quoteResponse = await fetch(`${base}/proxy/quote${proxyQuery()}`, {
     method: 'POST',
     headers,
-    body: JSON.stringify({ lines, district: 'Dhaka' })
+    body: JSON.stringify({ lines, division: 'Dhaka', district: 'Dhaka' })
   });
   assert.equal(quoteResponse.status, 200);
   const quote = await quoteResponse.json();
@@ -136,8 +143,9 @@ test('mocked Admin API order creation is pending COD and idempotent', async (t) 
       name: 'রহিম উদ্দিন',
       phone: '01712345678',
       address: 'বাড়ি ১, সড়ক ২',
+      division: 'Dhaka',
       district: 'Dhaka',
-      upazila: 'ধানমন্ডি'
+      upazila: 'Dhamrai'
     }
   };
   const firstResponse = await fetch(`${base}/proxy/orders${proxyQuery()}`, {
@@ -153,6 +161,9 @@ test('mocked Admin API order creation is pending COD and idempotent', async (t) 
   assert.equal(createdOrderInput.order.financialStatus, 'PENDING');
   assert.equal(createdOrderInput.order.shippingLines[0].priceSet.shopMoney.amount, '70.00');
   assert.equal(createdOrderInput.order.discountCode.itemPercentageDiscountCode.percentage, 2);
+  assert.ok(createdOrderInput.order.customAttributes.some((attribute) =>
+    attribute.key === 'delivery_division' && attribute.value === 'Dhaka'
+  ));
   assert.equal(createdOrderInput.options.inventoryBehaviour, 'DECREMENT_OBEYING_POLICY');
 
   const duplicateResponse = await fetch(`${base}/proxy/orders${proxyQuery()}`, {
@@ -187,7 +198,7 @@ test('invalid app-proxy signatures cannot request a quote', async (t) => {
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ lines: [{ variantId: '101', quantity: 1 }], district: 'Dhaka' })
+      body: JSON.stringify({ lines: [{ variantId: '101', quantity: 1 }], division: 'Dhaka', district: 'Dhaka' })
     }
   );
   assert.equal(response.status, 401);
