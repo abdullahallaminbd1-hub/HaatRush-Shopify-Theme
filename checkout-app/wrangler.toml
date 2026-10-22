@@ -5,7 +5,7 @@ workers_dev = true
 preview_urls = false
 
 [vars]
-SHOPIFY_SHOP_DOMAIN = "REPLACE_WITH_CONFIRMED_SHOP.myshopify.com"
+SHOPIFY_SHOP_DOMAIN = "azrgmc-up.myshopify.com"
 SHOPIFY_API_VERSION = "2026-10"
 BKASH_ENABLED = "false"
 
