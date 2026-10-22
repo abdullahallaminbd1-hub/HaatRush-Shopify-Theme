@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero": {
@@ -127,6 +136,7 @@
         "cat-5",
         "cat-6"
       ],
+      "disabled": true,
       "settings": {
         "kicker": "প্রতিদিনের প্রযুক্তির বাছাই",
         "heading": "হাটরাশের সংগ্রহ দেখুন",
@@ -169,6 +179,7 @@
         "card-2",
         "card-3"
       ],
+      "disabled": true,
       "settings": {
         "kicker": "হাটরাশের বিশেষত্ব",
         "heading": "<span>আধুনিক জীবনের</span> উপযোগী বাছাই",
