@@ -18,8 +18,7 @@
       <p class="checkout-page-subtitle">নিরাপদে অর্ডার সম্পন্ন করতে ডেলিভারির তথ্য দিন। পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন।</p>
     </div>
 
-    {%- if cart.item_count > 0 -%}
-      <div class="checkout-layout hr-checkout__layout" data-checkout-content>
+      <div class="checkout-layout hr-checkout__layout" data-checkout-content hidden>
         <div class="checkout-form-column">
           <form class="checkout-card hr-checkout__form" data-checkout-form novalidate>
             <div class="checkout-card__header">
@@ -132,17 +131,9 @@
       <div class="checkout-empty-state" data-checkout-empty hidden>
         <div class="checkout-empty-state__icon" aria-hidden="true">🛒</div>
         <h2 class="checkout-empty-state__title">আপনার কার্ট বর্তমানে খালি আছে</h2>
-        <p class="checkout-empty-state__desc">আপনার পছন্দের পণ্য বেছে নিতে আমাদের শপ ঘুরে দেখুন।</p>
-        <a href="{{ routes.all_products_collection_url }}" class="btn-primary hr-checkout__empty-link"><span>কেনাকাটা চালিয়ে যান →</span></a>
-      </div>
-    {%- else -%}
-      <div class="checkout-empty-state" data-checkout-empty>
-        <div class="checkout-empty-state__icon" aria-hidden="true">🛒</div>
-        <h2 class="checkout-empty-state__title">আপনার কার্ট বর্তমানে খালি আছে</h2>
         <p class="checkout-empty-state__desc">আপনার পছন্দের ইলেকট্রনিক্স পণ্য বাছাই করতে আমাদের শপ ঘুরে দেখুন।</p>
         <a href="{{ routes.all_products_collection_url }}" class="btn-primary hr-checkout__empty-link"><span>সব পণ্য দেখুন →</span></a>
       </div>
-    {%- endif -%}
   </div>
 </section>
 

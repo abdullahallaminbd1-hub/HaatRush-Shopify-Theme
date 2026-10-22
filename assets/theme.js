@@ -227,7 +227,16 @@
     }
   });
   /* ---------- cart data helpers ---------- */
-  var getCart = function () { return fetch('/cart.js').then(function (r) { return r.json(); }); };
+  var getCart = function () {
+    return fetch('/cart.js', {
+      headers: { Accept: 'application/json' },
+      cache: 'no-store',
+      credentials: 'same-origin'
+    }).then(function (response) {
+      if (!response.ok) { throw new Error('কার্ট যাচাই করা যায়নি।'); }
+      return response.json();
+    });
+  };
 
   var paintCount = function (count) {
     qsa('[data-cart-count]').forEach(function (el) { el.textContent = count; });
@@ -709,11 +718,55 @@
       });
     });
   };
-  var getCart = function () {
-    return fetch('/cart.js', { headers: { Accept: 'application/json' }, cache: 'no-store' })
+  var headerCartCount = function () {
+    var badge = document.querySelector('[data-cart-count]');
+    if (!badge) { return null; }
+    var digits = '০১২৩৪৫৬৭৮৯';
+    var value = badge.textContent.trim().replace(/[০-৯]/g, function (digit) {
+      return String(digits.indexOf(digit));
+    });
+    var count = Number(value);
+    return Number.isSafeInteger(count) && count >= 0 ? count : null;
+  };
+  var isValidCart = function (cart) {
+    if (!cart || !Array.isArray(cart.items)
+      || !Number.isSafeInteger(Number(cart.item_count)) || Number(cart.item_count) < 0) {
+      return false;
+    }
+    if (!cart.items.every(function (item) {
+      return item && Number.isSafeInteger(Number(item.variant_id))
+        && Number(item.variant_id) > 0
+        && Number.isSafeInteger(Number(item.quantity))
+        && Number(item.quantity) > 0;
+    })) {
+      return false;
+    }
+    var actualCount = cart.items.reduce(function (total, item) {
+      var quantity = Number(item.quantity);
+      return total + quantity;
+    }, 0);
+    return actualCount === Number(cart.item_count);
+  };
+  var getCart = function (attempt) {
+    return fetch('/cart.js', {
+      headers: { Accept: 'application/json' },
+      cache: 'no-store',
+      credentials: 'same-origin'
+    })
       .then(function (response) {
         if (!response.ok) { throw new Error('কার্ট যাচাই করা যায়নি।'); }
         return response.json();
+      }).then(function (cart) {
+        if (!isValidCart(cart)) {
+          throw new Error('কার্টের তথ্য সঠিক নয়।');
+        }
+        var expectedCount = headerCartCount();
+        if (!cart.items.length && expectedCount > 0 && (attempt || 0) < 2) {
+          return new Promise(function (resolve) {
+            window.setTimeout(resolve, 150);
+          }).then(function () { return getCart((attempt || 0) + 1); });
+        }
+        return cart;
       });
   };
   var cartLines = function (cart) {
@@ -1002,8 +1055,22 @@
   var refreshQuote = function (cartSnapshot) {
     var sequence = ++state.sequence;
     clearError();
-    return (cartSnapshot ? Promise.resolve(cartSnapshot) : getCart()).then(function (cart) {
+    var currentHeaderCount = headerCartCount();
+    var snapshotIsCurrent = isValidCart(cartSnapshot) && (currentHeaderCount === null
+      ? cartSnapshot.items.length > 0
+      : Number(cartSnapshot.item_count) === currentHeaderCount);
+    return (snapshotIsCurrent ? Promise.resolve(cartSnapshot) : getCart()).then(function (cart) {
       if (!cart.items || !cart.items.length) {
+        if (headerCartCount() > 0) {
+          if (content) { content.hidden = false; }
+          if (emptyCart) { emptyCart.hidden = true; }
+          state.quote = null;
+          state.lines = [];
+          itemsNode.replaceChildren();
+          submit.disabled = true;
+          setServiceNotice(true, 'কার্টের পণ্য যাচাই করা যাচ্ছে না। পেজটি রিফ্রেশ করে আবার চেষ্টা করুন।');
+          return null;
+        }
         showEmptyCart();
         return null;
       }
@@ -1297,7 +1364,7 @@
     });
   }
 
-  loadLocations().then(refreshQuote).then(function () {
+  loadLocations().then(function () { return refreshQuote(); }).then(function () {
     var pendingSubmission = getStoredSubmission();
     if (pendingSubmission) { pollSubmission(pendingSubmission, 15); }
   });
