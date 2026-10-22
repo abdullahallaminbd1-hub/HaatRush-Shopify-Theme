@@ -217,6 +217,25 @@ function safeEqual(left, right) {
   return difference === 0;
 }
 
+export async function verifyShopifyOAuthHmac(url, secret) {
+  const signatures = url.searchParams.getAll('hmac');
+  if (signatures.length !== 1 || !/^[a-f0-9]{64}$/i.test(signatures[0])) {
+    return false;
+  }
+  const seen = new Set();
+  for (const [key] of url.searchParams.entries()) {
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+  }
+  const parameters = [...url.searchParams.entries()]
+    .filter(([key]) => key !== 'hmac')
+    .sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0));
+  const message = parameters.map(([key, value]) => `${key}=${value}`).join('&');
+  return safeEqual(signatures[0].toLowerCase(), await hmacHex(secret, message));
+}
+
 function canonicalProxyQuery(searchParams) {
   const values = new Map();
   for (const [key, value] of searchParams.entries()) {

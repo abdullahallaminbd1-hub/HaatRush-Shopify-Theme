@@ -12,12 +12,13 @@ The previous Express/PostgreSQL files in this folder are legacy reference/tests 
 
 ## Shopify app and permissions required
 
-Create/install an app for the **confirmed HaatRush Shopify store** and issue an offline Admin API access token with these scopes:
+Create a Shopify Partner custom-distribution app for the **confirmed HaatRush Shopify store** with these Admin API scopes:
 
 - `write_orders` — create Shopify orders.
 - `read_products` — look up variant titles, prices, and availability.
 - `read_inventory` — validate tracked stock before order creation.
 - `write_customers` — upsert the customer's name and phone on the order.
+- `write_app_proxy` — configure the Shopify App Proxy for the storefront checkout.
 
 Configure the Shopify app's App Proxy:
 
@@ -25,9 +26,23 @@ Configure the Shopify app's App Proxy:
 | --- | --- |
 | Subpath prefix | `apps` |
 | Subpath | `haatrush-checkout` |
-| Proxy URL | `https://<worker-name>.<workers-subdomain>.workers.dev/proxy` |
+| Proxy URL | `https://haatrush-checkout.abdullahallaminbd1.workers.dev/proxy` |
 
-The Worker validates Shopify's App Proxy signature with the app's shared secret. Keep that app secret and the offline Admin API token in Cloudflare Worker secrets only. Never put them in Shopify theme settings, Liquid, browser JavaScript, committed files, or D1.
+The Worker uses Shopify's authorization-code flow to obtain an offline Admin API token. It verifies the callback HMAC and one-time CSRF state, then stores the token encrypted with AES-GCM in D1. D1 stores only the encrypted token, granted scopes, shop domain, and expiry metadata. Keep the app secret and token-encryption key in Cloudflare Worker secrets; never put them in Shopify theme settings, Liquid, browser JavaScript, committed files, or plaintext D1 columns.
+
+The Worker hostname is `https://haatrush-checkout.abdullahallaminbd1.workers.dev`. Its OAuth callback route is `/oauth/callback`, so enter this exact URL in the Partner app's **Allowed redirection URL(s)**:
+
+```text
+https://haatrush-checkout.abdullahallaminbd1.workers.dev/oauth/callback
+```
+
+Start an installation only for the configured store by visiting:
+
+```text
+https://haatrush-checkout.abdullahallaminbd1.workers.dev/oauth/install?shop=azrgmc-up.myshopify.com
+```
+
+The app client ID and app API secret must belong to the same newly created Partner app. Before installation, set that app's client ID as `SHOPIFY_CLIENT_ID` and replace the currently stored `SHOPIFY_API_SECRET` with the new app's API secret. The current secret may belong to the previous app and cannot be assumed valid for the new one.
 
 The storefront order form currently collects name, phone, and delivery address but no email. Shopify can create an order without email; a customer email receipt cannot be delivered unless an email field is added and collected. Verify the store's normal staff order notification behavior with the real test order.
 
@@ -58,25 +73,27 @@ From this folder:
    ```sh
    npx wrangler d1 migrations apply haatrush-checkout --remote
    npx wrangler secret put SHOPIFY_API_SECRET
-   npx wrangler secret put SHOPIFY_ADMIN_ACCESS_TOKEN
+   npx wrangler secret put SHOPIFY_TOKEN_ENCRYPTION_KEY
    npx wrangler secret put QUOTE_TOKEN_SECRET
+   npx wrangler secret put SHOPIFY_CLIENT_ID
    ```
 
-   `QUOTE_TOKEN_SECRET` must be a new, independent random value at least 32 bytes long. Enter secrets only at Wrangler's interactive prompt; do not put them on a command line or in a file.
+   `SHOPIFY_TOKEN_ENCRYPTION_KEY` and `QUOTE_TOKEN_SECRET` must be independent, randomly generated values at least 32 bytes long. Enter values only at Wrangler's interactive prompt; do not put them on a command line or in a file. The `SHOPIFY_CLIENT_ID` is not a secret, but storing it as a Wrangler secret keeps configuration consistent. Do not set a static Admin API access token; OAuth stores the encrypted offline token in D1.
 
 4. Set `SHOPIFY_SHOP_DOMAIN` in `wrangler.toml` to the confirmed canonical `*.myshopify.com` domain. The API version is set to `2026-10`. Keep `BKASH_ENABLED = "false"` until the merchant number/instructions are confirmed and configured in both Shopify theme settings and Worker variables.
 
-5. Verify the generated `workers.dev` URL, then deploy:
+5. Verify the configured `workers.dev` URL matches the deployment, then deploy:
 
    ```sh
    npx wrangler deploy
    ```
 
-   Configure the Shopify App Proxy URL from the deployed endpoint, ending in `/proxy`. Run the migration and deploy only while Wrangler shows the correct account and Free plan. Stop if Cloudflare asks to upgrade or attach a paid resource.
+   Configure the Shopify Allowed redirection URL shown above and the Shopify App Proxy URL ending in `/proxy`. Run the migration and deploy only while Wrangler shows the correct account and Free plan. Stop if Cloudflare asks to upgrade or attach a paid resource.
 
 ## Health and safe verification
 
 - `GET https://<worker>.workers.dev/healthz` is a public liveness check only.
+- `GET https://<worker>.workers.dev/oauth/install?shop=azrgmc-up.myshopify.com` starts the allowlisted Shopify authorization flow; the callback does not return or log access tokens.
 - `GET https://<store>/apps/haatrush-checkout/health` (through Shopify's configured App Proxy) checks the D1 binding, Shopify Admin API access, BDT currency, product access, and inventory access. It must return `200` before enabling order submission.
 - A signed `/config` and a real `/quote` call verify the App Proxy signature and catalog lookup. `write_orders` cannot be proved without creating an order; do not create a test order until the correct store and permissions are confirmed.
 - After deployment, verify location selection, Dhaka Metropolitan Area delivery at ৳70, outside-Dhaka delivery at ৳130, the strict `> ৳1,000` free-shipping threshold, and the 2% discount at two or more units.

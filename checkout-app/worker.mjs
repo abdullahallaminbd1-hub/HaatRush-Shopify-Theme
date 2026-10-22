@@ -11,7 +11,8 @@ import {
   sameLines,
   sameQuote,
   validateCustomer,
-  verifyAppProxy
+  verifyAppProxy,
+  verifyShopifyOAuthHmac
 } from './worker-domain.mjs';
 
 const CATALOG_QUERY = `query CheckoutCatalog($ids: [ID!]!) {
@@ -24,7 +25,7 @@ const CATALOG_QUERY = `query CheckoutCatalog($ids: [ID!]!) {
       availableForSale
       inventoryQuantity
       inventoryItem { tracked }
-      price { amount currencyCode }
+      price
       product { title featuredImage { url } }
     }
   }
@@ -63,6 +64,8 @@ const HEALTH_QUERY = `query HaatRushCheckoutHealth {
 }`;
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const requiredScopes = ['read_inventory', 'read_products', 'write_customers', 'write_orders', 'write_app_proxy'];
+const oauthStateLifetime = 600;
 
 function jsonResponse(body, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -96,22 +99,293 @@ async function readJson(request) {
 
 function validateConfiguration(env) {
   const domain = env.SHOPIFY_SHOP_DOMAIN || '';
+  let publicOrigin = '';
+  try {
+    const parsedOrigin = new URL(env.SHOPIFY_WORKER_ORIGIN);
+    if (parsedOrigin.protocol === 'https:' && parsedOrigin.origin === env.SHOPIFY_WORKER_ORIGIN) {
+      publicOrigin = parsedOrigin.origin;
+    }
+  } catch {
+    publicOrigin = '';
+  }
   return /^[a-z0-9][a-z0-9-]*\.myshopify\.com$/.test(domain)
     && typeof env.SHOPIFY_API_SECRET === 'string' && env.SHOPIFY_API_SECRET.length >= 32
-    && typeof env.SHOPIFY_ADMIN_ACCESS_TOKEN === 'string' && env.SHOPIFY_ADMIN_ACCESS_TOKEN.length > 0
+    && isShopifyClientId(env.SHOPIFY_CLIENT_ID)
+    && typeof env.SHOPIFY_TOKEN_ENCRYPTION_KEY === 'string' && env.SHOPIFY_TOKEN_ENCRYPTION_KEY.length >= 32
     && typeof env.QUOTE_TOKEN_SECRET === 'string' && env.QUOTE_TOKEN_SECRET.length >= 32
+    && publicOrigin.length > 0
     && typeof env.SHOPIFY_API_VERSION === 'string'
     && /^\d{4}-(01|04|07|10)$/.test(env.SHOPIFY_API_VERSION);
 }
 
+function isShopifyClientId(value) {
+  return typeof value === 'string' && value.length > 0 && !/^shpss_/i.test(value);
+}
+
+function base64Encode(bytes) {
+  let binary = '';
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+  return btoa(binary);
+}
+
+function base64Decode(value) {
+  return Uint8Array.from(atob(value), (character) => character.charCodeAt(0));
+}
+
+async function tokenEncryptionKey(secret) {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(secret));
+  return crypto.subtle.importKey('raw', digest, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
+}
+
+async function encryptToken(token, secret) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await tokenEncryptionKey(secret);
+  const ciphertext = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv },
+    key,
+    new TextEncoder().encode(JSON.stringify(token))
+  );
+  return JSON.stringify({ iv: base64Encode(iv), ciphertext: base64Encode(new Uint8Array(ciphertext)) });
+}
+
+async function decryptToken(encrypted, secret) {
+  const envelope = JSON.parse(encrypted);
+  const key = await tokenEncryptionKey(secret);
+  const plaintext = await crypto.subtle.decrypt(
+    { name: 'AES-GCM', iv: base64Decode(envelope.iv) },
+    key,
+    base64Decode(envelope.ciphertext)
+  );
+  return JSON.parse(new TextDecoder().decode(plaintext));
+}
+
+function randomHex(byteLength) {
+  const bytes = crypto.getRandomValues(new Uint8Array(byteLength));
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
+async function sha256Hex(value) {
+  const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value)));
+  return Array.from(digest, (byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
+async function fetchAdminToken(env, fetchImpl, now) {
+  if (!env.DB || !env.SHOPIFY_TOKEN_ENCRYPTION_KEY) {
+    throw new Error('Shopify authorization storage is unavailable.');
+  }
+  const record = await env.DB.prepare(
+    'SELECT encrypted_token FROM shopify_installations WHERE shop_domain = ?1'
+  ).bind(env.SHOPIFY_SHOP_DOMAIN).first();
+  if (!record?.encrypted_token) {
+    throw new Error('Shopify app is not installed.');
+  }
+  const token = await decryptToken(record.encrypted_token, env.SHOPIFY_TOKEN_ENCRYPTION_KEY);
+  if (token.expiresAt === null || token.expiresAt > now() + 60000) {
+    return token.accessToken;
+  }
+  if (!token.refreshToken) {
+    throw new Error('Shopify access token has expired; reinstall the app.');
+  }
+  const response = await fetchImpl(`https://${env.SHOPIFY_SHOP_DOMAIN}/admin/oauth/access_token`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      grant_type: 'refresh_token',
+      client_id: env.SHOPIFY_CLIENT_ID,
+      client_secret: env.SHOPIFY_API_SECRET,
+      refresh_token: token.refreshToken
+    }),
+    signal: AbortSignal.timeout(15000)
+  });
+  if (!response.ok) {
+    throw new Error('Shopify access token refresh failed.');
+  }
+  const refreshed = await response.json();
+  const expiresIn = Number(refreshed.expires_in);
+  if (typeof refreshed.access_token !== 'string' || !refreshed.access_token
+    || typeof refreshed.refresh_token !== 'string' || !refreshed.refresh_token
+    || !Number.isFinite(expiresIn) || expiresIn <= 0) {
+    throw new Error('Shopify returned an invalid refreshed access token.');
+  }
+  const refreshedToken = {
+    accessToken: refreshed.access_token,
+    refreshToken: refreshed.refresh_token,
+    expiresAt: now() + expiresIn * 1000,
+    scope: String(refreshed.scope || token.scope || '')
+  };
+  await env.DB.prepare(
+    'UPDATE shopify_installations SET encrypted_token = ?2, scopes = ?3, expires_at = ?4, updated_at = ?5 WHERE shop_domain = ?1'
+  ).bind(
+    env.SHOPIFY_SHOP_DOMAIN,
+    await encryptToken(refreshedToken, env.SHOPIFY_TOKEN_ENCRYPTION_KEY),
+    refreshedToken.scope,
+    refreshedToken.expiresAt,
+    Math.floor(now() / 1000)
+  ).run();
+  return refreshedToken.accessToken;
+}
+
+function shopifyOAuthMessage(url) {
+  if (url.searchParams.getAll('shop').length !== 1
+    || url.searchParams.getAll('timestamp').length !== 1
+    || url.searchParams.getAll('state').length !== 1
+    || url.searchParams.getAll('code').length !== 1
+    || url.searchParams.getAll('hmac').length !== 1) {
+    return 'Shopify authorization response is invalid.';
+  }
+  return '';
+}
+
+async function installStart(request, env, now) {
+  const url = new URL(request.url);
+  if (!env.DB || !isShopifyClientId(env.SHOPIFY_CLIENT_ID) || !env.SHOPIFY_API_SECRET
+    || !env.SHOPIFY_TOKEN_ENCRYPTION_KEY || !env.SHOPIFY_WORKER_ORIGIN) {
+    return errorResponse(503, 'oauth_not_configured', 'Shopify app authorization is not configured.');
+  }
+  const shop = url.searchParams.get('shop') || env.SHOPIFY_SHOP_DOMAIN;
+  if (shop !== env.SHOPIFY_SHOP_DOMAIN) {
+    return errorResponse(400, 'invalid_shop', 'The requested Shopify store is not configured.');
+  }
+  const state = randomHex(32);
+  const stateHash = await sha256Hex(state);
+  const issuedAt = Math.floor(now() / 1000);
+  await env.DB.prepare('DELETE FROM shopify_oauth_states WHERE expires_at < ?1')
+    .bind(issuedAt).run();
+  await env.DB.prepare('DELETE FROM shopify_oauth_states WHERE shop_domain = ?1')
+    .bind(shop).run();
+  await env.DB.prepare(
+    'INSERT INTO shopify_oauth_states (state_hash, shop_domain, created_at, expires_at) VALUES (?1, ?2, ?3, ?4)'
+  ).bind(stateHash, shop, issuedAt, issuedAt + oauthStateLifetime).run();
+
+  const callback = new URL('/oauth/callback', env.SHOPIFY_WORKER_ORIGIN);
+  const authorization = new URL(`https://${shop}/admin/oauth/authorize`);
+  authorization.searchParams.set('client_id', env.SHOPIFY_CLIENT_ID);
+  authorization.searchParams.set('scope', requiredScopes.join(','));
+  authorization.searchParams.set('redirect_uri', callback.toString());
+  authorization.searchParams.set('state', state);
+  return new Response(null, {
+    status: 302,
+    headers: {
+      Location: authorization.toString(),
+      'Cache-Control': 'no-store',
+      'Referrer-Policy': 'no-referrer',
+      'X-Content-Type-Options': 'nosniff'
+    }
+  });
+}
+
+async function oauthCallback(request, env, fetchImpl, now) {
+  const url = new URL(request.url);
+  const malformed = shopifyOAuthMessage(url);
+  if (malformed) {
+    return errorResponse(400, 'invalid_oauth_response', malformed);
+  }
+  if (!env.DB || !env.SHOPIFY_CLIENT_ID || !env.SHOPIFY_API_SECRET
+    || !env.SHOPIFY_TOKEN_ENCRYPTION_KEY || !env.SHOPIFY_WORKER_ORIGIN
+    || url.origin !== env.SHOPIFY_WORKER_ORIGIN) {
+    return errorResponse(503, 'oauth_not_configured', 'Shopify app authorization is not configured.');
+  }
+  if (!await verifyShopifyOAuthHmac(url, env.SHOPIFY_API_SECRET)) {
+    return errorResponse(401, 'invalid_oauth_hmac', 'Shopify authorization could not be verified.');
+  }
+  const shop = url.searchParams.get('shop');
+  const timestamp = Number(url.searchParams.get('timestamp'));
+  const state = url.searchParams.get('state');
+  if (shop !== env.SHOPIFY_SHOP_DOMAIN || !Number.isInteger(timestamp)
+    || Math.abs(Math.floor(now() / 1000) - timestamp) > oauthStateLifetime
+    || !/^[a-f0-9]{64}$/i.test(state)) {
+    return errorResponse(400, 'invalid_oauth_response', 'Shopify authorization response is expired or invalid.');
+  }
+  let stateRecord;
+  try {
+    stateRecord = await env.DB.prepare(
+      'DELETE FROM shopify_oauth_states WHERE state_hash = ?1 AND shop_domain = ?2 AND expires_at >= ?3 RETURNING shop_domain'
+    ).bind(await sha256Hex(state), shop, Math.floor(now() / 1000)).first();
+  } catch {
+    return errorResponse(503, 'oauth_storage_unavailable', 'Shopify authorization storage is unavailable.');
+  }
+  if (!stateRecord) {
+    return errorResponse(401, 'invalid_oauth_state', 'Shopify authorization session expired or was already used.');
+  }
+
+  let response;
+  try {
+    response = await fetchImpl(`https://${shop}/admin/oauth/access_token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        client_id: env.SHOPIFY_CLIENT_ID,
+        client_secret: env.SHOPIFY_API_SECRET,
+        code: url.searchParams.get('code')
+      }),
+      signal: AbortSignal.timeout(15000)
+    });
+  } catch {
+    return errorResponse(502, 'oauth_exchange_failed', 'Shopify authorization could not be completed. Start installation again.');
+  }
+  if (!response.ok) {
+    return errorResponse(502, 'oauth_exchange_failed', 'Shopify authorization could not be completed. Start installation again.');
+  }
+  let credentials;
+  try {
+    credentials = await response.json();
+  } catch {
+    return errorResponse(502, 'oauth_exchange_failed', 'Shopify returned an invalid authorization response.');
+  }
+  if (!credentials || typeof credentials !== 'object' || Array.isArray(credentials)) {
+    return errorResponse(502, 'oauth_exchange_failed', 'Shopify returned an invalid authorization response.');
+  }
+  const grantedScopes = new Set(String(credentials.scope || '').split(',').map((scope) => scope.trim()).filter(Boolean));
+  if (typeof credentials.access_token !== 'string' || !credentials.access_token
+    || !requiredScopes.every((scope) => grantedScopes.has(scope))) {
+    return errorResponse(403, 'oauth_scopes_missing', 'Shopify did not grant all required app permissions.');
+  }
+  const expiresIn = credentials.expires_in === undefined ? null : Number(credentials.expires_in);
+  if (expiresIn !== null && (!Number.isFinite(expiresIn) || expiresIn <= 0
+    || typeof credentials.refresh_token !== 'string' || !credentials.refresh_token)) {
+    return errorResponse(502, 'oauth_exchange_failed', 'Shopify returned invalid offline-token credentials.');
+  }
+  const token = {
+    accessToken: credentials.access_token,
+    refreshToken: typeof credentials.refresh_token === 'string' ? credentials.refresh_token : '',
+    expiresAt: expiresIn !== null
+      ? now() + expiresIn * 1000
+      : null,
+    scope: [...grantedScopes].sort().join(',')
+  };
+  try {
+    const encrypted = await encryptToken(token, env.SHOPIFY_TOKEN_ENCRYPTION_KEY);
+    const updatedAt = Math.floor(now() / 1000);
+    await env.DB.prepare(
+      `INSERT INTO shopify_installations (shop_domain, encrypted_token, scopes, expires_at, created_at, updated_at)
+       VALUES (?1, ?2, ?3, ?4, ?5, ?5)
+       ON CONFLICT(shop_domain) DO UPDATE SET
+         encrypted_token = excluded.encrypted_token,
+         scopes = excluded.scopes,
+         expires_at = excluded.expires_at,
+         updated_at = excluded.updated_at`
+    ).bind(shop, encrypted, token.scope, token.expiresAt || null, updatedAt).run();
+  } catch {
+    return errorResponse(503, 'oauth_storage_unavailable', 'Shopify access could not be securely stored.');
+  }
+  return jsonResponse({
+    status: 'installed',
+    shop,
+    scopes: token.scope.split(',')
+  });
+}
+
 async function adminGraphql(env, query, variables, fetchImpl) {
+  const accessToken = await fetchAdminToken(env, fetchImpl, Date.now);
   const response = await fetchImpl(
     `https://${env.SHOPIFY_SHOP_DOMAIN}/admin/api/${env.SHOPIFY_API_VERSION}/graphql.json`,
     {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Shopify-Access-Token': env.SHOPIFY_ADMIN_ACCESS_TOKEN
+        'X-Shopify-Access-Token': accessToken
       },
       body: JSON.stringify({ query, variables }),
       signal: AbortSignal.timeout(15000)
@@ -141,7 +415,7 @@ async function loadCatalog(lines, env, fetchImpl) {
     availableForSale: variant.availableForSale,
     inventoryTracked: Boolean(variant.inventoryItem?.tracked),
     inventoryQuantity: variant.inventoryQuantity,
-    price: variant.price,
+    price: { amount: variant.price, currencyCode: data.shop.currencyCode },
     product: variant.product
   }));
 }
@@ -196,6 +470,16 @@ export async function handleRequest(request, env, dependencies = {}) {
 
   if (url.pathname === '/healthz' && request.method === 'GET') {
     return jsonResponse({ status: 'ok' });
+  }
+  if (url.pathname === '/oauth/install' && request.method === 'GET') {
+    try {
+      return await installStart(request, env, now);
+    } catch {
+      return errorResponse(503, 'oauth_storage_unavailable', 'Shopify authorization storage is unavailable.');
+    }
+  }
+  if (url.pathname === '/oauth/callback' && request.method === 'GET') {
+    return oauthCallback(request, env, fetchImpl, now);
   }
   if (!url.pathname.startsWith('/proxy/')) {
     return errorResponse(404, 'not_found', 'অনুরোধটি পাওয়া যায়নি।');
