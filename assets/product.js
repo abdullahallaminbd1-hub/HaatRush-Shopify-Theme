@@ -558,7 +558,7 @@
         window.LumaCart.add([{ id: variantId, quantity: qty }])
           .then(function () {
             if (buyNow) {
-              window.location.assign('/pages/checkout');
+              window.location.assign('/checkout');
               return;
             }
             settle(true, 'Added to your cart.');
@@ -581,7 +581,7 @@
           var count = qs('[data-cart-count]');
           if (count) { count.textContent = String(cart.item_count); }
           if (buyNow) {
-            window.location.assign('/pages/checkout');
+            window.location.assign('/checkout');
             return;
           }
           document.body.classList.add('drawer-open');

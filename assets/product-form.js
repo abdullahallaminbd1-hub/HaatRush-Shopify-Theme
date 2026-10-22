@@ -109,7 +109,7 @@
         .then(function () {
           if (buyNow) {
             const productMain = document.getElementById('productMainSection');
-            window.location.assign(productMain && productMain.dataset.checkoutUrl || '/pages/checkout');
+            window.location.assign(productMain && productMain.dataset.checkoutUrl || '/checkout');
           } else if (typeof window.openCartDrawer === 'function') {
             window.openCartDrawer();
           }

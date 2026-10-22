@@ -1,3 +1,4 @@
+﻿
 /* HaatRush theme behaviour - V2 */
 (function () {
   'use strict';
@@ -153,7 +154,7 @@
      from the same confirmed cart snapshot after each cart operation. */
   var money = function (cents) {
     var amount = Math.max(0, Number(cents) || 0) / 100;
-    return '৳' + new Intl.NumberFormat('bn-BD', {
+    return 'à§³' + new Intl.NumberFormat('bn-BD', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     }).format(amount);
@@ -177,8 +178,8 @@
     if (shippingTrack) { shippingTrack.setAttribute('aria-valuenow', String(shippingValue)); }
     if (shippingStatus) {
       shippingStatus.textContent = shippingComplete
-        ? 'অভিনন্দন! আপনার অর্ডারে ফ্রি ডেলিভারি প্রযোজ্য।'
-        : 'আর ' + money(shippingThreshold - subtotal) + ' খরচ করুন';
+        ? 'à¦…à¦­à¦¿à¦¨à¦¨à§à¦¦à¦¨! à¦†à¦ªà¦¨à¦¾à¦° à¦…à¦°à§à¦¡à¦¾à¦°à§‡ à¦«à§à¦°à¦¿ à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦ªà§à¦°à¦¯à§‹à¦œà§à¦¯à¥¤'
+        : 'à¦†à¦° ' + money(shippingThreshold - subtotal) + ' à¦–à¦°à¦š à¦•à¦°à§à¦¨';
     }
     if (shippingOffer) {
       if (shippingComplete) { shippingOffer.setAttribute('data-complete', 'true'); }
@@ -203,7 +204,7 @@
     var result = qs('[data-track-result]');
     var value = String(new FormData(form).get('tracking') || '').replace(/[&<>"']/g, '');
     if (result) {
-      result.innerHTML = '<span>&#10003;</span><h2>ট্র্যাকিং অনুরোধটি পাওয়া গেছে।</h2><p><strong>' + value + '</strong> নম্বরটির সর্বশেষ তথ্য দেখানো হবে, কুরিয়ার-সংক্রান্ত তথ্য যুক্ত হলে।</p>';
+      result.innerHTML = '<span>&#10003;</span><h2>à¦Ÿà§à¦°à§à¦¯à¦¾à¦•à¦¿à¦‚ à¦…à¦¨à§à¦°à§‹à¦§à¦Ÿà¦¿ à¦ªà¦¾à¦“à¦¯à¦¼à¦¾ à¦—à§‡à¦›à§‡à¥¤</h2><p><strong>' + value + '</strong> à¦¨à¦®à§à¦¬à¦°à¦Ÿà¦¿à¦° à¦¸à¦°à§à¦¬à¦¶à§‡à¦· à¦¤à¦¥à§à¦¯ à¦¦à§‡à¦–à¦¾à¦¨à§‹ à¦¹à¦¬à§‡, à¦•à§à¦°à¦¿à¦¯à¦¼à¦¾à¦°-à¦¸à¦‚à¦•à§à¦°à¦¾à¦¨à§à¦¤ à¦¤à¦¥à§à¦¯ à¦¯à§à¦•à§à¦¤ à¦¹à¦²à§‡à¥¤</p>';
     }
   });
   /* ---------- cart data helpers ---------- */
@@ -213,7 +214,7 @@
       cache: 'no-store',
       credentials: 'same-origin'
     }).then(function (response) {
-      if (!response.ok) { throw new Error('কার্ট যাচাই করা যায়নি।'); }
+      if (!response.ok) { throw new Error('à¦•à¦¾à¦°à§à¦Ÿ à¦¯à¦¾à¦šà¦¾à¦‡ à¦•à¦°à¦¾ à¦¯à¦¾à¦¯à¦¼à¦¨à¦¿à¥¤'); }
       return response.json();
     });
   };
@@ -232,7 +233,7 @@
 
   /* Every cart write and the drawer re-render that follows it runs through
      this one queue, so a slow earlier response can never paint OLDER cart
-     state over a newer one (the "1 items / qty 2 / subtotal ৳54.88" frame in
+     state over a newer one (the "1 items / qty 2 / subtotal à§³54.88" frame in
      the recording was an out-of-order response overwriting fresh UI). Each
      operation paints the header count and the cart offers from the SAME
      confirmed /cart.js snapshot, after the drawer HTML swap has landed. */
@@ -279,7 +280,7 @@
       remove.setAttribute('data-remove-item', '');
       remove.setAttribute('data-line', line);
       remove.setAttribute('data-line-key', key);
-      remove.textContent = 'সরান';
+      remove.textContent = 'à¦¸à¦°à¦¾à¦¨';
       details.appendChild(createQuantityControl(item, line, key));
       details.appendChild(remove);
       row.appendChild(details);
@@ -301,8 +302,8 @@
     removeButton.setAttribute('data-remove-item', '');
     removeButton.setAttribute('data-line', line);
     removeButton.setAttribute('data-line-key', key);
-    removeButton.setAttribute('aria-label', 'কার্ট থেকে সরান: ' + heading.textContent);
-    removeButton.textContent = '×';
+    removeButton.setAttribute('aria-label', 'à¦•à¦¾à¦°à§à¦Ÿ à¦¥à§‡à¦•à§‡ à¦¸à¦°à¦¾à¦¨: ' + heading.textContent);
+    removeButton.textContent = 'Ã—';
     head.appendChild(removeButton);
     main.appendChild(head);
     if (item.variant_title && item.variant_title !== 'Default Title') {
@@ -334,8 +335,8 @@
       button.setAttribute('data-line-key', key);
       button.setAttribute('data-cart-delta', String(delta));
       button.setAttribute('data-quantity', String(Math.max(0, quantity + delta)));
-      button.setAttribute('aria-label', delta < 0 ? 'পরিমাণ কমান' : 'পরিমাণ বাড়ান');
-      button.textContent = delta < 0 ? '−' : '＋';
+      button.setAttribute('aria-label', delta < 0 ? 'à¦ªà¦°à¦¿à¦®à¦¾à¦£ à¦•à¦®à¦¾à¦¨' : 'à¦ªà¦°à¦¿à¦®à¦¾à¦£ à¦¬à¦¾à¦¡à¦¼à¦¾à¦¨');
+      button.textContent = delta < 0 ? 'âˆ’' : 'ï¼‹';
       control.appendChild(button);
       if (delta < 0) {
         var count = document.createElement('span');
@@ -357,13 +358,13 @@
           empty = document.createElement('div');
           empty.className = 'empty-state';
           var title = document.createElement('h3');
-          title.textContent = 'আপনার কার্ট বর্তমানে খালি আছে';
+          title.textContent = 'à¦†à¦ªà¦¨à¦¾à¦° à¦•à¦¾à¦°à§à¦Ÿ à¦¬à¦°à§à¦¤à¦®à¦¾à¦¨à§‡ à¦–à¦¾à¦²à¦¿ à¦†à¦›à§‡';
           var message = document.createElement('p');
-          message.textContent = 'আপনার পছন্দের পণ্য বেছে নিতে আমাদের শপ ঘুরে দেখুন।';
+          message.textContent = 'à¦†à¦ªà¦¨à¦¾à¦° à¦ªà¦›à¦¨à§à¦¦à§‡à¦° à¦ªà¦£à§à¦¯ à¦¬à§‡à¦›à§‡ à¦¨à¦¿à¦¤à§‡ à¦†à¦®à¦¾à¦¦à§‡à¦° à¦¶à¦ª à¦˜à§à¦°à§‡ à¦¦à§‡à¦–à§à¦¨à¥¤';
           var link = document.createElement('a');
           link.className = 'button button--dark';
           link.href = '/collections/all';
-          link.textContent = 'কেনাকাটা চালিয়ে যান';
+          link.textContent = 'à¦•à§‡à¦¨à¦¾à¦•à¦¾à¦Ÿà¦¾ à¦šà¦¾à¦²à¦¿à¦¯à¦¼à§‡ à¦¯à¦¾à¦¨';
           empty.appendChild(title);
           empty.appendChild(message);
           empty.appendChild(link);
@@ -384,7 +385,7 @@
       var drawerTotal = qs('.drawer__footer .drawer-total strong', cartDrawer);
       if (drawerTotal) { drawerTotal.textContent = money(cart.total_price); }
       var checkoutLink = qs('.drawer__checkout', cartDrawer);
-      if (checkoutLink) { checkoutLink.textContent = 'চেকআউট · ' + money(cart.total_price); }
+      if (checkoutLink) { checkoutLink.textContent = 'à¦šà§‡à¦•à¦†à¦‰à¦Ÿ Â· ' + money(cart.total_price); }
     }
 
     var cartPage = qs('.cart-page');
@@ -397,13 +398,13 @@
         pageEmpty = document.createElement('div');
         pageEmpty.className = 'cart-page__empty';
         var emptyTitle = document.createElement('h2');
-        emptyTitle.textContent = 'আপনার কার্ট বর্তমানে খালি আছে';
+        emptyTitle.textContent = 'à¦†à¦ªà¦¨à¦¾à¦° à¦•à¦¾à¦°à§à¦Ÿ à¦¬à¦°à§à¦¤à¦®à¦¾à¦¨à§‡ à¦–à¦¾à¦²à¦¿ à¦†à¦›à§‡';
         var emptyMessage = document.createElement('p');
-        emptyMessage.textContent = 'আপনার পছন্দের পণ্য বেছে নিতে আমাদের শপ ঘুরে দেখুন।';
+        emptyMessage.textContent = 'à¦†à¦ªà¦¨à¦¾à¦° à¦ªà¦›à¦¨à§à¦¦à§‡à¦° à¦ªà¦£à§à¦¯ à¦¬à§‡à¦›à§‡ à¦¨à¦¿à¦¤à§‡ à¦†à¦®à¦¾à¦¦à§‡à¦° à¦¶à¦ª à¦˜à§à¦°à§‡ à¦¦à§‡à¦–à§à¦¨à¥¤';
         var shopLink = document.createElement('a');
         shopLink.className = 'button button--dark';
         shopLink.href = '/collections/all';
-        shopLink.textContent = 'সব পণ্য দেখুন';
+        shopLink.textContent = 'à¦¸à¦¬ à¦ªà¦£à§à¦¯ à¦¦à§‡à¦–à§à¦¨';
         pageEmpty.appendChild(emptyTitle);
         pageEmpty.appendChild(emptyMessage);
         pageEmpty.appendChild(shopLink);
@@ -476,7 +477,7 @@
         var input = qs('input[name="discount"]', form);
         var note = qs('[data-discount-note]', scope) || qs('[data-discount-note]');
         var code = input ? input.value.trim() : '';
-        if (!code) { if (note) { note.textContent = 'আগে একটি ডিসকাউন্ট কোড লিখুন।'; } return; }
+        if (!code) { if (note) { note.textContent = 'à¦†à¦—à§‡ à¦à¦•à¦Ÿà¦¿ à¦¡à¦¿à¦¸à¦•à¦¾à¦‰à¦¨à§à¦Ÿ à¦•à§‹à¦¡ à¦²à¦¿à¦–à§à¦¨à¥¤'; } return; }
         enqueueCartOp(function () {
           return postCart('/cart/update.js', { discount: code })
             .then(function (r) {
@@ -484,10 +485,10 @@
               return r.json();
             })
             .then(function (cart) {
-              if (note) { note.textContent = 'আপনার অর্ডারে ' + code + ' প্রয়োগ হয়েছে।'; }
+              if (note) { note.textContent = 'à¦†à¦ªà¦¨à¦¾à¦° à¦…à¦°à§à¦¡à¦¾à¦°à§‡ ' + code + ' à¦ªà§à¦°à¦¯à¦¼à§‹à¦— à¦¹à¦¯à¦¼à§‡à¦›à§‡à¥¤'; }
               return applyCartSnapshot(cart);
             })
-            .catch(function () { if (note) { note.textContent = 'কোডটি প্রয়োগ করা যায়নি। আবার চেষ্টা করুন।'; } });
+            .catch(function () { if (note) { note.textContent = 'à¦•à§‹à¦¡à¦Ÿà¦¿ à¦ªà§à¦°à¦¯à¦¼à§‹à¦— à¦•à¦°à¦¾ à¦¯à¦¾à¦¯à¦¼à¦¨à¦¿à¥¤ à¦†à¦¬à¦¾à¦° à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨à¥¤'; } });
         });
       });
     });
@@ -536,7 +537,7 @@
       var originalHtml = quickAdd.innerHTML;
       quickAdd.setAttribute('aria-busy', 'true');
       quickAdd.disabled = true;
-      quickAdd.textContent = 'যোগ হচ্ছে...';
+      quickAdd.textContent = 'à¦¯à§‹à¦— à¦¹à¦šà§à¦›à§‡...';
       enqueueCartOp(function () {
         return postCart('/cart/add.js', { items: [{ id: variantId, quantity: 1 }] })
           .then(function (r) { if (!r.ok) { throw new Error('add failed'); } return getCart(); })
@@ -546,7 +547,7 @@
             restoreButton(quickAdd, originalHtml);
             return applyCartSnapshot(cart);
           })
-          .catch(function () { flashButton(quickAdd, 'পাওয়া যাচ্ছে না', originalHtml); });
+          .catch(function () { flashButton(quickAdd, 'à¦ªà¦¾à¦“à¦¯à¦¼à¦¾ à¦¯à¦¾à¦šà§à¦›à§‡ à¦¨à¦¾', originalHtml); });
       });
       return;
     }
@@ -579,7 +580,7 @@
           .catch(function () {
             setRowBusy(busyKey, false);
             setRowControlsDisabled(row, false);
-            showCartError('কার্ট আপডেট করা যায়নি। আবার চেষ্টা করুন।');
+            showCartError('à¦•à¦¾à¦°à§à¦Ÿ à¦†à¦ªà¦¡à§‡à¦Ÿ à¦•à¦°à¦¾ à¦¯à¦¾à¦¯à¦¼à¦¨à¦¿à¥¤ à¦†à¦¬à¦¾à¦° à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨à¥¤');
           });
       });
       return;
@@ -605,7 +606,7 @@
           .catch(function () {
             setRowBusy(removeBusyKey, false);
             setRowControlsDisabled(removeRow, false);
-            showCartError('পণ্যটি কার্ট থেকে সরানো যায়নি। আবার চেষ্টা করুন।');
+            showCartError('à¦ªà¦£à§à¦¯à¦Ÿà¦¿ à¦•à¦¾à¦°à§à¦Ÿ à¦¥à§‡à¦•à§‡ à¦¸à¦°à¦¾à¦¨à§‹ à¦¯à¦¾à¦¯à¦¼à¦¨à¦¿à¥¤ à¦†à¦¬à¦¾à¦° à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨à¥¤');
           });
       });
     }
@@ -633,77 +634,45 @@
   window.LumaCart = { add: addToCart, open: setDrawer, refresh: refreshDrawer, setCount: paintCount };
 
   bindDrawerInternals();
-}());
 
-/* ---------- HaatRush Shopify Admin API COD checkout ---------- */
-(function () {
-  var root = document.querySelector('[data-checkout-app]');
-  if (!root) { return; }
 
-  var form = root.querySelector('[data-checkout-form]');
-  var division = form && form.querySelector('[name="division"]');
-  var district = form && form.querySelector('[name="district"]');
-  var upazila = form && form.querySelector('[name="upazila"]');
-  var submit = root.querySelector('[data-checkout-submit]');
-  var submitLabel = root.querySelector('[data-checkout-submit-label]');
-  var error = root.querySelector('[data-checkout-error]');
-  var serviceNotice = root.querySelector('[data-checkout-service-notice]');
-  var itemsNode = root.querySelector('[data-checkout-items]');
-  var content = root.querySelector('[data-checkout-content]');
-  var emptyCart = root.querySelector('[data-checkout-empty]');
-  var confirmation = root.querySelector('[data-checkout-confirmation]');
-  var initialSubtotalMinor = Number(root.getAttribute('data-initial-subtotal-minor'));
-  var initialDiscountMinor = Number(root.getAttribute('data-initial-discount-minor'));
-  var initialPricing = Number.isSafeInteger(initialSubtotalMinor) && Number.isSafeInteger(initialDiscountMinor)
-    ? {
-      subtotalMinor: initialSubtotalMinor,
-      discountMinor: initialDiscountMinor,
-      shippingFree: root.getAttribute('data-initial-shipping-free') === 'true',
-      itemCount: 0
-    }
-    : null;
-  var state = {
-    quote: null,
-    lines: [],
-    cartPricing: initialPricing,
-    sequence: 0,
-    busy: false,
-    confirmed: false,
-    proxyReady: false,
-    locations: null
-  };
-  var submissionStorageKey = 'haatrush-cod-submission';
-  var base = root.getAttribute('data-proxy-root');
-  var locationsUrl = root.getAttribute('data-locations-url');
 
-  if (!form || !division || !district || !upazila || !submit || !itemsNode || !base) { return; }
+  
+  
+  
+  
+  
+  
+  
 
-  var endpoint = function (path) { return base.replace(/\/$/, '') + '/' + path; };
-  var showError = function (message) {
+  
+
+  (/\/$/, '') + '/' + path; };
+  
     if (!error) { return; }
     error.textContent = message;
     error.hidden = false;
   };
-  var customerError = function (value) {
+  
     var message = String(value || '');
     return /[\u0980-\u09FF]/.test(message)
       ? message
-      : 'দুঃখিত, অর্ডারটি সম্পন্ন করা যায়নি। তথ্য যাচাই করে আবার চেষ্টা করুন।';
+      : 'à¦¦à§à¦ƒà¦–à¦¿à¦¤, à¦…à¦°à§à¦¡à¦¾à¦°à¦Ÿà¦¿ à¦¸à¦®à§à¦ªà¦¨à§à¦¨ à¦•à¦°à¦¾ à¦¯à¦¾à¦¯à¦¼à¦¨à¦¿à¥¤ à¦¤à¦¥à§à¦¯ à¦¯à¦¾à¦šà¦¾à¦‡ à¦•à¦°à§‡ à¦†à¦¬à¦¾à¦° à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨à¥¤';
   };
-  var clearError = function () {
+  
     if (!error) { return; }
     error.textContent = '';
     error.hidden = true;
   };
-  var setServiceNotice = function (visible, message) {
+  
     if (!serviceNotice) { return; }
     if (message) { serviceNotice.textContent = message; }
     serviceNotice.hidden = !visible;
   };
   var money = function (amount) {
     var number = Number(amount);
-    if (!Number.isFinite(number)) { return '—'; }
-    return '৳' + new Intl.NumberFormat('bn-BD', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(number);
+    if (!Number.isFinite(number)) { return 'â€”'; }
+    return 'à§³' + new Intl.NumberFormat('bn-BD', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(number);
   };
   var requestJson = function (url, options) {
     return fetch(url, Object.assign({
@@ -719,8 +688,8 @@
   var headerCartCount = function () {
     var badge = document.querySelector('[data-cart-count]');
     if (!badge) { return null; }
-    var digits = '০১২৩৪৫৬৭৮৯';
-    var value = badge.textContent.trim().replace(/[০-৯]/g, function (digit) {
+    var digits = 'à§¦à§§à§¨à§©à§ªà§«à§¬à§­à§®à§¯';
+    var value = badge.textContent.trim().replace(/[à§¦-à§¯]/g, function (digit) {
       return String(digits.indexOf(digit));
     });
     var count = Number(value);
@@ -752,11 +721,11 @@
       credentials: 'same-origin'
     })
       .then(function (response) {
-        if (!response.ok) { throw new Error('কার্ট যাচাই করা যায়নি।'); }
+        if (!response.ok) { throw new Error('à¦•à¦¾à¦°à§à¦Ÿ à¦¯à¦¾à¦šà¦¾à¦‡ à¦•à¦°à¦¾ à¦¯à¦¾à¦¯à¦¼à¦¨à¦¿à¥¤'); }
         return response.json();
       }).then(function (cart) {
         if (!isValidCart(cart)) {
-          throw new Error('কার্টের তথ্য সঠিক নয়।');
+          throw new Error('à¦•à¦¾à¦°à§à¦Ÿà§‡à¦° à¦¤à¦¥à§à¦¯ à¦¸à¦ à¦¿à¦• à¦¨à¦¯à¦¼à¥¤');
         }
         var expectedCount = headerCartCount();
         if (!cart.items.length && expectedCount > 0 && (attempt || 0) < 2) {
@@ -801,16 +770,16 @@
     var districts = state.locations ? state.locations.districts.filter(function (entry) {
       return entry.division === division.value;
     }) : [];
-    replaceOptions(district, districts, 'জেলা নির্বাচন করুন');
+    replaceOptions(district, districts, 'à¦œà§‡à¦²à¦¾ à¦¨à¦¿à¦°à§à¦¬à¦¾à¦šà¦¨ à¦•à¦°à§à¦¨');
     district.disabled = !division.value || !districts.length;
-    replaceOptions(upazila, [], 'উপজেলা/থানা নির্বাচন করুন');
+    replaceOptions(upazila, [], 'à¦‰à¦ªà¦œà§‡à¦²à¦¾/à¦¥à¦¾à¦¨à¦¾ à¦¨à¦¿à¦°à§à¦¬à¦¾à¦šà¦¨ à¦•à¦°à§à¦¨');
     upazila.disabled = true;
   };
   var updateUpazilaOptions = function () {
     var upazilas = state.locations ? state.locations.upazilas.filter(function (entry) {
       return entry.district === district.value;
     }) : [];
-    replaceOptions(upazila, upazilas, 'উপজেলা/থানা নির্বাচন করুন');
+    replaceOptions(upazila, upazilas, 'à¦‰à¦ªà¦œà§‡à¦²à¦¾/à¦¥à¦¾à¦¨à¦¾ à¦¨à¦¿à¦°à§à¦¬à¦¾à¦šà¦¨ à¦•à¦°à§à¦¨');
     upazila.disabled = !district.value || !upazilas.length;
   };
   var isValidLocations = function (locations) {
@@ -842,20 +811,20 @@
         image.className = 'hr-checkout__item-image';
         row.appendChild(image);
       } else {
-        row.appendChild(create('span', 'hr-checkout__item-image hr-checkout__item-placeholder', '◇'));
+        row.appendChild(create('span', 'hr-checkout__item-image hr-checkout__item-placeholder', 'â—‡'));
       }
       var info = create('div', 'hr-checkout__item-info');
       info.appendChild(create('strong', 'hr-checkout__item-title', line.title));
       if (line.variantTitle) { info.appendChild(create('small', 'hr-checkout__item-variant', line.variantTitle)); }
       var controls = create('div', 'hr-checkout__item-controls');
-      var minus = create('button', 'checkout-qty-btn', '−');
+      var minus = create('button', 'checkout-qty-btn', 'âˆ’');
       minus.type = 'button';
       minus.setAttribute('data-cart-change', '');
       minus.setAttribute('data-line', String(index + 1));
       minus.setAttribute('data-line-key', line.cartKey || '');
       minus.setAttribute('data-cart-delta', '-1');
       minus.setAttribute('data-quantity', String(Math.max(0, line.quantity - 1)));
-      minus.setAttribute('aria-label', 'পরিমাণ কমান');
+      minus.setAttribute('aria-label', 'à¦ªà¦°à¦¿à¦®à¦¾à¦£ à¦•à¦®à¦¾à¦¨');
       controls.appendChild(minus);
       controls.appendChild(create('span', 'checkout-qty-val', bengaliCount(line.quantity)));
       var plus = create('button', 'checkout-qty-btn', '+');
@@ -865,17 +834,17 @@
       plus.setAttribute('data-line-key', line.cartKey || '');
       plus.setAttribute('data-cart-delta', '1');
       plus.setAttribute('data-quantity', String(line.quantity + 1));
-      plus.setAttribute('aria-label', 'পরিমাণ বাড়ান');
+      plus.setAttribute('aria-label', 'à¦ªà¦°à¦¿à¦®à¦¾à¦£ à¦¬à¦¾à¦¡à¦¼à¦¾à¦¨');
       controls.appendChild(plus);
       info.appendChild(controls);
       row.appendChild(info);
       row.appendChild(create('strong', 'hr-checkout__item-price', money(line.lineTotal)));
-      var remove = create('button', 'checkout-item__remove-btn', '×');
+      var remove = create('button', 'checkout-item__remove-btn', 'Ã—');
       remove.type = 'button';
       remove.setAttribute('data-remove-item', '');
       remove.setAttribute('data-line', String(index + 1));
       remove.setAttribute('data-line-key', line.cartKey || '');
-      remove.setAttribute('aria-label', line.title + ' কার্ট থেকে সরান');
+      remove.setAttribute('aria-label', line.title + ' à¦•à¦¾à¦°à§à¦Ÿ à¦¥à§‡à¦•à§‡ à¦¸à¦°à¦¾à¦¨');
       row.appendChild(remove);
       itemsNode.appendChild(row);
     });
@@ -897,11 +866,11 @@
     renderLines(state.lines);
     setText('[data-checkout-count]', bengaliCount(quote.itemCount));
     setText('[data-checkout-subtotal]', money(quote.subtotal));
-    setText('[data-checkout-discount]', quote.bundleEligible ? '− ' + money(quote.bundleDiscount) : money(0));
+    setText('[data-checkout-discount]', quote.bundleEligible ? 'âˆ’ ' + money(quote.bundleDiscount) : money(0));
     setText('[data-checkout-shipping-total]', quote.shipping == null
-      ? 'জেলা নির্বাচন করুন'
-      : Number(quote.shipping) === 0 ? 'ফ্রি' : money(quote.shipping));
-    setText('[data-checkout-total]', quote.total == null ? 'এলাকা নির্বাচন করুন' : money(quote.total));
+      ? 'à¦œà§‡à¦²à¦¾ à¦¨à¦¿à¦°à§à¦¬à¦¾à¦šà¦¨ à¦•à¦°à§à¦¨'
+      : Number(quote.shipping) === 0 ? 'à¦«à§à¦°à¦¿' : money(quote.shipping));
+    setText('[data-checkout-total]', quote.total == null ? 'à¦à¦²à¦¾à¦•à¦¾ à¦¨à¦¿à¦°à§à¦¬à¦¾à¦šà¦¨ à¦•à¦°à§à¦¨' : money(quote.total));
 
     var bundleDone = quote.bundleEligible;
     var bundle = root.querySelector('[data-checkout-bundle]');
@@ -911,10 +880,10 @@
     if (bundle) { bundle.classList.toggle('is-complete', bundleDone); }
     if (bundleFill) { bundleFill.style.width = Math.min(100, Math.round(quote.itemCount * 50)) + '%'; }
     if (bundleTrack) { bundleTrack.setAttribute('aria-valuenow', String(Math.min(2, quote.itemCount))); }
-    if (bundleStatus) { bundleStatus.textContent = bundleDone ? 'যোগ্যতা পূরণ' : bengaliCount(quote.itemCount) + ' / ২'; }
+    if (bundleStatus) { bundleStatus.textContent = bundleDone ? 'à¦¯à§‹à¦—à§à¦¯à¦¤à¦¾ à¦ªà§‚à¦°à¦£' : bengaliCount(quote.itemCount) + ' / à§¨'; }
     setText('[data-bundle-message]', bundleDone
-      ? '২% বান্ডেল ছাড় অর্ডারে প্রয়োগ করা হবে।'
-      : 'আর ' + bengaliCount(2 - quote.itemCount) + 'টি পণ্য যোগ করলে ২% ছাড় পাবেন।');
+      ? 'à§¨% à¦¬à¦¾à¦¨à§à¦¡à§‡à¦² à¦›à¦¾à¦¡à¦¼ à¦…à¦°à§à¦¡à¦¾à¦°à§‡ à¦ªà§à¦°à¦¯à¦¼à§‹à¦— à¦•à¦°à¦¾ à¦¹à¦¬à§‡à¥¤'
+      : 'à¦†à¦° ' + bengaliCount(2 - quote.itemCount) + 'à¦Ÿà¦¿ à¦ªà¦£à§à¦¯ à¦¯à§‹à¦— à¦•à¦°à¦²à§‡ à§¨% à¦›à¦¾à¦¡à¦¼ à¦ªà¦¾à¦¬à§‡à¦¨à¥¤');
 
     var shippingDone = quote.shippingFree;
     var shipping = root.querySelector('[data-checkout-shipping]');
@@ -929,12 +898,12 @@
     if (shippingTrack) { shippingTrack.setAttribute('aria-valuenow', String(Math.min(100001, subtotalMinor))); }
     if (shippingStatus) {
       shippingStatus.textContent = shippingDone
-        ? 'যোগ্যতা পূরণ'
-        : money(quote.shippingRemaining) + ' বাকি';
+        ? 'à¦¯à§‹à¦—à§à¦¯à¦¤à¦¾ à¦ªà§‚à¦°à¦£'
+        : money(quote.shippingRemaining) + ' à¦¬à¦¾à¦•à¦¿';
     }
     setText('[data-shipping-message]', shippingDone
-      ? '৳১,০০০-এর বেশি পণ্যের মোটে ফ্রি ডেলিভারি প্রযোজ্য।'
-      : 'পণ্যের মোট ৳১,০০০ অতিক্রম করলে ফ্রি ডেলিভারি পাবেন।');
+      ? 'à§³à§§,à§¦à§¦à§¦-à¦à¦° à¦¬à§‡à¦¶à¦¿ à¦ªà¦£à§à¦¯à§‡à¦° à¦®à§‹à¦Ÿà§‡ à¦«à§à¦°à¦¿ à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦ªà§à¦°à¦¯à§‹à¦œà§à¦¯à¥¤'
+      : 'à¦ªà¦£à§à¦¯à§‡à¦° à¦®à§‹à¦Ÿ à§³à§§,à§¦à§¦à§¦ à¦…à¦¤à¦¿à¦•à§à¦°à¦® à¦•à¦°à¦²à§‡ à¦«à§à¦°à¦¿ à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦ªà¦¾à¦¬à§‡à¦¨à¥¤');
     submit.disabled = state.busy || !state.proxyReady || !quote.quoteToken
       || !division.value || !district.value || !upazila.value || quote.total == null || state.confirmed;
   };
@@ -947,7 +916,7 @@
     var shippingFree = quote ? quote.shippingFree : pricing.shippingFree;
     var shipping = shippingFree ? 0 : district.value === 'Dhaka' ? 60 : 130;
     var total = subtotal - discount + shipping;
-    setText('[data-checkout-shipping-total]', shipping === 0 ? 'ফ্রি' : money(shipping));
+    setText('[data-checkout-shipping-total]', shipping === 0 ? 'à¦«à§à¦°à¦¿' : money(shipping));
     setText('[data-checkout-total]', money(total));
   };
   var paintCartPreview = function (cart) {
@@ -973,20 +942,20 @@
         image.className = 'hr-checkout__item-image';
         row.appendChild(image);
       } else {
-        row.appendChild(create('span', 'hr-checkout__item-image hr-checkout__item-placeholder', '◇'));
+        row.appendChild(create('span', 'hr-checkout__item-image hr-checkout__item-placeholder', 'â—‡'));
       }
       var info = create('div', 'hr-checkout__item-info');
       info.appendChild(create('strong', 'hr-checkout__item-title', line.title));
       if (line.variantTitle) { info.appendChild(create('small', 'hr-checkout__item-variant', line.variantTitle)); }
       var controls = create('div', 'hr-checkout__item-controls');
-      var minus = create('button', 'checkout-qty-btn', '−');
+      var minus = create('button', 'checkout-qty-btn', 'âˆ’');
       minus.type = 'button';
       minus.setAttribute('data-cart-change', '');
       minus.setAttribute('data-line', String(index + 1));
       minus.setAttribute('data-line-key', item.key || '');
       minus.setAttribute('data-cart-delta', '-1');
       minus.setAttribute('data-quantity', String(Math.max(0, line.quantity - 1)));
-      minus.setAttribute('aria-label', 'পরিমাণ কমান');
+      minus.setAttribute('aria-label', 'à¦ªà¦°à¦¿à¦®à¦¾à¦£ à¦•à¦®à¦¾à¦¨');
       controls.appendChild(minus);
       controls.appendChild(create('span', 'checkout-qty-val', bengaliCount(line.quantity)));
       var plus = create('button', 'checkout-qty-btn', '+');
@@ -996,17 +965,17 @@
       plus.setAttribute('data-line-key', item.key || '');
       plus.setAttribute('data-cart-delta', '1');
       plus.setAttribute('data-quantity', String(line.quantity + 1));
-      plus.setAttribute('aria-label', 'পরিমাণ বাড়ান');
+      plus.setAttribute('aria-label', 'à¦ªà¦°à¦¿à¦®à¦¾à¦£ à¦¬à¦¾à¦¡à¦¼à¦¾à¦¨');
       controls.appendChild(plus);
       info.appendChild(controls);
       row.appendChild(info);
       row.appendChild(create('strong', 'hr-checkout__item-price', money(line.lineTotal)));
-      var remove = create('button', 'checkout-item__remove-btn', '×');
+      var remove = create('button', 'checkout-item__remove-btn', 'Ã—');
       remove.type = 'button';
       remove.setAttribute('data-remove-item', '');
       remove.setAttribute('data-line', String(index + 1));
       remove.setAttribute('data-line-key', item.key || '');
-      remove.setAttribute('aria-label', line.title + ' কার্ট থেকে সরান');
+      remove.setAttribute('aria-label', line.title + ' à¦•à¦¾à¦°à§à¦Ÿ à¦¥à§‡à¦•à§‡ à¦¸à¦°à¦¾à¦¨');
       row.appendChild(remove);
       itemsNode.appendChild(row);
     });
@@ -1030,10 +999,10 @@
     var total = shipping === null ? null : subtotal - discount + shipping;
     setText('[data-checkout-count]', bengaliCount(cart.item_count));
     setText('[data-checkout-subtotal]', money(subtotal / 100));
-    setText('[data-checkout-discount]', discount ? '− ' + money(discount / 100) : money(0));
+    setText('[data-checkout-discount]', discount ? 'âˆ’ ' + money(discount / 100) : money(0));
     setText('[data-checkout-shipping-total]', shipping === null
-      ? 'জেলা নির্বাচন করুন' : shipping === 0 ? 'ফ্রি' : money(shipping / 100));
-    setText('[data-checkout-total]', total === null ? 'এলাকা নির্বাচন করুন' : money(total / 100));
+      ? 'à¦œà§‡à¦²à¦¾ à¦¨à¦¿à¦°à§à¦¬à¦¾à¦šà¦¨ à¦•à¦°à§à¦¨' : shipping === 0 ? 'à¦«à§à¦°à¦¿' : money(shipping / 100));
+    setText('[data-checkout-total]', total === null ? 'à¦à¦²à¦¾à¦•à¦¾ à¦¨à¦¿à¦°à§à¦¬à¦¾à¦šà¦¨ à¦•à¦°à§à¦¨' : money(total / 100));
 
     var bundleDone = itemCount >= 2;
     var bundle = root.querySelector('[data-checkout-bundle]');
@@ -1043,10 +1012,10 @@
     if (bundle) { bundle.classList.toggle('is-complete', bundleDone); }
     if (bundleFill) { bundleFill.style.width = Math.min(100, Math.round(itemCount * 50)) + '%'; }
     if (bundleTrack) { bundleTrack.setAttribute('aria-valuenow', String(Math.min(2, itemCount))); }
-    if (bundleStatus) { bundleStatus.textContent = bundleDone ? 'যোগ্যতা পূরণ' : bengaliCount(itemCount) + ' / ২'; }
+    if (bundleStatus) { bundleStatus.textContent = bundleDone ? 'à¦¯à§‹à¦—à§à¦¯à¦¤à¦¾ à¦ªà§‚à¦°à¦£' : bengaliCount(itemCount) + ' / à§¨'; }
     setText('[data-bundle-message]', bundleDone
-      ? '২% বান্ডেল ছাড় অর্ডারে প্রয়োগ করা হবে।'
-      : 'আর ' + bengaliCount(2 - itemCount) + 'টি পণ্য যোগ করলে ২% ছাড় পাবেন।');
+      ? 'à§¨% à¦¬à¦¾à¦¨à§à¦¡à§‡à¦² à¦›à¦¾à¦¡à¦¼ à¦…à¦°à§à¦¡à¦¾à¦°à§‡ à¦ªà§à¦°à¦¯à¦¼à§‹à¦— à¦•à¦°à¦¾ à¦¹à¦¬à§‡à¥¤'
+      : 'à¦†à¦° ' + bengaliCount(2 - itemCount) + 'à¦Ÿà¦¿ à¦ªà¦£à§à¦¯ à¦¯à§‹à¦— à¦•à¦°à¦²à§‡ à§¨% à¦›à¦¾à¦¡à¦¼ à¦ªà¦¾à¦¬à§‡à¦¨à¥¤');
 
     var shippingOffer = root.querySelector('[data-checkout-shipping]');
     var shippingFill = root.querySelector('[data-shipping-fill]');
@@ -1059,11 +1028,11 @@
     if (shippingFill) { shippingFill.style.width = shippingProgress + '%'; }
     if (shippingTrack) { shippingTrack.setAttribute('aria-valuenow', String(Math.min(100001, subtotal))); }
     if (shippingStatus) {
-      shippingStatus.textContent = shippingDone ? 'যোগ্যতা পূরণ' : money(Math.max(0, 100001 - subtotal) / 100) + ' বাকি';
+      shippingStatus.textContent = shippingDone ? 'à¦¯à§‹à¦—à§à¦¯à¦¤à¦¾ à¦ªà§‚à¦°à¦£' : money(Math.max(0, 100001 - subtotal) / 100) + ' à¦¬à¦¾à¦•à¦¿';
     }
     setText('[data-shipping-message]', shippingDone
-      ? '৳১,০০০-এর বেশি পণ্যের মোটে ফ্রি ডেলিভারি প্রযোজ্য।'
-      : 'পণ্যের মোট ৳১,০০০ অতিক্রম করলে ফ্রি ডেলিভারি পাবেন।');
+      ? 'à§³à§§,à§¦à§¦à§¦-à¦à¦° à¦¬à§‡à¦¶à¦¿ à¦ªà¦£à§à¦¯à§‡à¦° à¦®à§‹à¦Ÿà§‡ à¦«à§à¦°à¦¿ à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦ªà§à¦°à¦¯à§‹à¦œà§à¦¯à¥¤'
+      : 'à¦ªà¦£à§à¦¯à§‡à¦° à¦®à§‹à¦Ÿ à§³à§§,à§¦à§¦à§¦ à¦…à¦¤à¦¿à¦•à§à¦°à¦® à¦•à¦°à¦²à§‡ à¦«à§à¦°à¦¿ à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦ªà¦¾à¦¬à§‡à¦¨à¥¤');
     submit.disabled = true;
   };
   var showEmptyCart = function () {
@@ -1090,7 +1059,7 @@
           state.lines = [];
           itemsNode.replaceChildren();
           submit.disabled = true;
-          setServiceNotice(true, 'কার্টের পণ্য যাচাই করা যাচ্ছে না। পেজটি রিফ্রেশ করে আবার চেষ্টা করুন।');
+          setServiceNotice(true, 'à¦•à¦¾à¦°à§à¦Ÿà§‡à¦° à¦ªà¦£à§à¦¯ à¦¯à¦¾à¦šà¦¾à¦‡ à¦•à¦°à¦¾ à¦¯à¦¾à¦šà§à¦›à§‡ à¦¨à¦¾à¥¤ à¦ªà§‡à¦œà¦Ÿà¦¿ à¦°à¦¿à¦«à§à¦°à§‡à¦¶ à¦•à¦°à§‡ à¦†à¦¬à¦¾à¦° à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨à¥¤');
           return null;
         }
         showEmptyCart();
@@ -1112,7 +1081,7 @@
         if (!result.response.ok) {
           state.quote = null;
           paintCartPreview(cart);
-          showError(result.body.error || 'দাম ও স্টক যাচাই করা যাচ্ছে না।');
+          showError(result.body.error || 'à¦¦à¦¾à¦® à¦“ à¦¸à§à¦Ÿà¦• à¦¯à¦¾à¦šà¦¾à¦‡ à¦•à¦°à¦¾ à¦¯à¦¾à¦šà§à¦›à§‡ à¦¨à¦¾à¥¤');
           return null;
         }
         paintQuote(result.body, cart);
@@ -1123,7 +1092,7 @@
       if (sequence !== state.sequence) { return null; }
       state.quote = null;
       submit.disabled = true;
-      setServiceNotice(true, 'দুঃখিত, এই মুহূর্তে অর্ডার নেওয়া যাচ্ছে না। পরে আবার চেষ্টা করুন।');
+      setServiceNotice(true, 'à¦¦à§à¦ƒà¦–à¦¿à¦¤, à¦à¦‡ à¦®à§à¦¹à§‚à¦°à§à¦¤à§‡ à¦…à¦°à§à¦¡à¦¾à¦° à¦¨à§‡à¦“à¦¯à¦¼à¦¾ à¦¯à¦¾à¦šà§à¦›à§‡ à¦¨à¦¾à¥¤ à¦ªà¦°à§‡ à¦†à¦¬à¦¾à¦° à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨à¥¤');
       return null;
     });
   };
@@ -1135,14 +1104,14 @@
       if (!isValidLocations(locations)) { throw new Error('location data is invalid'); }
       state.locations = locations;
       if (division.options.length <= 1) {
-        replaceOptions(division, locations.divisions, 'বিভাগ নির্বাচন করুন');
+        replaceOptions(division, locations.divisions, 'à¦¬à¦¿à¦­à¦¾à¦— à¦¨à¦¿à¦°à§à¦¬à¦¾à¦šà¦¨ à¦•à¦°à§à¦¨');
       }
       division.disabled = false;
       updateDistrictOptions();
       return true;
     }).catch(function () {
       division.disabled = false;
-      setServiceNotice(true, 'দুঃখিত, এই মুহূর্তে অর্ডার নেওয়া যাচ্ছে না। পরে আবার চেষ্টা করুন।');
+      setServiceNotice(true, 'à¦¦à§à¦ƒà¦–à¦¿à¦¤, à¦à¦‡ à¦®à§à¦¹à§‚à¦°à§à¦¤à§‡ à¦…à¦°à§à¦¡à¦¾à¦° à¦¨à§‡à¦“à¦¯à¦¼à¦¾ à¦¯à¦¾à¦šà§à¦›à§‡ à¦¨à¦¾à¥¤ à¦ªà¦°à§‡ à¦†à¦¬à¦¾à¦° à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨à¥¤');
     });
   };
   var loadCheckoutService = function () {
@@ -1170,7 +1139,7 @@
     }).catch(function () {
       state.proxyReady = false;
       submit.disabled = true;
-      setServiceNotice(true, 'দুঃখিত, এই মুহূর্তে অর্ডার নেওয়া যাচ্ছে না। পরে আবার চেষ্টা করুন।');
+      setServiceNotice(true, 'à¦¦à§à¦ƒà¦–à¦¿à¦¤, à¦à¦‡ à¦®à§à¦¹à§‚à¦°à§à¦¤à§‡ à¦…à¦°à§à¦¡à¦¾à¦° à¦¨à§‡à¦“à¦¯à¦¼à¦¾ à¦¯à¦¾à¦šà§à¦›à§‡ à¦¨à¦¾à¥¤ à¦ªà¦°à§‡ à¦†à¦¬à¦¾à¦° à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨à¥¤');
       return false;
     });
   };
@@ -1207,18 +1176,18 @@
     if (confirmation) { confirmation.hidden = false; }
     if (result.subtotal != null) { setText('[data-checkout-subtotal]', money(result.subtotal)); }
     if (result.discount != null) {
-      setText('[data-checkout-discount]', Number(result.discount) > 0 ? '− ' + money(result.discount) : money(0));
+      setText('[data-checkout-discount]', Number(result.discount) > 0 ? 'âˆ’ ' + money(result.discount) : money(0));
     }
     if (result.shipping != null) {
-      setText('[data-checkout-shipping-total]', Number(result.shipping) === 0 ? 'ফ্রি' : money(result.shipping));
+      setText('[data-checkout-shipping-total]', Number(result.shipping) === 0 ? 'à¦«à§à¦°à¦¿' : money(result.shipping));
     }
     if (result.total != null) { setText('[data-checkout-total]', money(result.total)); }
     var paymentMethod = result.paymentMethod || 'cod';
     var confirmationBkash = root.querySelector('[data-confirmation-bkash]');
     if (paymentMethod === 'bkash') {
       if (confirmationBkash) {
-        confirmationBkash.textContent = 'ম্যানুয়াল বিকাশ পেমেন্ট: '
-          + root.getAttribute('data-bkash-number') + '। '
+        confirmationBkash.textContent = 'à¦®à§à¦¯à¦¾à¦¨à§à¦¯à¦¼à¦¾à¦² à¦¬à¦¿à¦•à¦¾à¦¶ à¦ªà§‡à¦®à§‡à¦¨à§à¦Ÿ: '
+          + root.getAttribute('data-bkash-number') + 'à¥¤ '
           + (root.getAttribute('data-bkash-instructions') || '');
         confirmationBkash.hidden = false;
       }
@@ -1229,13 +1198,13 @@
     if (confirmation) { confirmation.hidden = true; }
     state.busy = true;
     submit.disabled = true;
-    setServiceNotice(true, 'আপনার অর্ডারটি নিশ্চিত করা হচ্ছে। অনুগ্রহ করে অপেক্ষা করুন।');
+    setServiceNotice(true, 'à¦†à¦ªà¦¨à¦¾à¦° à¦…à¦°à§à¦¡à¦¾à¦°à¦Ÿà¦¿ à¦¨à¦¿à¦¶à§à¦šà¦¿à¦¤ à¦•à¦°à¦¾ à¦¹à¦šà§à¦›à§‡à¥¤ à¦…à¦¨à§à¦—à§à¦°à¦¹ à¦•à¦°à§‡ à¦…à¦ªà§‡à¦•à§à¦·à¦¾ à¦•à¦°à§à¦¨à¥¤');
     return requestJson(endpoint('orders/' + encodeURIComponent(submissionId))).then(function (result) {
       if (result.response.status === 404) {
         clearStoredSubmission();
         state.busy = false;
         setServiceNotice(false);
-        submitLabel.textContent = 'অর্ডার কনফার্ম করুন';
+        submitLabel.textContent = 'à¦…à¦°à§à¦¡à¦¾à¦° à¦•à¦¨à¦«à¦¾à¦°à§à¦® à¦•à¦°à§à¦¨';
         submit.disabled = !state.proxyReady || !state.quote || !state.quote.quoteToken || !state.quote.total;
         return;
       }
@@ -1249,13 +1218,13 @@
         clearStoredSubmission();
         state.busy = false;
         setServiceNotice(false);
-        submitLabel.textContent = 'অর্ডার কনফার্ম করুন';
-        showError(result.body.response && result.body.response.error || 'অর্ডারটি তৈরি হয়নি। তথ্য যাচাই করে আবার চেষ্টা করুন।');
+        submitLabel.textContent = 'à¦…à¦°à§à¦¡à¦¾à¦° à¦•à¦¨à¦«à¦¾à¦°à§à¦® à¦•à¦°à§à¦¨';
+        showError(result.body.response && result.body.response.error || 'à¦…à¦°à§à¦¡à¦¾à¦°à¦Ÿà¦¿ à¦¤à§ˆà¦°à¦¿ à¦¹à¦¯à¦¼à¦¨à¦¿à¥¤ à¦¤à¦¥à§à¦¯ à¦¯à¦¾à¦šà¦¾à¦‡ à¦•à¦°à§‡ à¦†à¦¬à¦¾à¦° à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨à¥¤');
         refreshQuote();
         return;
       }
       if (attempts <= 0) {
-        setServiceNotice(true, 'আপনার অর্ডারটি নিশ্চিত করা হচ্ছে। অনুগ্রহ করে অপেক্ষা করুন।');
+        setServiceNotice(true, 'à¦†à¦ªà¦¨à¦¾à¦° à¦…à¦°à§à¦¡à¦¾à¦°à¦Ÿà¦¿ à¦¨à¦¿à¦¶à§à¦šà¦¿à¦¤ à¦•à¦°à¦¾ à¦¹à¦šà§à¦›à§‡à¥¤ à¦…à¦¨à§à¦—à§à¦°à¦¹ à¦•à¦°à§‡ à¦…à¦ªà§‡à¦•à§à¦·à¦¾ à¦•à¦°à§à¦¨à¥¤');
         return;
       }
       window.setTimeout(function () { pollSubmission(submissionId, attempts - 1); }, 2000);
@@ -1263,7 +1232,7 @@
       if (attempts > 0) {
         window.setTimeout(function () { pollSubmission(submissionId, attempts - 1); }, 2000);
       } else {
-        setServiceNotice(true, 'আপনার অর্ডারটি নিশ্চিত করা হচ্ছে। অনুগ্রহ করে অপেক্ষা করুন।');
+        setServiceNotice(true, 'à¦†à¦ªà¦¨à¦¾à¦° à¦…à¦°à§à¦¡à¦¾à¦°à¦Ÿà¦¿ à¦¨à¦¿à¦¶à§à¦šà¦¿à¦¤ à¦•à¦°à¦¾ à¦¹à¦šà§à¦›à§‡à¥¤ à¦…à¦¨à§à¦—à§à¦°à¦¹ à¦•à¦°à§‡ à¦…à¦ªà§‡à¦•à§à¦·à¦¾ à¦•à¦°à§à¦¨à¥¤');
       }
     });
   };
@@ -1299,15 +1268,15 @@
     clearError();
     if (!form.reportValidity()) { return; }
     if (!state.proxyReady) {
-      setServiceNotice(true, 'দুঃখিত, এই মুহূর্তে অর্ডার নেওয়া যাচ্ছে না। পরে আবার চেষ্টা করুন।');
+      setServiceNotice(true, 'à¦¦à§à¦ƒà¦–à¦¿à¦¤, à¦à¦‡ à¦®à§à¦¹à§‚à¦°à§à¦¤à§‡ à¦…à¦°à§à¦¡à¦¾à¦° à¦¨à§‡à¦“à¦¯à¦¼à¦¾ à¦¯à¦¾à¦šà§à¦›à§‡ à¦¨à¦¾à¥¤ à¦ªà¦°à§‡ à¦†à¦¬à¦¾à¦° à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨à¥¤');
       return;
     }
     state.busy = true;
     submit.disabled = true;
-    submitLabel.textContent = 'তথ্য যাচাই হচ্ছে…';
+    submitLabel.textContent = 'à¦¤à¦¥à§à¦¯ à¦¯à¦¾à¦šà¦¾à¦‡ à¦¹à¦šà§à¦›à§‡â€¦';
     var cartSnapshot;
     getCart().then(function (cart) {
-      if (!cart.items || !cart.items.length) { throw new Error('আপনার কার্ট খালি।'); }
+      if (!cart.items || !cart.items.length) { throw new Error('à¦†à¦ªà¦¨à¦¾à¦° à¦•à¦¾à¦°à§à¦Ÿ à¦–à¦¾à¦²à¦¿à¥¤'); }
       cartSnapshot = cart;
       return requestJson(endpoint('quote'), {
         method: 'POST',
@@ -1321,12 +1290,12 @@
       });
     }).then(function (result) {
       if (!result.response.ok || !result.body.quoteToken || result.body.total == null) {
-        throw new Error(result.body.error || 'দাম বা ডেলিভারির তথ্য যাচাই করুন।');
+        throw new Error(result.body.error || 'à¦¦à¦¾à¦® à¦¬à¦¾ à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿à¦° à¦¤à¦¥à§à¦¯ à¦¯à¦¾à¦šà¦¾à¦‡ à¦•à¦°à§à¦¨à¥¤');
       }
       paintQuote(result.body, cartSnapshot);
       var submissionId = createSubmissionId();
       if (!saveSubmission(submissionId)) {
-        throw new Error('নিরাপদে অর্ডার জমা দেওয়া যাচ্ছে না। ব্রাউজারের সেশন স্টোরেজ চালু করে আবার চেষ্টা করুন।');
+        throw new Error('à¦¨à¦¿à¦°à¦¾à¦ªà¦¦à§‡ à¦…à¦°à§à¦¡à¦¾à¦° à¦œà¦®à¦¾ à¦¦à§‡à¦“à¦¯à¦¼à¦¾ à¦¯à¦¾à¦šà§à¦›à§‡ à¦¨à¦¾à¥¤ à¦¬à§à¦°à¦¾à¦‰à¦œà¦¾à¦°à§‡à¦° à¦¸à§‡à¦¶à¦¨ à¦¸à§à¦Ÿà§‹à¦°à§‡à¦œ à¦šà¦¾à¦²à§ à¦•à¦°à§‡ à¦†à¦¬à¦¾à¦° à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨à¥¤');
       }
       var formData = new FormData(form);
       var payload = {
@@ -1353,7 +1322,7 @@
         }
         if (!orderResult.response.ok || orderResult.body.status !== 'created') {
           clearStoredSubmission();
-          throw new Error(orderResult.body.error || 'অর্ডারটি তৈরি করা যায়নি। আবার চেষ্টা করুন।');
+          throw new Error(orderResult.body.error || 'à¦…à¦°à§à¦¡à¦¾à¦°à¦Ÿà¦¿ à¦¤à§ˆà¦°à¦¿ à¦•à¦°à¦¾ à¦¯à¦¾à¦¯à¦¼à¦¨à¦¿à¥¤ à¦†à¦¬à¦¾à¦° à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨à¥¤');
         }
         setServiceNotice(false);
         finishOrder(orderResult.body);
@@ -1371,7 +1340,7 @@
     }).finally(function () {
       if (!state.confirmed && !getStoredSubmission()) {
         submit.disabled = !state.proxyReady || !state.quote || !state.quote.quoteToken || !state.quote.total;
-        submitLabel.textContent = 'অর্ডার কনফার্ম করুন';
+        submitLabel.textContent = 'à¦…à¦°à§à¦¡à¦¾à¦° à¦•à¦¨à¦«à¦¾à¦°à§à¦® à¦•à¦°à§à¦¨';
       }
     });
   });
@@ -1400,12 +1369,12 @@
     return refreshQuote(cart);
   }).catch(function () {
     submit.disabled = true;
-    setServiceNotice(true, 'দুঃখিত, আপনার কার্ট যাচাই করা যাচ্ছে না। পেজটি রিফ্রেশ করে আবার চেষ্টা করুন।');
+    setServiceNotice(true, 'à¦¦à§à¦ƒà¦–à¦¿à¦¤, à¦†à¦ªà¦¨à¦¾à¦° à¦•à¦¾à¦°à§à¦Ÿ à¦¯à¦¾à¦šà¦¾à¦‡ à¦•à¦°à¦¾ à¦¯à¦¾à¦šà§à¦›à§‡ à¦¨à¦¾à¥¤ à¦ªà§‡à¦œà¦Ÿà¦¿ à¦°à¦¿à¦«à§à¦°à§‡à¦¶ à¦•à¦°à§‡ à¦†à¦¬à¦¾à¦° à¦šà§‡à¦·à§à¦Ÿà¦¾ à¦•à¦°à§à¦¨à¥¤');
   });
 }());
 
 /* ============================================================
-   HaatRush — Predictive product search suggestions
+   HaatRush â€” Predictive product search suggestions
    Uses Shopify's real Predictive Search API (suggest.json) to
    power the dropdown under the desktop header search field.
    Scoped to [data-search-suggest-form]; the desktop field is
@@ -1425,7 +1394,7 @@
   var formatMoney = function (cents) {
     if (typeof cents !== 'number') { cents = parseInt(cents, 10) || 0; }
     if (typeof Shopify !== 'undefined' && Shopify.formatMoney) { return Shopify.formatMoney(cents); }
-    return '৳' + (cents / 100).toFixed(2);
+    return 'à§³' + (cents / 100).toFixed(2);
   };
 
   var popular = [];
@@ -1491,8 +1460,8 @@
 
   var footerHtml = function (q) {
     var label = q
-      ? (escapeHtml(q) + ' ' + escapeHtml(localeStrings.view_all_results_for || 'এর সব ফলাফল দেখুন'))
-      : escapeHtml(localeStrings.view_all_products || 'সব পণ্য দেখুন');
+      ? (escapeHtml(q) + ' ' + escapeHtml(localeStrings.view_all_results_for || 'à¦à¦° à¦¸à¦¬ à¦«à¦²à¦¾à¦«à¦² à¦¦à§‡à¦–à§à¦¨'))
+      : escapeHtml(localeStrings.view_all_products || 'à¦¸à¦¬ à¦ªà¦£à§à¦¯ à¦¦à§‡à¦–à§à¦¨');
     var href = routes.root + 'search?q=' + encodeURIComponent(q || '');
     return '<div class="lf-suggest__footer">' +
       '<a class="lf-suggest__viewall" href="' + href + '" data-suggest-viewall>' +
@@ -1503,9 +1472,9 @@
 
   var statusHtml = function (q) {
     if (q) {
-      return '<div class="lf-suggest__status"><strong>' + escapeHtml(q) + '</strong>-এর ফলাফল</div>';
+      return '<div class="lf-suggest__status"><strong>' + escapeHtml(q) + '</strong>-à¦à¦° à¦«à¦²à¦¾à¦«à¦²</div>';
     }
-    return '<div class="lf-suggest__status">জনপ্রিয় পণ্য</div>';
+    return '<div class="lf-suggest__status">à¦œà¦¨à¦ªà§à¦°à¦¿à¦¯à¦¼ à¦ªà¦£à§à¦¯</div>';
   };
 
   var renderProducts = function (items, q) {
@@ -1514,14 +1483,14 @@
     if (!state.items.length) {
       panel.innerHTML = statusHtml(q) +
         '<div class="lf-suggest__empty" role="status">' +
-          '<strong>' + escapeHtml(localeStrings.no_matching_products || 'মিলছে এমন কোনো পণ্য পাওয়া যায়নি') + '</strong>' +
-          '<span>অন্য শব্দ দিয়ে খুঁজে দেখুন।</span>' +
+          '<strong>' + escapeHtml(localeStrings.no_matching_products || 'à¦®à¦¿à¦²à¦›à§‡ à¦à¦®à¦¨ à¦•à§‹à¦¨à§‹ à¦ªà¦£à§à¦¯ à¦ªà¦¾à¦“à¦¯à¦¼à¦¾ à¦¯à¦¾à¦¯à¦¼à¦¨à¦¿') + '</strong>' +
+          '<span>à¦…à¦¨à§à¦¯ à¦¶à¦¬à§à¦¦ à¦¦à¦¿à¦¯à¦¼à§‡ à¦–à§à¦à¦œà§‡ à¦¦à§‡à¦–à§à¦¨à¥¤</span>' +
         '</div>' +
         (q ? footerHtml(q) : '');
       input.removeAttribute('aria-activedescendant');
       return;
     }
-    var html = statusHtml(q) + '<div class="lf-suggest__heading">পণ্য</div><ul class="lf-suggest__list" role="listbox" aria-label="পণ্যের পরামর্শ">';
+    var html = statusHtml(q) + '<div class="lf-suggest__heading">à¦ªà¦£à§à¦¯</div><ul class="lf-suggest__list" role="listbox" aria-label="à¦ªà¦£à§à¦¯à§‡à¦° à¦ªà¦°à¦¾à¦®à¦°à§à¦¶">';
     for (var i = 0; i < state.items.length; i++) {
       html += rowHtml(state.items[i], i);
     }
@@ -1532,7 +1501,7 @@
 
   var renderLoading = function () {
     panel.innerHTML = '<div class="lf-suggest__loading" role="status" aria-live="polite">' +
-      '<span class="lf-suggest__spinner" aria-hidden="true"></span>খোঁজা হচ্ছে&hellip;</div>';
+      '<span class="lf-suggest__spinner" aria-hidden="true"></span>à¦–à§‹à¦à¦œà¦¾ à¦¹à¦šà§à¦›à§‡&hellip;</div>';
   };
 
   var open = function () {
@@ -1574,7 +1543,7 @@
     if (popular && popular.length) {
       renderProducts(popular.slice(0, LIMIT), '');
     } else {
-      panel.innerHTML = '<div class="lf-suggest__status">স্টোরে খুঁজুন</div>';
+      panel.innerHTML = '<div class="lf-suggest__status">à¦¸à§à¦Ÿà§‹à¦°à§‡ à¦–à§à¦à¦œà§à¦¨</div>';
     }
     open();
   };
@@ -1671,3 +1640,5 @@
     }, 120);
   });
 })();
+
+
