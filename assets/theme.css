@@ -1313,7 +1313,7 @@ html[lang^="bn"] .lf-section-title,html[lang^="bn"] .hero h1,html[lang^="bn"] .n
   .desktop-nav,.lf-header__menu-list a{font-size:17px;font-weight:600;}
 }
 
-/* Bengali cash-on-delivery checkout */
+/* Bengali Shopify cart review */
 .hr-checkout [hidden]{display:none!important;}
 .hr-checkout{padding:clamp(32px,5vw,72px) 20px;background:linear-gradient(135deg,#F8F3FF 0%,#fff 46%,#F8F3FF 100%);}
 .hr-checkout .container{width:min(1440px,100%);margin:0 auto;}

@@ -1,77 +1,37 @@
-{%- comment -%} HaatRush Theme - Shopify Admin API COD checkout {%- endcomment -%}
+{%- comment -%} HaatRush Theme - Shopify cart review {%- endcomment -%}
 
-<section class="checkout-page-section hr-checkout" id="checkoutPageSection" data-checkout-app data-proxy-root="/apps/haatrush-checkout" data-locations-url="{{ 'locations.json' | asset_url }}">
+<section class="checkout-page-section hr-checkout" id="checkoutPageSection" data-cart-review data-cart-root="{{ routes.root_url }}" data-cart-load-error="কার্টের তথ্য লোড করা যায়নি। পৃষ্ঠাটি রিফ্রেশ করুন।" data-unpriced-label="চেকআউটে হিসাব হবে" data-eligibility-label="যোগ্যতা পূরণ" data-shipping-remaining-suffix=" বাকি" data-quantity-decrease-label="পরিমাণ কমান" data-quantity-increase-label="পরিমাণ বাড়ান" data-remove-suffix=" কার্ট থেকে সরান">
   <div class="container">
     {%- render 'breadcrumb' -%}
 
     <div class="checkout-header-block">
-      <h1 class="checkout-page-title">চেকআউট</h1>
-      <p class="checkout-page-subtitle">নিরাপদে অর্ডার সম্পন্ন করতে ডেলিভারির তথ্য দিন। পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন।</p>
+      <h1 class="checkout-page-title">অর্ডার পর্যালোচনা</h1>
+      <p class="checkout-page-subtitle">আপনার পণ্য ও অফারের অগ্রগতি দেখে Shopify চেকআউটে এগিয়ে যান।</p>
     </div>
 
     {%- if cart.item_count > 0 -%}
       <div class="checkout-layout hr-checkout__layout" data-checkout-content>
         <div class="checkout-form-column">
-          <form class="checkout-card hr-checkout__form" data-checkout-form novalidate>
+          <div class="checkout-card hr-checkout__form hr-checkout__info">
             <div class="checkout-card__header">
-              <div class="checkout-card__icon-box" aria-hidden="true">⌖</div>
+              <div class="checkout-card__icon-box" aria-hidden="true">✓</div>
               <div class="checkout-card__title-box">
-                <h2 class="checkout-card__title">ডেলিভারির তথ্য</h2>
-                <p class="checkout-card__subtitle">আপনার অর্ডার পৌঁছে দিতে সঠিক তথ্য দিন</p>
+                <h2 class="checkout-card__title">চেকআউটের আগে</h2>
+                <p class="checkout-card__subtitle">অর্ডারটি একবার দেখে নিন</p>
               </div>
             </div>
-            <div class="hr-checkout__fields">
-              <label class="hr-checkout__field">
-                <span>আপনার পূর্ণ নাম <b aria-hidden="true">*</b></span>
-                <input name="name" type="text" autocomplete="name" maxlength="120" required>
-              </label>
-              <label class="hr-checkout__field">
-                <span>মোবাইল নম্বর <b aria-hidden="true">*</b></span>
-                <input name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="24" placeholder="০১XXXXXXXXX" required>
-              </label>
-              <label class="hr-checkout__field">
-                <span>বিভাগ <b aria-hidden="true">*</b></span>
-                <select name="division" autocomplete="address-level1" required disabled>
-                  <option value="">বিভাগ নির্বাচন করুন</option>
-                </select>
-              </label>
-              <label class="hr-checkout__field">
-                <span>জেলা <b aria-hidden="true">*</b></span>
-                <select name="district" autocomplete="address-level2" required disabled>
-                  <option value="">জেলা নির্বাচন করুন</option>
-                </select>
-              </label>
-              <label class="hr-checkout__field">
-                <span>উপজেলা/থানা <b aria-hidden="true">*</b></span>
-                <select name="upazila" autocomplete="address-level3" required disabled>
-                  <option value="">উপজেলা/থানা নির্বাচন করুন</option>
-                </select>
-              </label>
-            </div>
-            <div class="hr-checkout__cod">
-              <span class="hr-checkout__cod-icon" aria-hidden="true">৳</span>
-              <span><strong>ক্যাশ অন ডেলিভারি</strong><small>পণ্য হাতে পেয়ে টাকা পরিশোধ করুন</small></span>
-              <span class="hr-checkout__cod-selected" aria-label="নির্বাচিত">✓</span>
-            </div>
-            <label class="hr-checkout__field hr-checkout__field--wide hr-checkout__address">
-              <span>সম্পূর্ণ ঠিকানা <b aria-hidden="true">*</b></span>
-              <textarea name="address" autocomplete="street-address" rows="3" maxlength="500" placeholder="বাড়ি/রোড নম্বর, এলাকা ও বিস্তারিত ঠিকানা" required></textarea>
-            </label>
-            <p class="hr-checkout__service-notice" data-checkout-service-notice role="status" aria-live="polite" hidden>
-              চেকআউট সেবা সাময়িকভাবে অনুপলভ্য। পরে আবার চেষ্টা করুন।
-            </p>
-            <p class="hr-checkout__notice" data-checkout-error role="alert" hidden></p>
-            <button type="submit" class="btn-primary checkout-submit-btn hr-checkout__submit" data-checkout-submit disabled>
-              <span data-checkout-submit-label>ক্যাশ অন ডেলিভারিতে অর্ডার করুন</span>
+            <p class="hr-checkout__info-copy">পরের ধাপে Shopify চেকআউটে ডেলিভারির ঠিকানা দিন এবং সেখানে সক্রিয় পেমেন্ট পদ্ধতি বেছে নিন।</p>
+            <p class="hr-checkout__info-copy">ডেলিভারি চার্জ ও চূড়ান্ত মোট Shopify চেকআউটে হিসাব হবে।</p>
+            <a href="{{ routes.root_url }}checkout" class="btn-primary hr-checkout__submit">
+              <span>Shopify চেকআউটে এগিয়ে যান</span>
               <span aria-hidden="true">→</span>
-            </button>
-            <p class="hr-checkout__privacy">অর্ডার সম্পন্ন হলে আপনার তথ্য ডেলিভারির জন্য ব্যবহার করা হবে।</p>
-          </form>
+            </a>
+          </div>
         </div>
 
         <!-- RIGHT COLUMN: ORDER SUMMARY (40%) -->
         <div class="checkout-summary-column">
-          <div class="checkout-card checkout-card--summary">
+          <div class="checkout-card checkout-card--summary hr-checkout__summary">
             <div class="checkout-card__header">
               <div class="checkout-card__icon-box" aria-hidden="true">▣</div>
               <div class="checkout-card__title-box">
@@ -81,31 +41,46 @@
             </div>
 
             <div class="checkout-items-list hr-checkout__items" data-checkout-items aria-live="polite">
+              {%- for item in cart.items -%}
+                <article class="hr-checkout__item">
+                  {%- if item.image -%}
+                    <img class="hr-checkout__item-image" src="{{ item.image | image_url: width: 160 }}" alt="{{ item.product.title | escape }}" width="68" height="68" loading="lazy">
+                  {%- else -%}
+                    <span class="hr-checkout__item-image hr-checkout__item-placeholder" aria-hidden="true">◇</span>
+                  {%- endif -%}
+                  <div class="hr-checkout__item-info">
+                    <strong class="hr-checkout__item-title">{{ item.product.title | escape }}</strong>
+                    {%- unless item.product.has_only_default_variant -%}
+                      <small class="hr-checkout__item-variant">{{ item.variant.title | escape }}</small>
+                    {%- endunless -%}
+                    <div class="hr-checkout__item-controls">
+                      <button type="button" data-cart-change data-line="{{ forloop.index }}" data-quantity="{{ item.quantity | minus: 1 }}" aria-label="পরিমাণ কমান">−</button>
+                      <span>{{ item.quantity }}</span>
+                      <button type="button" data-cart-change data-line="{{ forloop.index }}" data-quantity="{{ item.quantity | plus: 1 }}" aria-label="পরিমাণ বাড়ান">+</button>
+                    </div>
+                  </div>
+                  <strong class="hr-checkout__item-price">{{ item.final_line_price | money }}</strong>
+                  <button type="button" class="checkout-item__remove-btn" data-remove-item data-line="{{ forloop.index }}" aria-label="{{ item.product.title | escape }} কার্ট থেকে সরান">×</button>
+                </article>
+              {%- endfor -%}
             </div>
 
             <div class="hr-checkout__offer" data-checkout-bundle>
-              <div class="hr-checkout__offer-heading"><span class="hr-checkout__offer-icon">%</span><span><strong>বান্ডেল সেভিংস</strong><small>২টি বা তার বেশি পণ্যে ২% ছাড়</small></span><b data-bundle-status>০ / ২</b></div>
+              <div class="hr-checkout__offer-heading"><span class="hr-checkout__offer-icon">%</span><span><strong>বান্ডেল সেভিংস</strong><small>২টি বা তার বেশি পণ্যে ২% ছাড়ের যোগ্যতা</small></span><b data-bundle-status data-complete-label="যোগ্যতা পূরণ">০ / ২</b></div>
               <div class="hr-checkout__track" role="progressbar" aria-label="বান্ডেল সেভিংসের অগ্রগতি" aria-valuemin="0" aria-valuemax="2" aria-valuenow="0"><i data-bundle-fill></i></div>
-              <p data-bundle-message aria-live="polite">২টি পণ্য যোগ করলে ২% ছাড় পাবেন।</p>
+              <p data-bundle-message aria-live="polite">ছাড় Shopify চেকআউটে প্রযোজ্য হলে দেখানো হবে।</p>
             </div>
             <div class="hr-checkout__offer" data-checkout-shipping>
-              <div class="hr-checkout__offer-heading"><span class="hr-checkout__offer-icon">৳</span><span><strong>ফ্রি শিপিং</strong><small>৳১,০০০-এর বেশি পণ্য কিনলে ডেলিভারি ফ্রি</small></span><b data-shipping-status>৳১,০০০-এর বেশি বাকি</b></div>
+              <div class="hr-checkout__offer-heading"><span class="hr-checkout__offer-icon">৳</span><span><strong>ফ্রি শিপিং</strong><small>৳১,০০০-এর বেশি কেনাকাটায় যোগ্যতা</small></span><b data-shipping-status data-complete-label="যোগ্যতা পূরণ">৳১,০০০-এর বেশি বাকি</b></div>
               <div class="hr-checkout__track" role="progressbar" aria-label="ফ্রি শিপিংয়ের অগ্রগতি" aria-valuemin="0" aria-valuemax="100001" aria-valuenow="0"><i data-shipping-fill></i></div>
-              <p data-shipping-message aria-live="polite">৳১,০০০-এর বেশি কেনাকাটায় ডেলিভারি ফ্রি।</p>
+              <p data-shipping-message aria-live="polite">চূড়ান্ত শিপিং চার্জ Shopify চেকআউটে নিশ্চিত হবে।</p>
             </div>
 
             <div class="checkout-totals-box hr-checkout__totals">
-              <div class="checkout-total-row"><span class="checkout-total-label">পণ্যের মোট (<span data-checkout-count>০</span> টি)</span><span class="checkout-total-val" data-checkout-subtotal>হিসাব হচ্ছে…</span></div>
-              <div class="checkout-total-row hr-checkout__discount"><span class="checkout-total-label">বান্ডেল সেভিংস (২%)</span><span class="checkout-total-val" data-checkout-discount>হিসাব হচ্ছে…</span></div>
-              <div class="checkout-total-row"><span class="checkout-total-label">ডেলিভারি চার্জ</span><span class="checkout-total-val" data-checkout-shipping-total>জেলা নির্বাচন করুন</span></div>
-              <div class="checkout-total-row hr-checkout__grand-total"><strong>সর্বমোট</strong><strong data-checkout-total>এলাকা নির্বাচন করুন</strong></div>
-            </div>
-
-            <div class="hr-checkout__confirmation" data-checkout-confirmation role="status" aria-live="assertive" hidden>
-              <span class="hr-checkout__success-mark" aria-hidden="true">✓</span>
-              <h2>অর্ডার সফল হয়েছে</h2>
-              <p data-confirmation-message></p>
-              <p>ক্যাশ অন ডেলিভারি — পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন।</p>
+              <div class="checkout-total-row"><span class="checkout-total-label">পণ্যের মোট (<span data-checkout-count>{{ cart.item_count }}</span> টি)</span><span class="checkout-total-val" data-checkout-subtotal>{{ cart.original_total_price | money }}</span></div>
+              <div class="checkout-total-row hr-checkout__discount"><span class="checkout-total-label">Shopify-তে প্রয়োগ ছাড়</span><span class="checkout-total-val" data-checkout-discount>{{ cart.total_discount | money }}</span></div>
+              <div class="checkout-total-row"><span class="checkout-total-label">ডেলিভারি চার্জ</span><span class="checkout-total-val" data-checkout-shipping-total>চেকআউটে হিসাব হবে</span></div>
+              <div class="checkout-total-row hr-checkout__grand-total"><strong>মোট (শিপিং বাদে)</strong><strong data-checkout-total>{{ cart.total_price | money }}</strong></div>
             </div>
           </div>
         </div>
@@ -125,8 +100,7 @@
         </a>
       </div>
     {%- else -%}
-      <!-- Empty Cart State -->
-      <div class="checkout-empty-state">
+      <div class="checkout-empty-state" data-checkout-empty>
         <div class="checkout-empty-state__icon">
           <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#5A1EB0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="9" cy="21" r="1"></circle>

@@ -524,9 +524,8 @@
   }
 
   /* ---------------- add to cart ----------------
-     Shopify's Cart API has no price field. The custom COD flow revalidates
-     current variant prices on the server and applies its eligible 2% discount
-     through Shopify's Admin orderCreate mutation. */
+     The review page uses Shopify cart totals; native Shopify checkout handles
+     final pricing, shipping, discounts, payment, and order creation. */
   var form = qs('.lf-atc', root);
   var message = qs('[data-atc-message]', root);
   if (form) {
