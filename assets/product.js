@@ -524,8 +524,8 @@
   }
 
   /* ---------------- add to cart ----------------
-     The review page uses Shopify cart totals; native Shopify checkout handles
-     final pricing, shipping, discounts, payment, and order creation. */
+     The Bengali checkout page submits orders through the secure Cloudflare
+     Worker; this product form must never create an order in the browser. */
   var form = qs('.lf-atc', root);
   var message = qs('[data-atc-message]', root);
   if (form) {

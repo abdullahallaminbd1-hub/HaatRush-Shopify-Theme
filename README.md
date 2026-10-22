@@ -9,9 +9,9 @@ A complete Shopify OS 2.0 theme purpose-built for Bengali-language electronics e
 ## ✨ Features
 
 - **Full Bengali Language Support** — Every label, button, and message is in Bengali (bn locale). No English fallback needed.
-- **Cash on Delivery (COD)** — Native COD checkout flow, the dominant payment method in Bangladesh.
+- **Custom Bengali COD Checkout** — Customer details are validated by a Cloudflare Worker and confirmed orders are created in Shopify Admin.
 - **Bangladesh Location Cascade** — Division → District → Upazila / Thana dropdown hierarchy for accurate delivery addresses.
-- **Configurable Delivery Charges** — Separate rates for inside Dhaka (৳70) and outside Dhaka (৳130), editable from the theme editor.
+- **Bangladesh Delivery Rules** — ৳70 in Dhaka Metropolitan Area, ৳130 outside it, with free shipping above ৳1,000.
 - **Responsive / Mobile-First Design** — Optimized for mobile shoppers, the primary device segment in Bangladesh.
 - **Shopify OS 2.0 Architecture** — JSON templates, section-everywhere support, and full Theme Editor integration.
 - **Announcement Bar** — Highlight promotions, free shipping thresholds, or special offers.

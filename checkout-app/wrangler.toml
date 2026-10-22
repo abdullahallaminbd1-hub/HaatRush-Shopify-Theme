@@ -1,0 +1,16 @@
+name = "haatrush-checkout"
+main = "worker.mjs"
+compatibility_date = "2026-10-22"
+workers_dev = true
+preview_urls = false
+
+[vars]
+SHOPIFY_SHOP_DOMAIN = "REPLACE_WITH_CONFIRMED_SHOP.myshopify.com"
+SHOPIFY_API_VERSION = "2026-10"
+BKASH_ENABLED = "false"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "haatrush-checkout"
+database_id = "003d43c3-8279-4631-a2b4-57c217ac9c0a"
+migrations_dir = "migrations"
