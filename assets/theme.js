@@ -30,12 +30,33 @@
   var setDrawer = function (open) {
     if (!setFlag('drawer-open', open)) { return; }
     if (cartDrawer) { cartDrawer.setAttribute('aria-hidden', open ? 'false' : 'true'); }
-  };
-  var setMenu = function (open) {
+};
+window.openCartDrawer = function () { setDrawer(true); };
+
+function removeCartItem(lineKey) {
+  fetch('/cart/change.js', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({ items: [{ key: lineKey, quantity: 0 }]); }
+    
     if (!setFlag('mobile-nav-open', open)) { return; }
     if (menuDrawer) { menuDrawer.setAttribute('aria-hidden', open ? 'false' : 'true'); }
     qsa('[data-menu-open]').forEach(function (t) { t.setAttribute('aria-expanded', open ? 'true' : 'false'); });
   };
+function changeCartItemQuantity(target) {
+  var lineKey = target.getAttribute('data-line-key');
+  var delta = target.getAttribute('data-cart-delta');
+  var currentQty = Number(target.getAttribute('data-quantity'));
+  var newQty = currentQty + Number(delta);
+  if (newQty < 0) { newQty = 0; }
+  fetch('/cart/change.js', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({ items: [{ key: lineKey, quantity: newQty }] })
+  });
+  if (cartDrawer) { cartDrawer.setAttribute('aria-hidden', 'false'); }
+  setDrawer(true);
+}
   /* The mobile search overlay closes from three places: the close control, the
      backdrop behind it, and the Escape key handled below. Opening keeps the
      existing behaviour (same form, same query, same results). Blurring the
@@ -59,6 +80,8 @@
     var target = event.target;
     if (target.closest('[data-cart-open]')) { event.preventDefault(); setDrawer(true); return; }
     if (target.closest('[data-drawer-close]')) { event.preventDefault(); setDrawer(false); return; }
+    if (target.closest('[data-cart-remove]')) { event.preventDefault(); removeCartItem(target.getAttribute('data-line-key')); return; }
+    if (target.closest('[data-cart-change]')) { event.preventDefault(); changeCartItemQuantity(target); return; }
     if (target.closest('[data-menu-open]')) { event.preventDefault(); setMenu(!body.classList.contains('mobile-nav-open')); return; }
     if (target.closest('[data-menu-close]')) { event.preventDefault(); setMenu(false); return; }
     if (target.closest('[data-search-open]')) { event.preventDefault(); setSearch(true); return; }
@@ -384,7 +407,30 @@
       }
       var drawerTotal = qs('.drawer__footer .drawer-total strong', cartDrawer);
       if (drawerTotal) { drawerTotal.textContent = money(cart.total_price); }
-      var checkoutLink = qs('.drawer__checkout', cartDrawer);
+      
+      // Add Place COD Order button below the total
+      var existingTotalRow = drawer.querySelector('.drawer__total-row');
+      if (!existingTotalRow) {
+        var totalContainer = drawer.querySelector('.drawer__footer .drawer-total');
+        if (totalContainer) {
+          var codButton = document.createElement('button');
+          codButton.type = 'button';
+          codButton.className = 'button button--accent button--block';
+          codButton.setAttribute('data-cod-order', 'true');
+          codButton.textContent = 'সর্বমোট পরের কে শ Produtt';
+          // Add click handler that reports limitation
+          codButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('নিও কোড ফর্ম কার্ট থেকে প্রPrimaryDirectlyTriggered হয় না। পণ্য পেজে নিও কোড ফর্ম আপ্লিকেশন ব্লক যোগ করুন।');
+          });
+          // Wrap the total and add the button
+          var totalRow = document.createElement('div');
+          totalRow.className = 'drawer__total-row';
+          totalRow.appendChild(totalContainer.parentNode.cloneNode(true));
+          totalRow.appendChild(codButton);
+          totalContainer.parentNode.replaceWith(totalRow);
+        }
+      }
       if (checkoutLink) { checkoutLink.textContent = 'à¦šà§‡à¦•à¦†à¦‰à¦Ÿ Â· ' + money(cart.total_price); }
     }
 
@@ -844,6 +890,7 @@
       remove.setAttribute('data-remove-item', '');
       remove.setAttribute('data-line', String(index + 1));
       remove.setAttribute('data-line-key', line.cartKey || '');
+      remove.setAttribute('data-cart-remove', '');
       remove.setAttribute('aria-label', line.title + ' à¦•à¦¾à¦°à§à¦Ÿ à¦¥à§‡à¦•à§‡ à¦¸à¦°à¦¾à¦¨');
       row.appendChild(remove);
       itemsNode.appendChild(row);
