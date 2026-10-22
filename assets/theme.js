@@ -152,8 +152,11 @@
      Liquid renders the initial state and this painter updates both indicators
      from the same confirmed cart snapshot after each cart operation. */
   var money = function (cents) {
-    if (typeof Shopify !== 'undefined' && Shopify.formatMoney) { return Shopify.formatMoney(cents); }
-    return '৳' + (cents / 100).toFixed(2);
+    var amount = Math.max(0, Number(cents) || 0) / 100;
+    return '৳' + new Intl.NumberFormat('bn-BD', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(amount);
   };
   var paintCartOffers = function (cart) {
     var root = qs('[data-cart-offers]');
