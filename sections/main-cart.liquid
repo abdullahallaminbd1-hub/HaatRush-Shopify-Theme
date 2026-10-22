@@ -46,11 +46,11 @@
               <h2>{{ item.product.title }}</h2>
               <p>{{ item.final_line_price | money }}</p>
               <div class="quantity-control">
-                <button type="button" data-cart-change data-line="{{ forloop.index }}" data-quantity="{{ item.quantity | minus: 1 }}" aria-label="{{ 'general.decrease_quantity' | t }}: {{ item.product.title | escape }}">−</button>
+                <button type="button" data-cart-change data-line="{{ forloop.index }}" data-line-key="{{ item.key | escape }}" data-quantity="{{ item.quantity | minus: 1 }}" data-cart-delta="-1" aria-label="{{ 'general.decrease_quantity' | t }}: {{ item.product.title | escape }}">−</button>
                 <span>{{ item.quantity }}</span>
-                <button type="button" data-cart-change data-line="{{ forloop.index }}" data-quantity="{{ item.quantity | plus: 1 }}" aria-label="{{ 'general.increase_quantity' | t }}: {{ item.product.title | escape }}">＋</button>
+                <button type="button" data-cart-change data-line="{{ forloop.index }}" data-line-key="{{ item.key | escape }}" data-quantity="{{ item.quantity | plus: 1 }}" data-cart-delta="1" aria-label="{{ 'general.increase_quantity' | t }}: {{ item.product.title | escape }}">＋</button>
               </div>
-              <a href="{{ item.url_to_remove }}" data-remove-item>{{ 'general.remove' | t }}</a>
+              <a href="{{ item.url_to_remove }}" data-remove-item data-line="{{ forloop.index }}" data-line-key="{{ item.key | escape }}">{{ 'general.remove' | t }}</a>
             </div>
           </div>
         {%- endfor -%}

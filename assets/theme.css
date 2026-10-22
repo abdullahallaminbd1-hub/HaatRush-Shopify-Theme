@@ -565,7 +565,7 @@ body.drawer-open .cart-drawer{transform:translateX(0);visibility:visible;}
 .cart-item .quantity-control button{width:32px;height:32px;min-width:32px;font-size:15px;border-radius:8px;}
 .cart-item .quantity-control span{min-width:26px;font-size:13px;font-weight:600;}
 /* transient per-row loading state - only the row the customer clicked */
-.cart-item.is-updating{position:relative;opacity:.5;pointer-events:none;}
+.cart-item.is-updating,.cart-page-item.is-updating,.hr-checkout__item.is-updating{position:relative;opacity:.55;pointer-events:none;}
 .cart-item.is-updating .cart-item__image{position:relative;}
 .cart-item.is-updating .cart-item__image::after{content:"";position:absolute;inset:0;border-radius:10px;background:rgba(255,255,255,.6);}
 .cart-item.is-updating .cart-item__image::before{content:"";position:absolute;top:50%;left:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border:2px solid var(--line-soft);border-top-color:var(--accent);border-radius:50%;animation:cart-row-spin .7s linear infinite;}
