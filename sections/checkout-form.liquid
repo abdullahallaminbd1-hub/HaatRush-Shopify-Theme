@@ -1,6 +1,6 @@
 {%- comment -%} HaatRush Theme - Shopify Admin API COD checkout {%- endcomment -%}
 
-<section class="checkout-page-section hr-checkout" id="checkoutPageSection" data-checkout-app data-proxy-root="/apps/haatrush-checkout">
+<section class="checkout-page-section hr-checkout" id="checkoutPageSection" data-checkout-app data-proxy-root="/apps/haatrush-checkout" data-locations-url="{{ 'locations.json' | asset_url }}">
   <div class="container">
     {%- render 'breadcrumb' -%}
 
@@ -58,7 +58,7 @@
               <textarea name="address" autocomplete="street-address" rows="3" maxlength="500" placeholder="বাড়ি/রোড নম্বর, এলাকা ও বিস্তারিত ঠিকানা" required></textarea>
             </label>
             <p class="hr-checkout__service-notice" data-checkout-service-notice role="status" aria-live="polite" hidden>
-              দুঃখিত, এই মুহূর্তে অর্ডার নেওয়া যাচ্ছে না। আপনার কার্ট সংরক্ষিত আছে—কিছুক্ষণ পর আবার চেষ্টা করুন।
+              চেকআউট সেবা সাময়িকভাবে অনুপলভ্য। পরে আবার চেষ্টা করুন।
             </p>
             <p class="hr-checkout__notice" data-checkout-error role="alert" hidden></p>
             <button type="submit" class="btn-primary checkout-submit-btn hr-checkout__submit" data-checkout-submit disabled>
@@ -96,11 +96,10 @@
             </div>
 
             <div class="checkout-totals-box hr-checkout__totals">
-              <div class="checkout-total-row"><span class="checkout-total-label">পণ্যের মোট (<span data-checkout-count>০</span> টি)</span><span class="checkout-total-val" data-checkout-subtotal>—</span></div>
-              <div class="checkout-total-row hr-checkout__discount"><span class="checkout-total-label">বান্ডেল সেভিংস (২%)</span><span class="checkout-total-val" data-checkout-discount>—</span></div>
+              <div class="checkout-total-row"><span class="checkout-total-label">পণ্যের মোট (<span data-checkout-count>০</span> টি)</span><span class="checkout-total-val" data-checkout-subtotal>হিসাব হচ্ছে…</span></div>
+              <div class="checkout-total-row hr-checkout__discount"><span class="checkout-total-label">বান্ডেল সেভিংস (২%)</span><span class="checkout-total-val" data-checkout-discount>হিসাব হচ্ছে…</span></div>
               <div class="checkout-total-row"><span class="checkout-total-label">ডেলিভারি চার্জ</span><span class="checkout-total-val" data-checkout-shipping-total>জেলা নির্বাচন করুন</span></div>
-              <div class="checkout-total-row hr-checkout__grand-total"><strong>সর্বমোট</strong><strong data-checkout-total>—</strong></div>
-              <p class="hr-checkout__tax-note">অর্ডার নিশ্চিত করার আগে পণ্যের মূল্য ও প্রাপ্যতা আবার মিলিয়ে নেওয়া হবে।</p>
+              <div class="checkout-total-row hr-checkout__grand-total"><strong>সর্বমোট</strong><strong data-checkout-total>এলাকা নির্বাচন করুন</strong></div>
             </div>
 
             <div class="hr-checkout__confirmation" data-checkout-confirmation role="status" aria-live="assertive" hidden>
@@ -109,7 +108,6 @@
               <p data-confirmation-message></p>
               <p>ক্যাশ অন ডেলিভারি — পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন।</p>
             </div>
-            <p class="checkout-security-note">অর্ডার সফলভাবে জমা হলে নিশ্চিতকরণ দেখানো হবে।</p>
           </div>
         </div>
       </div>

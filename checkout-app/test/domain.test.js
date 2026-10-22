@@ -3,6 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
+const STOREFRONT_LOCATIONS = require('../../assets/locations.json');
 const {
   DIVISIONS,
   DISTRICTS,
@@ -33,6 +34,7 @@ test('location data contains the administrative hierarchy and delivery follows t
   assert.equal(DIVISIONS.length, 8);
   assert.equal(DISTRICTS.length, 64);
   assert.equal(UPAZILAS.length, 500);
+  assert.deepEqual(STOREFRONT_LOCATIONS, { divisions: DIVISIONS, districts: DISTRICTS, upazilas: UPAZILAS });
   assert.ok(UPAZILAS.some((upazila) => upazila.value === 'Dhamrai' && upazila.district === 'Dhaka'));
   assert.ok([
     ['Mokamtola', 'Bogura'],

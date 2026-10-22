@@ -461,6 +461,7 @@
   var state = { quote: null, lines: [], sequence: 0, busy: false, confirmed: false, proxyReady: false, locations: null };
   var submissionStorageKey = 'haatrush-cod-submission';
   var base = root.getAttribute('data-proxy-root');
+  var locationsUrl = root.getAttribute('data-locations-url');
 
   if (!form || !division || !district || !upazila || !submit || !itemsNode || !base) { return; }
 
@@ -524,7 +525,9 @@
     return node;
   };
   var replaceOptions = function (select, entries, placeholder) {
-    select.replaceChildren(create('option', '', placeholder));
+    var placeholderOption = create('option', '', placeholder);
+    placeholderOption.value = '';
+    select.replaceChildren(placeholderOption);
     entries.forEach(function (entry) {
       var option = create('option', '', entry.label);
       option.value = entry.value;
@@ -555,7 +558,7 @@
     setText('[data-checkout-subtotal]', '—');
     setText('[data-checkout-discount]', '—');
     setText('[data-checkout-shipping-total]', '—');
-    setText('[data-checkout-total]', '—');
+    setText('[data-checkout-total]', '৳০.০০');
     state.quote = null;
     submit.disabled = true;
   };
@@ -673,7 +676,7 @@
     setText('[data-checkout-subtotal]', money(quote.subtotal));
     setText('[data-checkout-discount]', quote.bundleEligible ? '− ' + money(quote.bundleDiscount) : money(0));
     setText('[data-checkout-shipping-total]', quote.shipping == null ? 'জেলা নির্বাচন করুন' : quote.shipping === '0.00' ? 'ফ্রি' : money(quote.shipping));
-    setText('[data-checkout-total]', quote.total == null ? '—' : money(quote.total));
+    setText('[data-checkout-total]', quote.total == null ? 'এলাকা নির্বাচন করুন' : money(quote.total));
 
     var bundle = root.querySelector('[data-checkout-bundle]');
     var bundleFill = root.querySelector('[data-bundle-fill]');
@@ -748,11 +751,14 @@
       }).then(function (result) {
         if (sequence !== state.sequence) { return null; }
         if (!result.response.ok) {
-          if (result.response.status >= 500 || result.body.code === 'quote_unavailable') {
-            state.proxyReady = false;
-            setServiceNotice(true);
-          } else {
+          if (result.response.status === 422 && result.body.code !== 'quote_unavailable') {
+            state.proxyReady = true;
+            setServiceNotice(false);
             showError(result.body.error || 'কার্টের পণ্যের তথ্য যাচাই করা যায়নি।');
+          } else {
+            state.proxyReady = false;
+            clearError();
+            setServiceNotice(true);
           }
           renderQuote(preview);
           return null;
@@ -831,18 +837,31 @@
   };
 
   var loadLocations = function () {
-    return requestJson(endpoint('config')).then(function (result) {
+    if (!locationsUrl) { return Promise.reject(new Error('লোকেশন ডেটার ঠিকানা পাওয়া যায়নি।')); }
+    return requestJson(locationsUrl).then(function (result) {
+      var locations = result.body;
+      var divisionValues = new Set((locations && locations.divisions || []).map(function (entry) { return entry.value; }));
+      var districtValues = new Set((locations && locations.districts || []).map(function (entry) { return entry.value; }));
+      var validEntries = function (entries) {
+        return Array.isArray(entries) && entries.every(function (entry) {
+          return entry && typeof entry.value === 'string' && entry.value && typeof entry.label === 'string' && entry.label;
+        });
+      };
       if (!result.response.ok
-        || !Array.isArray(result.body.divisions)
-        || !Array.isArray(result.body.districts)
-        || !Array.isArray(result.body.upazilas)) {
+        || !locations
+        || !validEntries(locations.divisions)
+        || !validEntries(locations.districts)
+        || !validEntries(locations.upazilas)
+        || !locations.divisions.length
+        || !locations.upazilas.length
+        || !locations.districts.every(function (entry) { return divisionValues.has(entry.division); })
+        || !locations.upazilas.every(function (entry) { return districtValues.has(entry.district); })) {
         throw new Error('লোকেশন তালিকা লোড করা যায়নি।');
       }
-      state.locations = result.body;
+      state.locations = locations;
       replaceOptions(division, state.locations.divisions, 'বিভাগ নির্বাচন করুন');
       division.disabled = false;
       updateDistrictOptions();
-      state.proxyReady = true;
       return loadQuote();
     });
   };

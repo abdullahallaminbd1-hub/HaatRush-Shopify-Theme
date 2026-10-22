@@ -1346,7 +1346,7 @@ html[lang^="bn"] .lf-section-title,html[lang^="bn"] .hero h1,html[lang^="bn"] .n
 .hr-checkout__notice{margin:0 0 14px;padding:12px 14px;border:1px solid #FECACA;border-radius:10px;background:#FEF2F2;color:#991B1B;font-size:14px;line-height:1.6;}
 .hr-checkout__submit{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:56px;border:0;border-radius:11px;background:linear-gradient(100deg,#7628D7,#5A1EB0);color:#fff;font-size:18px;font-weight:700;line-height:1.4;cursor:pointer;}
 .hr-checkout__submit:disabled{opacity:.55;cursor:not-allowed;}
-.hr-checkout__privacy,.hr-checkout__tax-note{margin:12px 0 0;color:#64748B;font-size:12px;line-height:1.6;text-align:center;}
+.hr-checkout__privacy{margin:12px 0 0;color:#64748B;font-size:12px;line-height:1.6;text-align:center;}
 .hr-checkout__summary{position:sticky;top:16px;}
 .hr-checkout__items{display:grid;gap:0;margin:8px 0 16px;}
 .hr-checkout__loading{margin:0;padding:20px 8px;color:#64748B;font-size:14px;text-align:center;}
@@ -1384,7 +1384,6 @@ html[lang^="bn"] .lf-section-title,html[lang^="bn"] .hero h1,html[lang^="bn"] .n
 .hr-checkout__discount,.hr-checkout__discount .checkout-total-val{color:#059669!important;}
 .hr-checkout .hr-checkout__grand-total{margin-top:3px;padding:12px 14px;border-radius:10px;background:#F5EDFF;color:#5A1EB0;font-size:18px;}
 .hr-checkout .hr-checkout__grand-total strong{font-size:20px;font-weight:700;}
-.hr-checkout__tax-note{text-align:left;}
 .hr-checkout__confirmation{margin-top:16px;padding:18px;border:1px solid #B6E6D2;border-radius:14px;background:#F0FBF6;text-align:center;}
 .hr-checkout__success-mark{display:grid;place-items:center;width:44px;height:44px;margin:0 auto 10px;border-radius:50%;background:#059669;color:#fff;font-size:24px;font-weight:700;}
 .hr-checkout__confirmation h2{margin:0 0 6px;color:#047857;font-size:20px;font-weight:700;}
