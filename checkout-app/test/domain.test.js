@@ -30,7 +30,7 @@ function fixtureVariant(id, price, title) {
   };
 }
 
-test('location data contains the administrative hierarchy and delivery follows the selected Dhaka zone', () => {
+test('location data contains the administrative hierarchy and delivery follows the selected district', () => {
   assert.equal(DIVISIONS.length, 8);
   assert.equal(DISTRICTS.length, 64);
   assert.equal(UPAZILAS.filter((upazila) => upazila.type !== 'delivery_zone').length, 500);
@@ -52,12 +52,12 @@ test('location data contains the administrative hierarchy and delivery follows t
   ));
   const lines = normalizeLines([{ variantId: '101', quantity: 1 }]);
   const variants = [fixtureVariant('101', '500.00', 'পণ্য')];
-  assert.equal(buildQuote(lines, variants, 'Dhaka', 'Dhaka', 'Dhaka City').shipping, '70.00');
+  assert.equal(buildQuote(lines, variants, 'Dhaka', 'Dhaka', 'Dhaka City').shipping, '60.00');
   for (const upazila of ['Savar', 'Dhamrai', 'Keraniganj', 'Nawabganj', 'Dohar']) {
-    assert.equal(buildQuote(lines, variants, 'Dhaka', 'Dhaka', upazila).shipping, '130.00');
+    assert.equal(buildQuote(lines, variants, 'Dhaka', 'Dhaka', upazila).shipping, '60.00');
   }
+  assert.equal(buildQuote(lines, variants, 'Dhaka', 'Dhaka').shipping, '60.00');
   assert.equal(buildQuote(lines, variants, 'Chattogram', 'Chattogram', 'Rangunia').shipping, '130.00');
-  assert.equal(buildQuote(lines, variants, 'Dhaka', 'Dhaka').shipping, null);
   assert.throws(() => buildQuote(lines, variants, 'Dhaka', 'Chattogram'), /জেলা/);
 });
 
@@ -66,8 +66,8 @@ test('free shipping requires subtotal to exceed ৳1,000', () => {
   const atThreshold = buildQuote(lines, [fixtureVariant('101', '1000.00', 'পণ্য')], 'Dhaka', 'Dhaka', 'Dhaka City');
   const aboveThreshold = buildQuote(lines, [fixtureVariant('101', '1000.01', 'পণ্য')], 'Dhaka', 'Dhaka', 'Dhaka City');
   assert.equal(atThreshold.shippingFree, false);
-  assert.equal(atThreshold.shipping, '70.00');
-  assert.equal(atThreshold.total, '1070.00');
+  assert.equal(atThreshold.shipping, '60.00');
+  assert.equal(atThreshold.total, '1060.00');
   assert.equal(aboveThreshold.shippingFree, true);
   assert.equal(aboveThreshold.shipping, '0.00');
   assert.equal(aboveThreshold.total, '1000.01');
@@ -79,7 +79,7 @@ test('bundle discount is absent for one item and applied for two eligible units'
   const two = buildQuote(normalizeLines([{ variantId: '101', quantity: 2 }]), variants, 'Dhaka', 'Dhaka', 'Dhaka City');
   assert.equal(one.bundleDiscount, '0.00');
   assert.equal(two.bundleDiscount, '4.00');
-  assert.equal(two.total, '266.00');
+  assert.equal(two.total, '256.00');
   const order = buildOrderInput({
     quote: two,
     lines: [],

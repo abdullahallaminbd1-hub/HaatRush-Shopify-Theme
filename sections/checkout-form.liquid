@@ -1,4 +1,11 @@
 {%- comment -%} HaatRush Theme - Cloudflare Worker COD checkout {%- endcomment -%}
+{%- assign checkout_bundle_discount = 0 -%}
+{%- if cart.item_count >= 2 -%}
+  {%- for item in cart.items -%}
+    {%- assign checkout_line_discount = item.original_line_price | times: 2 | divided_by: 100 | floor -%}
+    {%- assign checkout_bundle_discount = checkout_bundle_discount | plus: checkout_line_discount -%}
+  {%- endfor -%}
+{%- endif -%}
 
 <section
   class="checkout-page-section hr-checkout"
@@ -9,6 +16,9 @@
   data-bkash-enabled="{% if section.settings.bkash_number != blank %}true{% else %}false{% endif %}"
   data-bkash-number="{{ section.settings.bkash_number | escape }}"
   data-bkash-instructions="{{ section.settings.bkash_instructions | escape }}"
+  data-initial-subtotal-minor="{{ cart.original_total_price | default: 0 }}"
+  data-initial-discount-minor="{{ checkout_bundle_discount }}"
+  data-initial-shipping-free="{% if cart.original_total_price > 100000 %}true{% else %}false{% endif %}"
 >
   <div class="container">
     {%- render 'breadcrumb' -%}
@@ -18,7 +28,7 @@
       <p class="checkout-page-subtitle">নিরাপদে অর্ডার সম্পন্ন করতে ডেলিভারির তথ্য দিন। পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন।</p>
     </div>
 
-      <div class="checkout-layout hr-checkout__layout" data-checkout-content hidden>
+      <div class="checkout-layout hr-checkout__layout" data-checkout-content{% if cart.item_count == 0 %} hidden{% endif %}>
         <div class="checkout-form-column">
           <form class="checkout-card hr-checkout__form" data-checkout-form novalidate>
             <div class="checkout-card__header">
@@ -39,8 +49,16 @@
               </label>
               <label class="hr-checkout__field">
                 <span>বিভাগ <b aria-hidden="true">*</b></span>
-                <select name="division" autocomplete="address-level1" required disabled>
+                <select name="division" autocomplete="address-level1" required>
                   <option value="">বিভাগ নির্বাচন করুন</option>
+                  <option value="Chattogram">চট্টগ্রাম</option>
+                  <option value="Rajshahi">রাজশাহী</option>
+                  <option value="Khulna">খুলনা</option>
+                  <option value="Barishal">বরিশাল</option>
+                  <option value="Sylhet">সিলেট</option>
+                  <option value="Dhaka">ঢাকা</option>
+                  <option value="Rangpur">রংপুর</option>
+                  <option value="Mymensingh">ময়মনসিংহ</option>
                 </select>
               </label>
               <label class="hr-checkout__field">
@@ -87,6 +105,12 @@
             </button>
             <p class="hr-checkout__privacy">অর্ডার সম্পন্ন হলে আপনার তথ্য ডেলিভারির জন্য ব্যবহার করা হবে।</p>
           </form>
+          <div class="checkout-card hr-checkout__confirmation" data-checkout-confirmation role="status" aria-live="assertive" hidden>
+            <span class="hr-checkout__success-mark" aria-hidden="true">✓</span>
+            <h2>আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে। ধন্যবাদ!</h2>
+            <p>ক্যাশ অন ডেলিভারি — পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন।</p>
+            <p data-confirmation-bkash hidden></p>
+          </div>
         </div>
 
         <div class="checkout-summary-column">
@@ -98,37 +122,55 @@
                 <p class="checkout-card__subtitle">আপনার নির্বাচিত পণ্য ও মোট খরচ</p>
               </div>
             </div>
-            <div class="checkout-items-list hr-checkout__items" data-checkout-items aria-live="polite"></div>
+            <div class="checkout-items-list hr-checkout__items" data-checkout-items aria-live="polite">
+              {%- for item in cart.items -%}
+                <article class="hr-checkout__item">
+                  {%- if item.image -%}
+                    <img class="hr-checkout__item-image" src="{{ item.image | image_url: width: 136 }}" alt="" width="68" height="68" loading="lazy">
+                  {%- else -%}
+                    <span class="hr-checkout__item-image hr-checkout__item-placeholder" aria-hidden="true">◇</span>
+                  {%- endif -%}
+                  <div class="hr-checkout__item-info">
+                    <strong class="hr-checkout__item-title">{{ item.product.title | escape }}</strong>
+                    {%- unless item.variant.title == 'Default Title' -%}<small class="hr-checkout__item-variant">{{ item.variant.title | escape }}</small>{%- endunless -%}
+                    <div class="hr-checkout__item-controls">
+                      <button type="button" class="checkout-qty-btn" data-cart-change data-line="{{ forloop.index }}" data-line-key="{{ item.key | escape }}" data-cart-delta="-1" data-quantity="{{ item.quantity | minus: 1 }}" aria-label="পরিমাণ কমান">−</button>
+                      <span class="checkout-qty-val">{{ item.quantity }}</span>
+                      <button type="button" class="checkout-qty-btn" data-cart-change data-line="{{ forloop.index }}" data-line-key="{{ item.key | escape }}" data-cart-delta="1" data-quantity="{{ item.quantity | plus: 1 }}" aria-label="পরিমাণ বাড়ান">+</button>
+                    </div>
+                  </div>
+                  <strong class="hr-checkout__item-price">{{ item.original_line_price | money }}</strong>
+                  <button type="button" class="checkout-item__remove-btn" data-remove-item data-line="{{ forloop.index }}" data-line-key="{{ item.key | escape }}" aria-label="{{ item.product.title | escape }} কার্ট থেকে সরান">×</button>
+                </article>
+              {%- endfor -%}
+            </div>
+
+            {%- assign checkout_shipping_progress = cart.original_total_price | times: 100 | divided_by: 100001 -%}
+            {%- assign checkout_shipping_remaining = 100001 | minus: cart.original_total_price -%}
+            {%- assign checkout_estimated_total = cart.original_total_price | minus: checkout_bundle_discount -%}
 
             <div class="hr-checkout__offer" data-checkout-bundle>
-              <div class="hr-checkout__offer-heading"><span class="hr-checkout__offer-icon">%</span><span><strong>বান্ডেল সেভিংস</strong><small>২টি বা তার বেশি পণ্যে ২% ছাড়</small></span><b data-bundle-status>০ / ২</b></div>
-              <div class="hr-checkout__track" role="progressbar" aria-label="বান্ডেল সেভিংসের অগ্রগতি" aria-valuemin="0" aria-valuemax="2" aria-valuenow="0"><i data-bundle-fill></i></div>
-              <p data-bundle-message aria-live="polite">২টি পণ্য যোগ করলে ২% ছাড় পাবেন।</p>
+              <div class="hr-checkout__offer-heading"><span class="hr-checkout__offer-icon">%</span><span><strong>বান্ডেল সেভিংস</strong><small>২টি বা তার বেশি পণ্যে ২% ছাড়</small></span><b data-bundle-status>{% if cart.item_count >= 2 %}যোগ্যতা পূরণ{% else %}{{ cart.item_count }} / ২{% endif %}</b></div>
+              <div class="hr-checkout__track" role="progressbar" aria-label="বান্ডেল সেভিংসের অগ্রগতি" aria-valuemin="0" aria-valuemax="2" aria-valuenow="{{ cart.item_count | at_most: 2 }}"><i data-bundle-fill style="width:{{ cart.item_count | times: 50 | at_most: 100 }}%"></i></div>
+              <p data-bundle-message aria-live="polite">{% if cart.item_count >= 2 %}২% বান্ডেল ছাড় অর্ডারে প্রয়োগ করা হবে।{% else %}আর {{ 2 | minus: cart.item_count }}টি পণ্য যোগ করলে ২% ছাড় পাবেন।{% endif %}</p>
             </div>
             <div class="hr-checkout__offer" data-checkout-shipping>
-              <div class="hr-checkout__offer-heading"><span class="hr-checkout__offer-icon">৳</span><span><strong>ফ্রি শিপিং</strong><small>৳১,০০০-এর বেশি পণ্য কিনলে ডেলিভারি ফ্রি</small></span><b data-shipping-status>৳১,০০০-এর বেশি বাকি</b></div>
-              <div class="hr-checkout__track" role="progressbar" aria-label="ফ্রি শিপিংয়ের অগ্রগতি" aria-valuemin="0" aria-valuemax="100001" aria-valuenow="0"><i data-shipping-fill></i></div>
+              <div class="hr-checkout__offer-heading"><span class="hr-checkout__offer-icon">৳</span><span><strong>ফ্রি শিপিং</strong><small>৳১,০০০-এর বেশি পণ্য কিনলে ডেলিভারি ফ্রি</small></span><b data-shipping-status>{% if cart.original_total_price > 100000 %}যোগ্যতা পূরণ{% else %}{{ checkout_shipping_remaining | money }} বাকি{% endif %}</b></div>
+              <div class="hr-checkout__track" role="progressbar" aria-label="ফ্রি শিপিংয়ের অগ্রগতি" aria-valuemin="0" aria-valuemax="100001" aria-valuenow="{{ cart.original_total_price | at_most: 100001 }}"><i data-shipping-fill style="width:{{ checkout_shipping_progress | at_most: 100 }}%"></i></div>
               <p data-shipping-message aria-live="polite">৳১,০০০-এর বেশি কেনাকাটায় ডেলিভারি ফ্রি।</p>
             </div>
 
             <div class="checkout-totals-box hr-checkout__totals">
-              <div class="checkout-total-row"><span class="checkout-total-label">পণ্যের মোট (<span data-checkout-count>০</span> টি)</span><span class="checkout-total-val" data-checkout-subtotal>হিসাব হচ্ছে…</span></div>
-              <div class="checkout-total-row hr-checkout__discount"><span class="checkout-total-label">বান্ডেল সেভিংস (২%)</span><span class="checkout-total-val" data-checkout-discount>হিসাব হচ্ছে…</span></div>
+              <div class="checkout-total-row"><span class="checkout-total-label">পণ্যের মোট (<span data-checkout-count>{{ cart.item_count }}</span> টি)</span><span class="checkout-total-val" data-checkout-subtotal>{{ cart.original_total_price | money }}</span></div>
+              <div class="checkout-total-row hr-checkout__discount"><span class="checkout-total-label">বান্ডেল সেভিংস (২%)</span><span class="checkout-total-val" data-checkout-discount>{% if checkout_bundle_discount > 0 %}− {{ checkout_bundle_discount | money }}{% else %}{{ 0 | money }}{% endif %}</span></div>
               <div class="checkout-total-row"><span class="checkout-total-label">ডেলিভারি চার্জ</span><span class="checkout-total-val" data-checkout-shipping-total>জেলা নির্বাচন করুন</span></div>
-              <div class="checkout-total-row hr-checkout__grand-total"><strong>সর্বমোট</strong><strong data-checkout-total>এলাকা নির্বাচন করুন</strong></div>
+              <div class="checkout-total-row hr-checkout__grand-total"><strong>সর্বমোট</strong><strong data-checkout-total>{% if cart.original_total_price > 100000 %}{% assign checkout_estimated_total = checkout_estimated_total %}{{ checkout_estimated_total | money }}{% else %}জেলা নির্বাচন করুন{% endif %}</strong></div>
             </div>
 
-            <div class="hr-checkout__confirmation" data-checkout-confirmation role="status" aria-live="assertive" hidden>
-              <span class="hr-checkout__success-mark" aria-hidden="true">✓</span>
-              <h2>অর্ডার সফল হয়েছে</h2>
-              <p data-confirmation-message></p>
-              <p data-confirmation-payment>ক্যাশ অন ডেলিভারি — পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন।</p>
-              <p data-confirmation-bkash hidden></p>
-            </div>
           </div>
         </div>
       </div>
-      <div class="checkout-empty-state" data-checkout-empty hidden>
+      <div class="checkout-empty-state" data-checkout-empty{% if cart.item_count > 0 %} hidden{% endif %}>
         <div class="checkout-empty-state__icon" aria-hidden="true">🛒</div>
         <h2 class="checkout-empty-state__title">আপনার কার্ট বর্তমানে খালি আছে</h2>
         <p class="checkout-empty-state__desc">আপনার পছন্দের ইলেকট্রনিক্স পণ্য বাছাই করতে আমাদের শপ ঘুরে দেখুন।</p>

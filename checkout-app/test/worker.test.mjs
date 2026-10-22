@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHmac } from 'node:crypto';
 import { handleRequest } from '../worker.mjs';
-import { hmacHex, verifyShopifyOAuthHmac } from '../worker-domain.mjs';
+import { buildOrderInput, hmacHex, verifyShopifyOAuthHmac } from '../worker-domain.mjs';
 
 const appSecret = 'shopify-app-secret-for-worker-tests-123456';
 const quoteSecret = 'quote-secret-for-worker-tests-1234567890';
@@ -280,8 +280,8 @@ function createShopifyFetch({ price = '500.00', inventoryQuantity = 10 } = {}) {
             displayFinancialStatus: 'PENDING',
             currentSubtotalPriceSet: { shopMoney: { amount: '1000.00', currencyCode: 'BDT' } },
             currentTotalDiscountsSet: { shopMoney: { amount: '20.00', currencyCode: 'BDT' } },
-            currentShippingPriceSet: { shopMoney: { amount: '70.00', currencyCode: 'BDT' } },
-            currentTotalPriceSet: { shopMoney: { amount: '1050.00', currencyCode: 'BDT' } }
+            currentShippingPriceSet: { shopMoney: { amount: '60.00', currencyCode: 'BDT' } },
+            currentTotalPriceSet: { shopMoney: { amount: '1040.00', currencyCode: 'BDT' } }
           },
           userErrors: []
         }
@@ -467,15 +467,15 @@ test('Worker health and signed location configuration are available', async () =
   });
 });
 
-test('quote applies the strict free-shipping threshold, bundle saving, and Dhaka zones', async () => {
+test('quote applies the strict free-shipping threshold, bundle saving, and district delivery rates', async () => {
   const { fetchImpl } = createShopifyFetch();
   const env = await testEnvironment({ fetchImpl });
 
   const exactThreshold = await quoteFor(env, [{ variantId: '101', quantity: 2 }]);
   assert.equal(exactThreshold.subtotal, '1000.00');
   assert.equal(exactThreshold.bundleDiscount, '20.00');
-  assert.equal(exactThreshold.shipping, '70.00');
-  assert.equal(exactThreshold.total, '1050.00');
+  assert.equal(exactThreshold.shipping, '60.00');
+  assert.equal(exactThreshold.total, '1040.00');
 
   const overThreshold = await quoteFor(env, [{ variantId: '101', quantity: 3 }]);
   assert.equal(overThreshold.subtotal, '1500.00');
@@ -487,8 +487,56 @@ test('quote applies the strict free-shipping threshold, bundle saving, and Dhaka
     district: 'Dhaka',
     upazila: 'Savar'
   });
-  assert.equal(outsideDhaka.shipping, '130.00');
+  assert.equal(outsideDhaka.shipping, '60.00');
   assert.equal(outsideDhaka.bundleDiscount, '0.00');
+
+  const dhakaWithoutUpazila = await quoteFor(env, [{ variantId: '101', quantity: 1 }], {
+    division: 'Dhaka',
+    district: 'Dhaka',
+    upazila: ''
+  });
+  assert.equal(dhakaWithoutUpazila.shipping, '60.00');
+  assert.equal(dhakaWithoutUpazila.total, '560.00');
+
+  const otherDhakaDivisionDistrict = await quoteFor(env, [{ variantId: '101', quantity: 1 }], {
+    division: 'Dhaka',
+    district: 'Narayanganj',
+    upazila: 'Narayanganj Sadar'
+  });
+  assert.equal(otherDhakaDivisionDistrict.shipping, '130.00');
+});
+
+test('order input rejects manipulated district fee, discount, free-shipping flag, and total', async () => {
+  const { fetchImpl } = createShopifyFetch();
+  const env = await testEnvironment({ fetchImpl });
+  const quote = await quoteFor(env, [{ variantId: '101', quantity: 2 }]);
+  const customer = {
+    name: 'রহিম উদ্দিন',
+    phone: '01712345678',
+    address: 'বাড়ি ১, সড়ক ২',
+    division: 'Dhaka',
+    district: 'Dhaka',
+    upazila: 'Dhaka City',
+    paymentMethod: 'cod'
+  };
+  const input = { quote, lines: [], customer, submissionId, bkashEnabled: false };
+
+  assert.throws(() => buildOrderInput({
+    ...input,
+    quote: { ...quote, shipping: '70.00', total: '1050.00' }
+  }), /খরচের হিসাব সঠিক নয়/);
+  assert.throws(() => buildOrderInput({
+    ...input,
+    quote: { ...quote, bundleDiscount: '19.99' }
+  }), /খরচের হিসাব সঠিক নয়/);
+  assert.throws(() => buildOrderInput({
+    ...input,
+    quote: { ...quote, shippingFree: true }
+  }), /খরচের হিসাব সঠিক নয়/);
+  assert.throws(() => buildOrderInput({
+    ...input,
+    quote: { ...quote, total: '1050.00' }
+  }), /খরচের হিসাব সঠিক নয়/);
 });
 
 test('fractional percentage discounts match Shopify currency rounding', async () => {
@@ -538,7 +586,7 @@ test('order creation is server-priced, pending, tagged for COD, and deduplicated
   const confirmation = await response.json();
   assert.equal(confirmation.orderName, '#1001');
   assert.equal(confirmation.financialStatus, 'PENDING');
-  assert.equal(confirmation.total, '1050.00');
+  assert.equal(confirmation.total, '1040.00');
   assert.equal(shopify.state.mutations, 1);
   assert.equal(shopify.state.orderVariables.order.financialStatus, 'PENDING');
   assert.equal('fulfillmentStatus' in shopify.state.orderVariables.order, false);
@@ -546,8 +594,8 @@ test('order creation is server-priced, pending, tagged for COD, and deduplicated
   assert.equal(shopify.state.orderVariables.order.phone, '+8801712345678');
   assert.equal(shopify.state.orderVariables.order.shippingAddress.firstName, 'রহিম');
   assert.equal(shopify.state.orderVariables.order.shippingAddress.lastName, 'উদ্দিন');
-  assert.equal(shopify.state.orderVariables.order.shippingLines[0].priceSet.shopMoney.amount, '70.00');
-  assert.equal(shopify.state.orderVariables.order.shippingLines[0].code, 'DHAKA-METRO-70');
+  assert.equal(shopify.state.orderVariables.order.shippingLines[0].priceSet.shopMoney.amount, '60.00');
+  assert.equal(shopify.state.orderVariables.order.shippingLines[0].code, 'DHAKA-DISTRICT-60');
   assert.equal(shopify.state.orderVariables.order.transactions[0].gateway, 'ক্যাশ অন ডেলিভারি');
   assert.equal(shopify.state.orderVariables.order.discountCode.itemPercentageDiscountCode.percentage, 2);
   assert.equal(shopify.state.orderVariables.options.inventoryBehaviour, 'DECREMENT_OBEYING_POLICY');

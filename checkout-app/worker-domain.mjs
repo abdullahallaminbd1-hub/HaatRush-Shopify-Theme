@@ -177,9 +177,9 @@ export function buildQuote(lines, variants, district, division, upazila) {
   const shippingFree = subtotal > FREE_SHIPPING_THRESHOLD;
   const shipping = shippingFree
     ? 0n
-    : !district || (district === 'Dhaka' && !upazila)
+    : !district
       ? null
-      : district === 'Dhaka' && upazila === 'Dhaka City' ? 7000n : 13000n;
+      : district === 'Dhaka' ? 6000n : 13000n;
   const total = shipping === null ? null : subtotal - bundleDiscount + shipping;
 
   return {
@@ -352,12 +352,29 @@ export function buildOrderInput({ quote, lines, customer, submissionId, bkashEna
   if (quote.shipping === null || quote.total === null) {
     throw new Error('ডেলিভারির এলাকা নির্বাচন করুন।');
   }
+  const expectedShipping = quote.shippingFree ? '0.00' : customer.district === 'Dhaka' ? '60.00' : '130.00';
+  const expectedBundleDiscount = quote.itemCount >= BUNDLE_MINIMUM_ITEMS
+    ? fromMinorUnits(quote.lines.reduce((sum, line) => (
+      sum + percentageDiscount(toMinorUnits(line.unitPrice) * BigInt(line.quantity), BUNDLE_PERCENTAGE)
+    ), 0n))
+    : '0.00';
+  const expectedShippingFree = toMinorUnits(quote.subtotal) > FREE_SHIPPING_THRESHOLD;
+  const expectedTotal = fromMinorUnits(
+    toMinorUnits(quote.subtotal) - toMinorUnits(expectedBundleDiscount) + toMinorUnits(expectedShipping)
+  );
+  if (quote.bundleEligible !== (quote.itemCount >= BUNDLE_MINIMUM_ITEMS)
+    || quote.bundleDiscount !== expectedBundleDiscount
+    || quote.shippingFree !== expectedShippingFree
+    || quote.shipping !== expectedShipping
+    || quote.total !== expectedTotal) {
+    throw new Error('ডেলিভারি বা মোট খরচের হিসাব সঠিক নয়।');
+  }
   const [firstName, ...lastNameParts] = customer.name.trim().split(/\s+/);
   const phone = normalizePhone(customer.phone);
   const paymentLabel = customer.paymentMethod === 'bkash' ? 'বিকাশ (ম্যানুয়াল)' : 'ক্যাশ অন ডেলিভারি';
   const shippingTitle = quote.shippingFree
     ? 'ফ্রি ডেলিভারি'
-    : quote.upazila === 'Dhaka City' ? 'ঢাকা মহানগরে ডেলিভারি' : 'ঢাকার বাইরে ডেলিভারি';
+    : customer.district === 'Dhaka' ? 'ঢাকা জেলায় ডেলিভারি' : 'ঢাকার বাইরে ডেলিভারি';
   const order = {
     currency: 'BDT',
     financialStatus: 'PENDING',
@@ -380,8 +397,8 @@ export function buildOrderInput({ quote, lines, customer, submissionId, bkashEna
     phone,
     shippingLines: [{
       title: shippingTitle,
-      code: quote.shippingFree ? 'FREE' : quote.upazila === 'Dhaka City' ? 'DHAKA-METRO-70' : 'OUTSIDE-DHAKA-130',
-      priceSet: { shopMoney: { amount: quote.shipping, currencyCode: 'BDT' } }
+      code: quote.shippingFree ? 'FREE' : customer.district === 'Dhaka' ? 'DHAKA-DISTRICT-60' : 'OUTSIDE-DHAKA-130',
+      priceSet: { shopMoney: { amount: expectedShipping, currencyCode: 'BDT' } }
     }],
     transactions: [{
       kind: 'SALE',

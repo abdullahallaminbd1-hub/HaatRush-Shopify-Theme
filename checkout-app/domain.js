@@ -137,9 +137,9 @@ function buildQuote(lines, variants, district, division, upazila) {
   const shippingFree = subtotal > FREE_SHIPPING_THRESHOLD;
   const shipping = shippingFree
     ? 0n
-    : !district || (district === 'Dhaka' && !upazila)
+    : !district
       ? null
-      : district === 'Dhaka' && upazila === 'Dhaka City' ? 7000n : 13000n;
+      : district === 'Dhaka' ? 6000n : 13000n;
   const total = shipping === null ? null : subtotal - bundleDiscount + shipping;
 
   return {
@@ -265,7 +265,7 @@ function buildOrderInput({ quote, lines, customer, submissionId }) {
   }));
   const shippingTitle = quote.shippingFree
     ? 'ফ্রি ডেলিভারি'
-    : quote.upazila === 'Dhaka City' ? 'ঢাকা মহানগরে ডেলিভারি' : 'ঢাকার বাইরে ডেলিভারি';
+    : customer.district === 'Dhaka' ? 'ঢাকা জেলায় ডেলিভারি' : 'ঢাকার বাইরে ডেলিভারি';
   const order = {
     currency: 'BDT',
     customer: {
@@ -291,7 +291,7 @@ function buildOrderInput({ quote, lines, customer, submissionId }) {
     phone,
     shippingLines: [{
       title: shippingTitle,
-      code: quote.shippingFree ? 'FREE' : quote.upazila === 'Dhaka City' ? 'DHAKA-METRO-70' : 'OUTSIDE-DHAKA-130',
+      code: quote.shippingFree ? 'FREE' : customer.district === 'Dhaka' ? 'DHAKA-DISTRICT-60' : 'OUTSIDE-DHAKA-130',
       priceSet: { shopMoney: { amount: quote.shipping, currencyCode: 'BDT' } }
     }],
     tags: ['haatrush-cod', 'haatrush-custom-checkout'],

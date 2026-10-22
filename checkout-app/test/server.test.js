@@ -92,8 +92,8 @@ test('mocked Admin API order creation is pending COD and idempotent', async (t) 
             displayFinancialStatus: 'PENDING',
             currentSubtotalPriceSet: { shopMoney: { amount: '980.00', currencyCode: 'BDT' } },
             currentTotalDiscountsSet: { shopMoney: { amount: '20.00', currencyCode: 'BDT' } },
-            currentShippingPriceSet: { shopMoney: { amount: '70.00', currencyCode: 'BDT' } },
-            currentTotalPriceSet: { shopMoney: { amount: '1050.00', currencyCode: 'BDT' } }
+            currentShippingPriceSet: { shopMoney: { amount: '60.00', currencyCode: 'BDT' } },
+            currentTotalPriceSet: { shopMoney: { amount: '1040.00', currencyCode: 'BDT' } }
           },
           userErrors: []
         }
@@ -167,10 +167,10 @@ test('mocked Admin API order creation is pending COD and idempotent', async (t) 
   const firstResult = await firstResponse.json();
   assert.equal(firstResult.orderName, '#1001');
   assert.equal(firstResult.financialStatus, 'PENDING');
-  assert.equal(firstResult.total, '1050.00');
+  assert.equal(firstResult.total, '1040.00');
   assert.equal(createdOrderInput.order.financialStatus, 'PENDING');
-  assert.equal(createdOrderInput.order.shippingLines[0].priceSet.shopMoney.amount, '70.00');
-  assert.equal(createdOrderInput.order.shippingLines[0].code, 'DHAKA-METRO-70');
+  assert.equal(createdOrderInput.order.shippingLines[0].priceSet.shopMoney.amount, '60.00');
+  assert.equal(createdOrderInput.order.shippingLines[0].code, 'DHAKA-DISTRICT-60');
   assert.equal(createdOrderInput.order.discountCode.itemPercentageDiscountCode.percentage, 2);
   assert.ok(createdOrderInput.order.customAttributes.some((attribute) =>
     attribute.key === 'delivery_division' && attribute.value === 'Dhaka'
