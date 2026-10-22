@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "current": {
     "brand_tagline": "ইলেকট্রনিক্স, গ্যাজেট ও প্রতিদিনের প্রয়োজনীয় ডিভাইস",
@@ -10,6 +19,10 @@
     "instagram_url": "https://facebook.com",
     "tiktok_url": "",
     "facebook_url": "",
+    "cart_promo_enabled": false,
+    "cart_promo_threshold": 7500,
+    "cart_promo_label": "",
+    "cart_promo_reached_label": "",
     "sections": {
       "announcement-bar": {
         "type": "announcement-bar",
@@ -67,10 +80,6 @@
         "disabled": true,
         "settings": {}
       }
-    },
-    "cart_promo_enabled": false,
-    "cart_promo_threshold": 7500,
-    "cart_promo_label": "",
-    "cart_promo_reached_label": ""
+    }
   }
 }
