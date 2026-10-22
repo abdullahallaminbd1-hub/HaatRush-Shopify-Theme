@@ -148,54 +148,58 @@
     }
   });
 
-  /* ---------- cart milestone updater ----------
-     Single source of truth for the reward strip: the Liquid in
-     cart-drawer.liquid computes the SAME percentage, so the server re-render
-     and this live painter never disagree (a mismatch here used to paint the
-     fill forward, then jump it backward when refreshDrawer swapped the DOM).
-     The strip only appears when the merchant has enabled it in Theme settings
-     and provided a factual label, so no unconfigured offer is ever promised. */
+  /* ---------- cart offer progress ----------
+     Liquid renders the initial state and this painter updates both indicators
+     from the same confirmed cart snapshot after each cart operation. */
   var money = function (cents) {
     if (typeof Shopify !== 'undefined' && Shopify.formatMoney) { return Shopify.formatMoney(cents); }
     return '৳' + (cents / 100).toFixed(2);
   };
-  var milestoneState = function (cart, threshold) {
-    var count = (cart && cart.item_count) || 0;
-    var subtotal = (cart && cart.total_price) || 0;
-    var shipDone = threshold > 0 && subtotal >= threshold;
-    var pct = 0;
-    if (shipDone) { pct = 100; }
-    else if (threshold > 0 && subtotal > 0) {
-      pct = Math.min(99, Math.round(subtotal * 100 / threshold));
-    }
-    return { count: count, subtotal: subtotal, shipDone: shipDone, pct: pct };
-  };
-  var paintMilestones = function (cart) {
-    var root = qs('[data-cart-milestones]');
+  var paintCartOffers = function (cart) {
+    var root = qs('[data-cart-offers]');
     if (!root || !cart) { return; }
-    var threshold = parseInt(root.getAttribute('data-threshold'), 10);
-    if (isNaN(threshold) || threshold < 0) { return; }
-    var st = milestoneState(cart, threshold);
-    root.setAttribute('data-subtotal', String(st.subtotal));
-    var fill = qs('[data-milestone-fill]', root);
-    if (fill) { fill.style.width = st.pct + '%'; }
-    var track = qs('.reward-strip__track', root);
-    if (track) { track.setAttribute('aria-valuenow', String(st.pct)); }
-    if (st.shipDone) { root.setAttribute('data-complete', 'true'); }
-    else { root.removeAttribute('data-complete'); }
-    var markers = qsa('.reward-strip__marker', root);
-    markers.forEach(function (marker) {
-      marker.classList.toggle('is-done', st.shipDone);
-    });
-    var lead = qs('[data-milestone-lead]', root);
-    if (lead) {
-      var label = root.getAttribute('data-label') || '';
-      var reached = root.getAttribute('data-label-reached') || label;
-      if (st.shipDone) { lead.textContent = reached; }
-      else {
-        var remaining = threshold - st.subtotal;
-        lead.textContent = label + ' আরও ' + money(remaining) + ' খরচ করুন';
-      }
+    var bundleTarget = parseInt(root.getAttribute('data-bundle-target'), 10);
+    var shippingThreshold = parseInt(root.getAttribute('data-shipping-threshold'), 10);
+    if (!bundleTarget || bundleTarget < 1 || isNaN(shippingThreshold) || shippingThreshold < 1) { return; }
+
+    var count = Math.max(0, parseInt(cart.item_count, 10) || 0);
+    var subtotal = Math.max(0, parseInt(cart.total_price, 10) || 0);
+    var bundleOffer = qs('[data-bundle-offer]', root);
+    var bundleFill = qs('[data-bundle-fill]', root);
+    var bundleTrack = qs('[data-bundle-offer] [role="progressbar"]', root);
+    var bundleStatus = qs('[data-bundle-status]', root);
+    var bundleComplete = count >= bundleTarget;
+    var bundleValue = Math.min(count, bundleTarget);
+    if (bundleOffer) { bundleOffer.classList.toggle('is-complete', bundleComplete); }
+    if (bundleFill) { bundleFill.style.width = Math.min(100, Math.round(bundleValue * 100 / bundleTarget)) + '%'; }
+    if (bundleTrack) { bundleTrack.setAttribute('aria-valuenow', String(bundleValue)); }
+    if (bundleStatus) {
+      bundleStatus.textContent = bundleComplete
+        ? 'অভিনন্দন! আপনি ২% ছাড়ের জন্য যোগ্য।'
+        : 'আর ' + (bundleTarget - count) + 'টি পণ্য যোগ করুন';
+    }
+    if (bundleOffer) {
+      if (bundleComplete) { bundleOffer.setAttribute('data-complete', 'true'); }
+      else { bundleOffer.removeAttribute('data-complete'); }
+    }
+
+    var shippingOffer = qs('[data-shipping-offer]', root);
+    var shippingFill = qs('[data-shipping-fill]', root);
+    var shippingTrack = qs('[data-shipping-offer] [role="progressbar"]', root);
+    var shippingStatus = qs('[data-shipping-status]', root);
+    var shippingComplete = subtotal >= shippingThreshold;
+    var shippingValue = Math.min(subtotal, shippingThreshold);
+    if (shippingOffer) { shippingOffer.classList.toggle('is-complete', shippingComplete); }
+    if (shippingFill) { shippingFill.style.width = Math.min(100, Math.round(shippingValue * 100 / shippingThreshold)) + '%'; }
+    if (shippingTrack) { shippingTrack.setAttribute('aria-valuenow', String(shippingValue)); }
+    if (shippingStatus) {
+      shippingStatus.textContent = shippingComplete
+        ? 'অভিনন্দন! আপনার অর্ডারে ফ্রি ডেলিভারি প্রযোজ্য।'
+        : 'আর ' + money(shippingThreshold - subtotal) + ' খরচ করুন';
+    }
+    if (shippingOffer) {
+      if (shippingComplete) { shippingOffer.setAttribute('data-complete', 'true'); }
+      else { shippingOffer.removeAttribute('data-complete'); }
     }
   };
 
@@ -238,7 +242,7 @@
      this one queue, so a slow earlier response can never paint OLDER cart
      state over a newer one (the "1 items / qty 2 / subtotal ৳54.88" frame in
      the recording was an out-of-order response overwriting fresh UI). Each
-     operation paints the header count and the reward strip from the SAME
+     operation paints the header count and the cart offers from the SAME
      confirmed /cart.js snapshot, after the drawer HTML swap has landed. */
   var cartOpQueue = Promise.resolve();
   var enqueueCartOp = function (op) {
@@ -248,7 +252,7 @@
   };
   var applyCartSnapshot = function (cart, anchorLine) {
     paintCount(cart.item_count);
-    return refreshDrawer(anchorLine).then(function () { paintMilestones(cart); });
+    return refreshDrawer(anchorLine).then(function () { paintCartOffers(cart); });
   };
 
   var restoreButton = function (button, html) {

@@ -2,29 +2,41 @@
 <aside class="cart-drawer" aria-label="{{ 'general.cart' | t }}" data-cart-drawer>
   <header class="drawer__header"><h2 class="drawer__title">{{ 'general.your_cart' | t }} <span class="drawer__meta"><span data-cart-count>{{ cart.item_count }}</span> {{ 'sections.cart.items' | t }}</span></h2><button class="icon-button" data-drawer-close aria-label="{{ 'general.close' | t }}">{% render 'icon', icon: 'close' %}</button></header>
   <div class="drawer__body" data-cart-body>
-    {%- if cart.item_count > 0 -%}
     {%- assign ship_threshold = 100000 -%}
+    {%- assign bundle_target = 2 -%}
     {%- assign ship_done = false -%}
     {%- if cart.total_price >= ship_threshold -%}{%- assign ship_done = true -%}{%- endif -%}
+    {%- assign bundle_done = false -%}
+    {%- if cart.item_count >= bundle_target -%}{%- assign bundle_done = true -%}{%- endif -%}
     {%- assign ship_left = ship_threshold | minus: cart.total_price -%}
-    {%- assign milestone_pct = 0 -%}
+    {%- assign bundle_progress = cart.item_count | at_most: bundle_target -%}
+    {%- assign shipping_progress = cart.total_price | at_most: ship_threshold -%}
+    {%- assign ship_pct = 0 -%}
     {%- if ship_done -%}
-      {%- assign milestone_pct = 100 -%}
+      {%- assign ship_pct = 100 -%}
     {%- elsif cart.total_price > 0 -%}
-      {%- assign milestone_pct = cart.total_price | times: 100.0 | divided_by: ship_threshold | round -%}
-      {%- if milestone_pct > 99 -%}{%- assign milestone_pct = 99 -%}{%- endif -%}
+      {%- assign ship_pct = cart.total_price | times: 100.0 | divided_by: ship_threshold | round -%}
+      {%- if ship_pct > 99 -%}{%- assign ship_pct = 99 -%}{%- endif -%}
     {%- endif -%}
-    <div class="reward-strip" data-cart-milestones data-threshold="{{ ship_threshold }}" data-subtotal="{{ cart.total_price }}" data-label="ফ্রি শিপিং পেতে" data-label-reached="অভিনন্দন! ফ্রি শিপিং আনলক হয়েছে।"{% if ship_done %} data-complete="true"{% endif %}>
-      {%- if ship_done -%}
-        <p class="reward-strip__lead" data-milestone-lead>অভিনন্দন! ফ্রি শিপিং আনলক হয়েছে।</p>
-      {%- else -%}
-        <p class="reward-strip__lead" data-milestone-lead>ফ্রি শিপিং পেতে আরও {{ ship_left | money }} খরচ করুন</p>
-      {%- endif -%}
-      <div class="reward-strip__track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ milestone_pct }}" aria-label="ফ্রি শিপিংয়ের অগ্রগতি">
-        <i class="reward-strip__fill" data-milestone-fill style="width:{{ milestone_pct }}%"></i>
-        <span class="reward-strip__marker reward-strip__marker--ship{% if ship_done %} is-done{% endif %}" aria-hidden="true"><span class="reward-strip__marker-icon">{% render 'icon', icon: 'truck' %}</span><svg class="reward-strip__marker-check" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12.5 4 4 8-9"/></svg></span>
-      </div>
-    {%- endif -%}
+    {%- assign bundle_pct = cart.item_count | times: 100.0 | divided_by: bundle_target | round -%}
+    {%- if bundle_pct > 100 -%}{%- assign bundle_pct = 100 -%}{%- endif -%}
+    <div class="drawer-offers" data-cart-offers data-bundle-target="{{ bundle_target }}" data-shipping-threshold="{{ ship_threshold }}">
+      <section class="drawer-offer{% if bundle_done %} is-complete{% endif %}" data-bundle-offer{% if bundle_done %} data-complete="true"{% endif %}>
+        <div class="drawer-offer__track" role="progressbar" aria-valuemin="0" aria-valuemax="{{ bundle_target }}" aria-valuenow="{{ bundle_progress }}" aria-label="বান্ডেল সেভিংসের অগ্রগতি">
+          <i class="drawer-offer__fill" data-bundle-fill style="width:{{ bundle_pct }}%"></i>
+        </div>
+        <p class="drawer-offer__label">বান্ডেল সেভিংস</p>
+        <p class="drawer-offer__subtitle">২টি পণ্য কিনুন, ২% ছাড় পান</p>
+        <p class="drawer-offer__status" data-bundle-status aria-live="polite">{% if bundle_done %}অভিনন্দন! আপনি ২% ছাড়ের জন্য যোগ্য।{% else %}আর {{ bundle_target | minus: cart.item_count }}টি পণ্য যোগ করুন{% endif %}</p>
+      </section>
+      <section class="drawer-offer{% if ship_done %} is-complete{% endif %}" data-shipping-offer{% if ship_done %} data-complete="true"{% endif %}>
+        <div class="drawer-offer__track" role="progressbar" aria-valuemin="0" aria-valuemax="{{ ship_threshold }}" aria-valuenow="{{ shipping_progress }}" aria-label="ফ্রি শিপিংয়ের অগ্রগতি">
+          <i class="drawer-offer__fill" data-shipping-fill style="width:{{ ship_pct }}%"></i>
+        </div>
+        <p class="drawer-offer__label">ফ্রি শিপিং</p>
+        <p class="drawer-offer__subtitle">৳১,০০০ বা তার বেশি কেনাকাটায় ফ্রি ডেলিভারি</p>
+        <p class="drawer-offer__status" data-shipping-status aria-live="polite">{% if ship_done %}অভিনন্দন! আপনার অর্ডারে ফ্রি ডেলিভারি প্রযোজ্য।{% else %}আর {{ ship_left | money }} খরচ করুন{% endif %}</p>
+      </section>
     </div>
     {% if cart.item_count == 0 %}<div class="empty-state"><div class="empty-state__mark">◇</div><h3>{{ 'general.empty_cart' | t }}</h3><p>{{ 'general.no_products' | t }}</p><a class="button button--dark" href="{{ routes.all_products_collection_url }}">{{ 'general.continue_shopping' | t }}</a></div>{% else %}<div class="cart-items">{% for item in cart.items %}<div class="cart-item"><div class="cart-item__image">{% if item.image %}{{ item.image | image_url: width: 180 | image_tag }}{% endif %}</div><div class="cart-item__main"><div class="cart-item__head"><h3 class="cart-item__title">{{ item.product.title }}</h3><button type="button" class="cart-item__remove" data-remove-item data-line="{{ forloop.index }}" aria-label="{{ 'general.remove' | t }}: {{ item.product.title | escape }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6"/><path d="M6.5 7l.9 11.1A2 2 0 0 0 9.4 20h5.2a2 2 0 0 0 2-1.9L17.5 7"/><path d="M9.5 7V5.2A1.2 1.2 0 0 1 10.7 4h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/></svg></button></div>{% unless item.variant.title == 'Default Title' %}<p class="cart-item__variant">{{ item.variant.title }}</p>{% endunless %}<div class="cart-item__foot"><div class="quantity-control"><button type="button" data-cart-change data-line="{{ forloop.index }}" data-quantity="{{ item.quantity | minus: 1 }}" aria-label="{{ 'general.decrease_quantity' | t }}: {{ item.product.title | escape }}">−</button><span>{{ item.quantity }}</span><button type="button" data-cart-change data-line="{{ forloop.index }}" data-quantity="{{ item.quantity | plus: 1 }}" aria-label="{{ 'general.increase_quantity' | t }}: {{ item.product.title | escape }}">＋</button></div><span class="cart-item__price">{{ item.final_line_price | money }}</span></div></div></div>{% endfor %}</div>{% endif %}
     <div class="drawer-recommendations"><div class="drawer-recommendations__head"><span class="eyebrow">{{ 'sections.product.related_products' | t }}</span><a class="drawer-recommendations__all" href="{{ routes.all_products_collection_url }}">{{ 'general.view_all' | t }} <span aria-hidden="true">→</span></a></div>
