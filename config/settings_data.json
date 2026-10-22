@@ -26,7 +26,11 @@
     "sections": {
       "announcement-bar": {
         "type": "announcement-bar",
-        "settings": {}
+        "settings": {
+          "message_1": "হাটরাশে স্বাগতম — ইলেকট্রনিক্স ও দরকারি গ্যাজেট",
+          "message_2": "ক্যাশ অন ডেলিভারি সুবিধা",
+          "message_3": "নিরাপদ চেকআউট · গ্রাহক সহায়তা · স্পষ্ট ডেলিভারি তথ্য"
+        }
       },
       "header": {
         "type": "header",
@@ -41,8 +45,8 @@
           ".lf-footer__inner {padding-left: 10px;}",
           ".lf-footer__inner {padding-right: 10px;}",
           ".lf-footer__wave {height: 100px;}",
-          ".lf-footer__wave {background: #EBDFFF;}",
-          ".lf-footer__inner {background: #5A1EB0;}"
+          ".lf-footer__wave {background: #ebdfff;}",
+          ".lf-footer__inner {background: #5a1eb0;}"
         ],
         "settings": {
           "logo_width": 140,
@@ -75,9 +79,14 @@
           "agent_border_radius": 24
         }
       },
-      "13015552501482376882": {
-        "type": "shopify://apps/neo-cod-form-upsell/blocks/app-block/6d1c1f47-a7b1-4fee-af01-4ada7fb162d2",
-        "disabled": true,
+      "1626193551103621034": {
+        "type": "shopify://apps/cod-king/blocks/app-embed/99553eb5-bf07-4ce0-9263-7e5f10cab22c",
+        "disabled": false,
+        "settings": {}
+      },
+      "5505325162364479422": {
+        "type": "shopify://apps/cod-king/blocks/cod-form-embed/99553eb5-bf07-4ce0-9263-7e5f10cab22c",
+        "disabled": false,
         "settings": {}
       }
     }
