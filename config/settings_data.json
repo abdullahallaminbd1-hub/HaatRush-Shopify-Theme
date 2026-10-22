@@ -79,13 +79,13 @@
           "agent_border_radius": 24
         }
       },
-      "1626193551103621034": {
-        "type": "shopify://apps/cod-king/blocks/app-embed/99553eb5-bf07-4ce0-9263-7e5f10cab22c",
+      "5505325162364479422": {
+        "type": "shopify://apps/cod-king/blocks/cod-form-embed/99553eb5-bf07-4ce0-9263-7e5f10cab22c",
         "disabled": false,
         "settings": {}
       },
-      "5505325162364479422": {
-        "type": "shopify://apps/cod-king/blocks/cod-form-embed/99553eb5-bf07-4ce0-9263-7e5f10cab22c",
+      "1626193551103621034": {
+        "type": "shopify://apps/cod-king/blocks/app-embed/99553eb5-bf07-4ce0-9263-7e5f10cab22c",
         "disabled": false,
         "settings": {}
       }
