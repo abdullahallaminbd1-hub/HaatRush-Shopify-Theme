@@ -1,26 +1,2 @@
-{%- comment -%}
-  HaatRush Theme - Main Page Section
-{%- endcomment -%}
-
-<section class="main-page-section" style="padding: 40px 0;">
-  <div class="container">
-    {%- render 'breadcrumb' -%}
-
-    <div class="page-header" style="margin-bottom: 24px;">
-      <h1 class="page-title" style="font-size: 28px; font-weight: 700; color: var(--color-text);">
-        {{ page.title }}
-      </h1>
-    </div>
-
-    <div class="page-content rte" style="background: #ffffff; border-radius: var(--radius-card); padding: 30px; box-shadow: var(--shadow-card); line-height: 1.8;">
-      {{ page.content }}
-    </div>
-  </div>
-</section>
-
-{% schema %}
-{
-  "name": "পেজ কনটেন্ট",
-  "settings": []
-}
-{% endschema %}
+<section class="content-page"><div class="content-page__intro"><span class="eyebrow">{{ section.settings.kicker }}</span><h1>{{ page.title }}</h1><p>{{ section.settings.intro }}</p></div><div class="content-page__body rte">{{ page.content }}</div></section>
+{% schema %}{"name":"Main page","settings":[{"type":"text","id":"kicker","label":"Kicker","default":"হাটরাশ / গ্রাহক সেবা"},{"type":"textarea","id":"intro","label":"Intro","default":"নিশ্চিন্তে কেনাকাটার জন্য প্রয়োজনীয় তথ্য।"}],"presets":[{"name":"Main page"}]}{% endschema %}

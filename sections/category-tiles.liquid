@@ -1,0 +1,51 @@
+<section class="lf-categories" data-reveal-group>
+  <div class="page-width">
+    <div class="lf-section-head">
+      <span class="lf-eyebrow">{{ section.settings.kicker }}</span>
+      <h2 class="lf-section-title">{{ section.settings.heading }}</h2>
+      {%- if section.settings.text != blank -%}<p class="lf-section-subtitle">{{ section.settings.text }}</p>{%- endif -%}
+    </div>
+    <div class="lf-categories__grid">
+      {%- for block in section.blocks -%}
+        <a class="lf-category-card" href="{{ block.settings.link | default: routes.all_products_collection_url }}" {{ block.shopify_attributes }} data-reveal>
+          <div class="lf-category-card__image">
+            {%- if block.settings.image -%}
+              {{ block.settings.image | image_url: width: 600 | image_tag: loading: 'lazy', alt: block.settings.title }}
+            {%- else -%}
+              <span class="lf-category-card__placeholder lf-category-card__placeholder--{{ forloop.index }}">{{ block.settings.title | slice: 0 }}</span>
+            {%- endif -%}
+          </div>
+          <strong class="lf-category-card__name">{{ block.settings.title }}</strong>
+          <span class="lf-category-card__link">{{ block.settings.link_label }} <span aria-hidden="true">→</span></span>
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Category circles",
+  "settings": [
+    {"type":"text","id":"kicker","label":"Kicker","default":"প্রতিদিনের প্রযুক্তির বাছাই"},
+    {"type":"text","id":"heading","label":"Heading","default":"হাটরাশের সংগ্রহ দেখুন"},
+    {"type":"textarea","id":"text","label":"Text","default":"আধুনিক জীবনের উপযোগী গ্যাজেট, অডিও, অ্যাক্সেসরিজ ও ইলেকট্রনিক্স খুঁজে নিন।"}
+  ],
+  "blocks": [
+    {"type":"tile","name":"Category","settings":[
+      {"type":"text","id":"title","label":"Title","default":"ইলেকট্রনিক্স"},
+      {"type":"text","id":"link_label","label":"Link label","default":"পণ্য দেখুন"},
+      {"type":"url","id":"link","label":"Link"},
+      {"type":"image_picker","id":"image","label":"Image"}
+    ]}
+  ],
+  "max_blocks": 12,
+  "presets":[{"name":"Category circles","blocks":[
+    {"type":"tile","settings":{"title":"ইলেকট্রনিক্স","link_label":"পণ্য দেখুন"}},
+    {"type":"tile","settings":{"title":"গ্যাজেট","link_label":"গ্যাজেট দেখুন"}},
+    {"type":"tile","settings":{"title":"অডিও","link_label":"অডিও পণ্য দেখুন"}},
+    {"type":"tile","settings":{"title":"স্মার্ট ডিভাইস","link_label":"ডিভাইস দেখুন"}},
+    {"type":"tile","settings":{"title":"অ্যাক্সেসরিজ","link_label":"অ্যাক্সেসরিজ দেখুন"}},
+    {"type":"tile","settings":{"title":"নতুন পণ্য","link_label":"নতুন পণ্য দেখুন"}}
+  ]}]
+}
+{% endschema %}

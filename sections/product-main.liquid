@@ -183,31 +183,31 @@
                 <div class="feature-icon__svg">
                   {%- case block.settings.icon_type -%}
                     {%- when 'usb' -%}
-                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1B3C3C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5A1EB0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 2v10m0 0l3-3m-3 3l-3-3M7 14v3a2 2 0 002 2h6a2 2 0 002-2v-3"></path>
                       </svg>
                     {%- when 'waterproof' -%}
-                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1B3C3C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5A1EB0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"></path>
                       </svg>
                     {%- when 'rgb' -%}
-                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1B3C3C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5A1EB0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="5"></circle>
                         <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
                       </svg>
                     {%- when 'remote' -%}
-                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1B3C3C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5A1EB0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="5" y="2" width="14" height="20" rx="2"></rect>
                         <circle cx="12" cy="14" r="2"></circle>
                         <line x1="12" y1="6" x2="12" y2="6"></line>
                       </svg>
                     {%- when 'warranty' -%}
-                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1B3C3C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5A1EB0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                         <polyline points="9 12 11 14 15 10"></polyline>
                       </svg>
                     {%- else -%}
-                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1B3C3C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5A1EB0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                       </svg>
                   {%- endcase -%}
@@ -254,11 +254,11 @@
           "id": "icon_type",
           "label": "আইকন ধরন",
           "options": [
-            { "value": "usb", "label": "USB Powered" },
-            { "value": "waterproof", "label": "Waterproof" },
-            { "value": "rgb", "label": "ARGB Color" },
-            { "value": "remote", "label": "App & Remote" },
-            { "value": "warranty", "label": "Warranty / Shield" }
+            { "value": "usb", "label": "USB দিয়ে চালিত" },
+            { "value": "waterproof", "label": "পানিরোধী" },
+            { "value": "rgb", "label": "ARGB রঙ" },
+            { "value": "remote", "label": "অ্যাপ ও রিমোট" },
+            { "value": "warranty", "label": "ওয়ারেন্টি / সুরক্ষা" }
           ],
           "default": "usb"
         },
@@ -266,7 +266,7 @@
           "type": "text",
           "id": "label",
           "label": "ফিচার নাম",
-          "default": "USB Powered"
+          "default": "USB দিয়ে চালিত"
         },
         {
           "type": "text",

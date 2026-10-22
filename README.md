@@ -102,19 +102,18 @@ shopify theme push
 
 | Token               | Value       | Usage                                      |
 | -------------------- | ----------- | ------------------------------------------ |
-| `primary_color`      | `#FF6B00`   | CTA buttons, highlights, sale badges       |
-| `header_color`       | `#1B3C3C`   | Header background, footer, dark accents    |
+| `primary_color`      | `#2563EB`   | CTA buttons, highlights, sale badges       |
+| `header_color`       | `#0F172A`   | Header background, footer, dark accents    |
 | White                | `#FFFFFF`   | Page backgrounds, card surfaces            |
-| Light Gray           | `#F5F5F5`   | Section backgrounds, input fields          |
-| Text Dark            | `#333333`   | Body text, headings                        |
-| Text Muted           | `#666666`   | Secondary text, descriptions               |
+| Light Blue           | `#EFF6FF`   | Section backgrounds, input fields          |
+| Text Dark            | `#0F172A`   | Body text, headings                        |
+| Text Muted           | `#64748B`   | Secondary text, descriptions               |
 | Success Green        | `#28A745`   | In-stock badges, success messages          |
 | Danger Red           | `#DC3545`   | Out-of-stock, error messages               |
 
 ### Typography
 
-- **Headings**: System font stack or Google Fonts (Bengali-compatible)
-- **Body**: `'Noto Sans Bengali', 'Hind Siliguri', sans-serif` recommended
+- **Headings and body**: Self-hosted `'Noto Sans Bengali'` with `'Hind Siliguri'` fallback
 - **Base size**: 16px
 - **Line height**: 1.6 for Bengali text readability
 
@@ -132,8 +131,8 @@ All settings are accessible from **Shopify Admin → Online Store → Themes →
 - Configure tagline (default: "বিশ্বস্ত ইলেকট্রনিক্স সঙ্গী")
 
 #### Colors
-- **Primary Color** — Used for buttons, links, sale badges. Default: `#FF6B00` (vibrant orange).
-- **Header Color** — Used for header and footer backgrounds. Default: `#1B3C3C` (deep teal).
+- **Primary Color** — Used for buttons, links, sale badges. Default: `#2563EB` (blue).
+- **Header Color** — Used for header and footer backgrounds. Default: `#0F172A` (navy).
 
 #### Contact Information
 - Support phone number

@@ -1,24 +1,15 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "current": {
-    "logo_text": "HaatRush",
-    "tagline": "বিশ্বস্ত ইলেকট্রনিক্স সঙ্গী",
-    "primary_color": "#FF6B00",
-    "header_color": "#1B3C3C",
-    "support_phone": "01XXXXXXXXX",
-    "support_email": "support@haatrush.com",
-    "address": "ঢাকা, বাংলাদেশ",
-    "whatsapp_number": "8801875126006",
-    "delivery_inside_dhaka": "70",
-    "delivery_outside_dhaka": "130",
+    "brand_tagline": "ইলেকট্রনিক্স, গ্যাজেট ও প্রতিদিনের প্রয়োজনীয় ডিভাইস",
+    "color_ink": "#27183A",
+    "color_accent": "#7628D7",
+    "color_sand": "#F8F3FF",
+    "contact_email": "support@haatrush.com",
+    "hero_height_desktop": 660,
+    "hero_height_mobile": 590,
+    "instagram_url": "https://facebook.com",
+    "tiktok_url": "",
+    "facebook_url": "",
     "sections": {
       "announcement-bar": {
         "type": "announcement-bar",
@@ -26,16 +17,60 @@
       },
       "header": {
         "type": "header",
-        "settings": {}
+        "settings": {
+          "logo_width": 180,
+          "menu": "main-menu"
+        }
       },
       "footer": {
         "type": "footer",
-        "settings": {}
+        "custom_css": [
+          ".lf-footer__inner {padding-left: 10px;}",
+          ".lf-footer__inner {padding-right: 10px;}",
+          ".lf-footer__wave {height: 100px;}",
+          ".lf-footer__wave {background: #EBDFFF;}",
+          ".lf-footer__inner {background: #5A1EB0;}"
+        ],
+        "settings": {
+          "logo_width": 140,
+          "menu_shop": "",
+          "menu_customer_care": "footer"
+        }
+      }
+    },
+    "content_for_index": [],
+    "blocks": {
+      "15683396631634586217": {
+        "type": "shopify://apps/inbox/blocks/chat/841fc607-4181-4ad1-842d-e24d7f8bad6b",
+        "disabled": false,
+        "settings": {
+          "greeting_message": "",
+          "show_featured_products": true,
+          "featured_products": [],
+          "background_color": "#F8F3FF",
+          "font_color": "#27183A",
+          "agent_invert_activator_colors": true,
+          "button_color": "#7628D7",
+          "button_icon": "chat_bubble",
+          "button_text": "no_text",
+          "button_horizontal_position": "bottom_right",
+          "button_vertical_position": "lowest",
+          "agent_inherit_fonts": true,
+          "agent_font": "system_ui_n4",
+          "agent_font_size": 14,
+          "agent_activator_font_size": 24,
+          "agent_border_radius": 24
+        }
       },
-      "trust-badges": {
-        "type": "trust-badges",
+      "13015552501482376882": {
+        "type": "shopify://apps/neo-cod-form-upsell/blocks/app-block/6d1c1f47-a7b1-4fee-af01-4ada7fb162d2",
+        "disabled": true,
         "settings": {}
       }
-    }
+    },
+    "cart_promo_enabled": false,
+    "cart_promo_threshold": 7500,
+    "cart_promo_label": "",
+    "cart_promo_reached_label": ""
   }
 }

@@ -1,0 +1,6 @@
+{% assign active_policy = shop.privacy_policy %}
+{% if request.path contains 'shipping-policy' %}{% assign active_policy = shop.shipping_policy %}{% endif %}
+{% if request.path contains 'refund-policy' %}{% assign active_policy = shop.refund_policy %}{% endif %}
+{% if request.path contains 'terms-of-service' %}{% assign active_policy = shop.terms_of_service %}{% endif %}
+<section class="policy-page"><div class="content-page__intro"><span class="eyebrow">{{ 'general.quick_links' | t }}</span><h1>{{ active_policy.title | default: 'general.quick_links' | t }}</h1><p>{{ 'general.quick_links' | t }}</p></div><div class="content-page__body rte">{{ active_policy.body | default: 'এই নীতিটি Shopify Admin-এ সেটআপ করার পর এখানে দেখা যাবে।' }}</div></section>
+{% schema %}{"name":"Policy page","settings":[],"presets":[{"name":"Policy page"}]}{% endschema %}

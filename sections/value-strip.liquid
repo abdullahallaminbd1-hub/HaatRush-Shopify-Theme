@@ -1,0 +1,36 @@
+<section class="lf-trust-strip">
+  <div class="lf-trust-strip__container page-width">
+    <div class="lf-trust-card">
+      <span class="lf-trust-card__icon">{% render 'icon', icon: 'star' %}</span>
+      <div><h4>{{ section.settings.title_1 }}</h4><p>{{ section.settings.text_1 }}</p></div>
+    </div>
+    <div class="lf-trust-card">
+      <span class="lf-trust-card__icon">{% render 'icon', icon: 'truck' %}</span>
+      <div><h4>{{ section.settings.title_2 }}</h4><p>{{ section.settings.text_2 }}</p></div>
+    </div>
+    <div class="lf-trust-card">
+      <span class="lf-trust-card__icon">{% render 'icon', icon: 'shield' %}</span>
+      <div><h4>{{ section.settings.title_3 }}</h4><p>{{ section.settings.text_3 }}</p></div>
+    </div>
+    <div class="lf-trust-card">
+      <span class="lf-trust-card__icon">{% render 'icon', icon: 'chat' %}</span>
+      <div><h4>{{ section.settings.title_4 }}</h4><p>{{ section.settings.text_4 }}</p></div>
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Trust strip",
+  "settings": [
+    {"type":"text","id":"title_1","label":"Card 1 title","default":"বাছাই করা মান"},
+    {"type":"text","id":"text_1","label":"Card 1 text","default":"যত্ন নিয়ে বাছাই করা ইলেকট্রনিক্স ও গ্যাজেট"},
+    {"type":"text","id":"title_2","label":"Card 2 title","default":"স্পষ্ট ডেলিভারি তথ্য"},
+    {"type":"text","id":"text_2","label":"Card 2 text","default":"পেমেন্টের আগেই ডেলিভারির তথ্য দেখুন"},
+    {"type":"text","id":"title_3","label":"Card 3 title","default":"নিরাপদ চেকআউট"},
+    {"type":"text","id":"text_3","label":"Card 3 text","default":"Shopify-এর মাধ্যমে নিরাপদ চেকআউট"},
+    {"type":"text","id":"title_4","label":"Card 4 title","default":"গ্রাহক সহায়তা"},
+    {"type":"text","id":"text_4","label":"Card 4 text","default":"প্রয়োজনে সহায়তা পেতে যোগাযোগ করুন"}
+  ],
+  "presets":[{"name":"Trust strip"}]
+}
+{% endschema %}

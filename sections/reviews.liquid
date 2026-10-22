@@ -1,0 +1,52 @@
+<section class="lf-reviews" data-reveal-group>
+  <div class="page-width">
+    <div class="lf-section-head">
+      <span class="lf-eyebrow">{{ section.settings.kicker }}</span>
+      <h2 class="lf-section-title">{{ section.settings.heading }}</h2>
+      {%- if section.settings.text != blank -%}<p class="lf-section-subtitle">{{ section.settings.text }}</p>{%- endif -%}
+    </div>
+    <div class="lf-reviews__grid">
+      {%- for block in section.blocks -%}
+        <blockquote class="lf-review-card" {{ block.shopify_attributes }} data-reveal>
+          <span class="lf-review-card__stars" aria-hidden="true">★★★★★</span>
+          <span class="lf-review-card__label">{{ 'general.reviews_area' | t }}</span>
+          <h3>{{ block.settings.title }}</h3>
+          <p>{{ block.settings.text }}</p>
+          <footer class="lf-review-card__footer">
+            <span class="lf-review-card__source">{{ 'general.reviews_area' | t }}</span>
+            <span class="lf-review-card__verified">{{ 'general.reviews_area' | t }}</span>
+          </footer>
+        </blockquote>
+      {%- endfor -%}
+    </div>
+    <div class="lf-reviews__proof">
+      <div><span>✓</span><div><strong>{{ 'general.returns' | t }}</strong><small>{{ 'general.reviews_note' | t }}</small></div></div>
+      <div><span>◇</span><div><strong>{{ 'sections.footer.secure_payment' | t }}</strong><small>{{ 'sections.footer.payment_note' | t }}</small></div></div>
+      <div><span>✦</span><div><strong>{{ 'general.curated_selection' | t }}</strong><small>{{ 'general.brand_blurb' | t }}</small></div></div>
+      <div><span>→</span><div><strong>{{ 'general.delivery_information' | t }}</strong><small>{{ 'general.delivery_note' | t }}</small></div></div>
+    </div>
+    <p class="lf-reviews__note">{{ 'general.reviews_note' | t }}</p>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Reviews",
+  "settings": [
+    {"type":"text","id":"kicker","label":"Kicker","default":"ক্রেতাদের অভিজ্ঞতা"},
+    {"type":"text","id":"heading","label":"Heading","default":"<span>ক্রেতাদের</span> পছন্দ"},
+    {"type":"textarea","id":"text","label":"Text","default":"রিভিউ প্ল্যাটফর্ম যুক্ত হলে এখানে ক্রেতাদের মতামত দেখানো হবে।"}
+  ],
+  "blocks": [
+    {"type":"review","name":"Review","settings":[
+      {"type":"text","id":"title","label":"Title","default":"ইলেকট্রনিক্স"},
+      {"type":"textarea","id":"text","label":"Text","default":"রিভিউ চালু হলে এখানে ইলেকট্রনিক্স ও গ্যাজেট সম্পর্কে ক্রেতাদের মতামত দেখানো হবে।"}
+    ]}
+  ],
+  "max_blocks": 6,
+  "presets":[{"name":"Reviews","blocks":[
+    {"type":"review","settings":{"title":"ইলেকট্রনিক্স","text":"রিভিউ চালু হলে এখানে ইলেকট্রনিক্স ও গ্যাজেট সম্পর্কে ক্রেতাদের মতামত দেখানো হবে।"}},
+    {"type":"review","settings":{"title":"স্মার্ট ডিভাইস","text":"আপনার রিভিউ সিস্টেমে জমা হওয়া ক্রেতাদের মতামত এখানে দেখানো হবে।"}},
+    {"type":"review","settings":{"title":"সেবা ও ডেলিভারি","text":"অর্ডার, ডেলিভারি ও সহায়তা সম্পর্কে ক্রেতাদের মতামত এখানে দেখানো হবে।"}}
+  ]}]
+}
+{% endschema %}

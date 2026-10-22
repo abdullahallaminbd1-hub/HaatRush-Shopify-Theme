@@ -1,0 +1,73 @@
+<section class="cart-page">
+  <div class="cart-page__intro">
+    <span class="eyebrow">{{ 'general.cart' | t }}</span>
+    <h1>{{ 'general.your_cart' | t }}</h1>
+    <a class="text-link" href="{{ routes.all_products_collection_url }}">{{ 'general.continue_shopping' | t }} <span>↗</span></a>
+  </div>
+
+  {%- if cart.item_count == 0 -%}
+    <div class="cart-page__empty">
+      <span>◇</span>
+      <h2>{{ 'general.empty_cart' | t }}</h2>
+      <p>{{ 'general.no_products' | t }}</p>
+      <a class="button button--dark" href="{{ routes.all_products_collection_url }}">{{ 'general.view_all' | t }}</a>
+    </div>
+  {%- else -%}
+    <div class="cart-page__layout">
+      <div class="cart-page__items">
+        {%- comment -%}
+          Progress strip mirrors the cart drawer. It only appears when the
+          merchant has enabled it in Theme settings and set a factual label,
+          so the page never promises an offer that is not configured.
+        {%- endcomment -%}
+        {%- if settings.cart_promo_enabled and settings.cart_promo_label != blank -%}
+          {%- assign ship_threshold = settings.cart_promo_threshold | default: 7500 -%}
+          {%- assign ship_done = false -%}{%- if cart.total_price >= ship_threshold -%}{%- assign ship_done = true -%}{%- endif -%}
+          {%- assign ship_left = ship_threshold | minus: cart.total_price -%}
+          {%- assign milestone_pct = 0 -%}
+          {%- if ship_done -%}{%- assign milestone_pct = 100 -%}
+          {%- elsif cart.total_price > 0 -%}{%- assign milestone_pct = cart.total_price | times: 100.0 | divided_by: ship_threshold | round -%}{%- if milestone_pct > 99 -%}{%- assign milestone_pct = 99 -%}{%- endif -%}
+          {%- endif -%}
+          <div class="shipping-progress">
+            {%- if ship_done -%}
+              <span>{{ settings.cart_promo_reached_label | default: settings.cart_promo_label | escape }}</span>
+            {%- else -%}
+              <span>{{ settings.cart_promo_label | escape }} পেতে আরও <strong>{{ ship_left | money }}</strong></span>
+            {%- endif -%}
+            <div><i style="width:{{ milestone_pct }}%"></i></div>
+          </div>
+        {%- endif -%}
+
+        {%- for item in cart.items -%}
+          <div class="cart-page-item">
+            <div class="cart-page-item__image">{% if item.image %}{{ item.image | image_url: width: 360 | image_tag }}{% endif %}</div>
+            <div class="cart-page-item__details">
+              <span class="eyebrow">{{ item.product.vendor | default: shop.name }}</span>
+              <h2>{{ item.product.title }}</h2>
+              <p>{{ item.final_line_price | money }}</p>
+              <div class="quantity-control">
+                <button type="button" data-cart-change data-line="{{ forloop.index }}" data-quantity="{{ item.quantity | minus: 1 }}" aria-label="{{ 'general.decrease_quantity' | t }}: {{ item.product.title | escape }}">−</button>
+                <span>{{ item.quantity }}</span>
+                <button type="button" data-cart-change data-line="{{ forloop.index }}" data-quantity="{{ item.quantity | plus: 1 }}" aria-label="{{ 'general.increase_quantity' | t }}: {{ item.product.title | escape }}">＋</button>
+              </div>
+              <a href="{{ item.url_to_remove }}" data-remove-item>{{ 'general.remove' | t }}</a>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+
+      <aside class="cart-page__summary">
+        <form class="discount-form" data-discount-form>
+          <input type="text" name="discount" placeholder="{{ 'sections.cart.discount_code' | t }}" aria-label="{{ 'general.discount_code' | t }}">
+          <button type="submit">{{ 'sections.cart.apply' | t }}</button>
+        </form>
+        <p class="cart-note" data-discount-note aria-live="polite"></p>
+        <div class="drawer-total"><span>{{ 'sections.cart.subtotal' | t }}</span><strong>{{ cart.total_price | money }}</strong></div>
+        <a class="button button--accent button--full" href="{{ routes.checkout_url }}">{{ 'general.checkout' | t }} <span>→</span></a>
+        <p class="payment-note">{{ 'sections.cart.note' | t }}</p>
+        <div class="drawer__pay" role="group" aria-label="{{ 'sections.footer.secure_payment' | t }}">{%- for type in shop.enabled_payment_types -%}{{ type | payment_type_svg_tag }}{%- endfor -%}</div>
+      </aside>
+    </div>
+  {%- endif -%}
+</section>
+{% schema %}{"name":"Main cart","settings":[],"presets":[{"name":"Main cart"}]}{% endschema %}

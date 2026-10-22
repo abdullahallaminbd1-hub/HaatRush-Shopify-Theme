@@ -1,48 +1,63 @@
 <!doctype html>
-<html lang="bn">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ page_title }} — HaatRush</title>
-  {{ content_for_header }}
-  {{ 'theme.css' | asset_url | stylesheet_tag }}
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
-  {%- section 'announcement-bar' -%}
-  {%- section 'header' -%}
-  <main id="main-content">
-    {{ content_for_layout }}
-  </main>
-  {%- section 'footer' -%}
-  <script src="{{ 'theme.js' | asset_url }}" defer="defer"></script>
-  <div class="cart-drawer" id="cart-drawer" role="dialog" aria-modal="true" aria-label="শপিং কার্ট">
-    <div class="cart-drawer__overlay" id="cart-drawer-overlay"></div>
-    <div class="cart-drawer__wrapper">
-      <div class="cart-drawer__header">
-        <h2 class="cart-drawer__title">আপনার কার্ট</h2>
-        <button type="button" class="cart-drawer__close" data-cart-drawer-close aria-label="কার্ট বন্ধ করুন">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-        </button>
-      </div>
-      <div class="cart-drawer__content">
-        <div class="cart-drawer__items" id="cart-drawer-items"></div>
-        <div class="cart-drawer__footer">
-          <div class="cart-drawer__totals">
-            <span class="cart-drawer__total-label">মোট:</span>
-            <span class="cart-drawer__total-price" id="cart-drawer-subtotal">৳০</span>
-          </div>
-          <a href="/cart" class="cart-drawer__checkout-btn btn-primary">
-            চেকআউটে এগিয়ে যান →
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</body>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="canonical" href="{{ canonical_url }}">
+    <title>{{ page_title }}{% unless page_title contains shop.name %} — {{ shop.name }}{% endunless %}</title>
+    {{ 'noto-sans-bengali-bengali.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: 'anonymous' }}
+    {{ 'noto-sans-bengali-latin.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: 'anonymous' }}
+    {{ content_for_header }}
+    {{ 'theme.css' | asset_url | stylesheet_tag }}
+    {{ 'product-card.css' | asset_url | stylesheet_tag }}
+    <style>
+      :root{
+        --ink: {{ settings.color_ink | default: '#27183A' }};
+        --accent: #FF7058;
+        --primary: {{ settings.color_accent | default: '#7628D7' }};
+        --primary-hover: #5A1EB0;
+        --sand: {{ settings.color_sand | default: '#F8F3FF' }};
+        --navy: #7628D7;
+        --navy-deep: #5A1EB0;
+        --blue: #7628D7;
+        --blue-soft: #F8F3FF;
+        --accent-soft: #F8F3FF;
+        --badge: #EBDFFF;
+        --surface-soft: #F8F3FF;
+        --surface: #FFFFFF;
+        --cyan: #FF7058;
+        --charcoal: #7628D7;
+        --muted: #64748B;
+        --line-soft: rgba(118, 40, 215, .14);
+        --shadow-soft: 0 18px 40px -28px rgba(90, 30, 176, .28);
+        --radius-card: 16px;
+        --font-body: 'Noto Sans Bengali', 'Hind Siliguri', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+        --font-accent: 'Noto Sans Bengali', 'Hind Siliguri', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      }
+      {% if settings.product_card_width_mode == 'box' %}
+      /* Theme settings > Product cards > Card width mode: Box Width.
+         Caps each product card at the configured pixel width; cards still
+         shrink with their grid column on narrow screens (max-width only). */
+      .lf-product-card{width:100%;max-width:{{ settings.product_card_width | default: 340 }}px;margin-left:auto;margin-right:auto;}
+      {% endif %}
+    </style>
+  </head>
+  <body class="template-{{ template.name }}">
+    <a class="skip-link" href="#MainContent">{{ 'general.skip_to_content' | t }}</a>
+    {% section 'announcement-bar' %}
+    {% section 'header' %}
+    <main id="MainContent" role="main">{{ content_for_layout }}</main>
+    {% section 'footer' %}
+    {% render 'cart-drawer' %}
+    <script src="{{ 'theme.js' | asset_url }}" defer></script>
+  </body>
+    <script>
+      (function () {
+        var html = document.documentElement;
+        var isChromeDesktopSiteOnPhone = !(/Mobi/.test(navigator.userAgent)) && navigator.maxTouchPoints > 0 && window.innerWidth <= 989;
+        if (isChromeDesktopSiteOnPhone) {
+          html.classList.add('lf-chrome-desktop-site');
+        }
+      })();
+    </script>
 </html>

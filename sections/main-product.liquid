@@ -1,0 +1,519 @@
+{%- comment -%}
+  HaatRush product page.
+  Two-column gallery + purchase panel, "buy more save more" offers, a real
+  limited-time offer block with a live countdown, order progress, policy
+  accordions, description and a reviews area. All copy and numbers come from
+  section settings, blocks and real Shopify product data.
+{%- endcomment -%}
+{{ 'product.css' | asset_url | stylesheet_tag }}
+
+<div class="lf-product" data-product-root>
+
+  <div class="lf-product__layout">
+    {%- comment -%} ==================== gallery ==================== {%- endcomment -%}
+    <div class="lf-product__media" data-product-media>
+      {%- if product.media.size > 0 -%}
+        <div class="lf-gallery" data-gallery>
+          <div class="lf-gallery__stage" data-gallery-stage>
+            {%- for media in product.media -%}
+              <div class="lf-gallery__slide{% if forloop.first %} is-active{% endif %}"
+                   data-gallery-slide
+                   data-media-id="{{ media.id }}"
+                   data-media-position="{{ forloop.index }}"
+                   role="group"
+                   aria-roledescription="slide"
+                   aria-label="{{ forloop.index }} / {{ product.media.size }}">
+                {%- case media.media_type -%}
+                  {%- when 'video' -%}
+                    {{ media | video_tag: image_size: '1200x', controls: true, preload: 'none', class: 'lf-gallery__media' }}
+                  {%- when 'external_video' -%}
+                    {{ media | external_video_tag: class: 'lf-gallery__media' }}
+                  {%- else -%}
+                    {%- if forloop.first -%}
+                      {%- assign gallery_loading = 'eager' -%}
+                    {%- else -%}
+                      {%- assign gallery_loading = 'lazy' -%}
+                    {%- endif -%}
+                    {{ media.preview_image | image_url: width: 1500 | image_tag:
+                        loading: gallery_loading,
+                        widths: '480, 720, 960, 1200, 1500',
+                        sizes: '(min-width: 990px) 52vw, 100vw',
+                        class: 'lf-gallery__media',
+                        alt: media.alt | default: product.title }}
+                {%- endcase -%}
+                <button class="lf-gallery__zoom" type="button" data-gallery-zoom="{{ media.id }}" aria-label="ছবি {{ forloop.index }} বড় করে দেখুন">
+                  {%- render 'icon', icon: 'search' -%}
+                </button>
+              </div>
+            {%- endfor -%}
+          </div>
+
+          <button class="lf-gallery__arrow lf-gallery__arrow--prev" type="button" data-gallery-prev aria-label="আগের ছবি" disabled>
+            {%- render 'icon', icon: 'chevron-left' -%}
+          </button>
+          <button class="lf-gallery__arrow lf-gallery__arrow--next" type="button" data-gallery-next aria-label="পরের ছবি">
+            {%- render 'icon', icon: 'chevron-right' -%}
+          </button>
+          <div class="lf-gallery__dots" data-gallery-dots role="tablist" aria-label="পণ্যের ছবি বেছে নিন"></div>
+        </div>
+
+        <div class="lf-thumbs" data-thumbs>
+          <button class="lf-thumbs__arrow" type="button" data-thumbs-prev aria-label="থাম্বনেইল বামে সরান" disabled>{% render 'icon', icon: 'chevron-left' %}</button>
+          <ul class="lf-thumbs__list" data-thumbs-list>
+            {%- for media in product.media -%}
+              <li class="lf-thumbs__item">
+                <button class="lf-thumb{% if forloop.first %} is-active{% endif %}"
+                        type="button"
+                        data-gallery-thumb="{{ forloop.index0 }}"
+                        aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+                        role="tab"
+                        aria-label="ছবি {{ forloop.index }} দেখুন">
+                  {{ media.preview_image | image_url: width: 240 | image_tag: loading: 'lazy', widths: '120, 180, 240', sizes: '132px', alt: media.alt | default: product.title }}
+                </button>
+              </li>
+            {%- endfor -%}
+          </ul>
+          <button class="lf-thumbs__arrow" type="button" data-thumbs-next aria-label="থাম্বনেইল ডানে সরান">{% render 'icon', icon: 'chevron-right' %}</button>
+        </div>
+      {%- else -%}
+        <div class="lf-gallery__placeholder">{{ shop.name }}</div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} ==================== purchase panel ==================== {%- endcomment -%}
+    <div class="lf-product__info" data-product-info>
+
+      <div class="lf-proof">
+        <span class="lf-proof__faces" aria-hidden="true">
+          {%- comment -%} Proof Eyebrow avatars: each circle shows the image chosen in Main product > Proof Image 1/2/3; when none is selected the original gradient circle fallback stays. {%- endcomment -%}
+          <span class="lf-proof__face" data-face="1">{% if section.settings.proof_image_1 %}{{ section.settings.proof_image_1 | image_url: width: 120 | image_tag: loading: 'lazy', widths: '58,120', sizes: '29px', alt: '' }}{% endif %}</span>
+          <span class="lf-proof__face" data-face="2">{% if section.settings.proof_image_2 %}{{ section.settings.proof_image_2 | image_url: width: 120 | image_tag: loading: 'lazy', widths: '58,120', sizes: '29px', alt: '' }}{% endif %}</span>
+          <span class="lf-proof__face" data-face="3">{% if section.settings.proof_image_3 %}{{ section.settings.proof_image_3 | image_url: width: 120 | image_tag: loading: 'lazy', widths: '58,120', sizes: '29px', alt: '' }}{% endif %}</span>
+        </span>
+        <span class="lf-proof__text">
+          <span class="lf-proof__eyebrow">{{ section.settings.proof_eyebrow | escape }}</span>
+          <span class="lf-proof__strong">{{ section.settings.proof_text | escape }} <span class="lf-proof__check">{% render 'icon', icon: 'check' %}</span></span>
+        </span>
+      </div>
+
+      <h1 class="lf-product__title">{{ product.title }}</h1>
+
+      {%- assign rating_value = section.settings.rating_value | default: 5 -%}
+      <div class="lf-rating">
+        <span class="lf-rating__stars" role="img" aria-label="৫-এর মধ্যে {{ rating_value }} তারকা">
+          {%- for i in (1..5) -%}<span class="lf-rating__star{% if i <= rating_value %} is-on{% endif %}">&#9733;</span>{%- endfor -%}
+        </span>
+        <span class="lf-rating__text">{{ section.settings.rating_text | escape }}</span>
+      </div>
+
+      {%- assign highlights = section.blocks | where: 'type', 'highlight' -%}
+      {%- if section.settings.show_highlights and highlights.size > 0 -%}
+        <ul class="lf-highlights">
+          {%- for block in highlights -%}
+            <li class="lf-highlights__item" {{ block.shopify_attributes }}>
+              <span class="lf-highlights__mark">{% render 'icon', icon: block.settings.icon %}</span>
+              <span>{{ block.settings.text | escape }}</span>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+
+      <div class="lf-badges">
+        {%- if product.compare_at_price > product.price -%}
+          {%- assign off_pct = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round -%}
+          <span class="lf-pbadge lf-pbadge--off">{{ 'general.up_to_off' | t }} {{ off_pct }}% {{ 'general.off' | t }}</span>
+        {%- endif -%}
+        {%- if section.settings.offer_badge != blank -%}
+          <span class="lf-pbadge lf-pbadge--offer">{% render 'icon', icon: 'gift' %}{{ section.settings.offer_badge | escape }}</span>
+        {%- endif -%}
+      </div>
+
+      <div class="lf-price">
+        <span class="lf-price__current" data-price-current>{{ product.price | money }}</span>
+        {%- comment -%}
+          The crossed price and the saving line are always rendered (hidden
+          when the product is not on sale) so "Buy Two" can reveal them for
+          the discounted bundle total.
+        {%- endcomment -%}
+        <s class="lf-price__compare" data-price-compare{% unless product.compare_at_price > product.price %} hidden{% endunless %}>{% if product.compare_at_price > product.price %}{{ product.compare_at_price | money }}{% else %}&nbsp;{% endif %}</s>
+        {%- if section.settings.sale_badge != blank -%}
+          <span class="lf-price__badge">{% render 'icon', icon: 'gift' %}{{ section.settings.sale_badge | escape }}</span>
+        {%- endif -%}
+        <p class="lf-price__saving" data-price-saving{% unless product.compare_at_price > product.price %} hidden{% endunless %}>
+          {{ 'general.you_save' | t }} {{ product.compare_at_price | minus: product.price | money }}
+        </p>
+      </div>
+
+      {%- if section.settings.payment_note != blank -%}
+        <p class="lf-payment-note">{{ section.settings.payment_note | escape }}</p>
+      {%- endif -%}
+
+      {%- comment -%} ==================== buy more, save more ==================== {%- endcomment -%}
+      {%- assign tiers = section.blocks | where: 'type', 'tier' -%}
+      {%- if tiers.size > 0 -%}
+        <div class="lf-offers" data-offers>
+          <div class="lf-offers__head">
+            <span class="lf-offers__rule" aria-hidden="true"></span>
+            <span class="lf-offers__title">{{ section.settings.offers_heading | escape }}</span>
+            <span class="lf-offers__rule" aria-hidden="true"></span>
+          </div>
+          <div class="lf-offers__list">
+            {%- for block in tiers -%}
+              {%- assign tier_qty = block.settings.quantity | default: 1 -%}
+              {%- assign tier_pct = block.settings.discount | default: 0 | divided_by: 100.0 -%}
+              <div class="lf-offer{% if block.settings.featured %} is-featured{% endif %}{% if forloop.first %} is-selected{% endif %}"
+                   data-offer data-quantity="{{ tier_qty }}" data-discount="{{ tier_pct }}"
+                   {{ block.shopify_attributes }}>
+                <input class="lf-offer__input" type="radio" name="lf-offer-{{ section.id }}" id="lf-offer-{{ section.id }}-{{ block.id }}" value="{{ forloop.index0 }}" data-offer-input{% if forloop.first %} checked{% endif %}>
+                <label class="lf-offer__label" for="lf-offer-{{ section.id }}-{{ block.id }}">
+                  {%- if block.settings.badge != blank -%}<span class="lf-offer__badge">{{ block.settings.badge | escape }}</span>{%- endif -%}
+                  <span class="lf-offer__body">
+                    <span class="lf-offer__row">
+                      <span class="lf-offer__qty">{{ tier_qty }}টি নিন</span>
+                      {%- if block.settings.benefit != blank -%}
+                        <span class="lf-offer__benefit{% if block.settings.solid_benefit %} is-solid{% endif %}">{{ block.settings.benefit | escape }}</span>
+                      {%- endif -%}
+                    </span>
+                    <span class="lf-offer__caption" data-offer-caption>
+                      {%- if tier_pct > 0 -%}সাশ্রয় <span data-offer-save>—</span>{%- else -%}{{ block.settings.caption | escape }}{%- endif -%}
+                    </span>
+                    {%- unless product.has_only_default_variant -%}
+                      <span class="lf-offer__variant">
+                        <span class="lf-offer__variant-num">#1</span>
+                        <span class="lf-offer__selectwrap">
+                          <select class="lf-offer__select" data-offer-select aria-label="{{ tier_qty }}টি পণ্যের ধরন বেছে নিন">
+                            {%- for option in product.options_with_values -%}
+                              <optgroup label="{{ option.name | escape }}">
+                                {%- for value in option.values -%}
+                                  <option value="{{ value | escape }}">{{ value | escape }}</option>
+                                {%- endfor -%}
+                              </optgroup>
+                            {%- endfor -%}
+                          </select>
+                          {% render 'icon', icon: 'chevron-right' %}
+                        </span>
+                      </span>
+                    {%- endunless -%}
+                  </span>
+                  <span class="lf-offer__price">
+                    <span class="lf-offer__amount" data-offer-price>—</span>
+                    <s class="lf-offer__was" data-offer-was{% unless tier_pct > 0 %} hidden{% endunless %}>—</s>
+                  </span>
+                </label>
+              </div>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} ==================== add to cart ==================== {%- endcomment -%}
+      {%- assign atc_variant = product.selected_or_first_available_variant -%}
+      {% form 'product', product, id: 'ProductForm', class: 'lf-atc', novalidate: 'novalidate' %}
+        <input type="hidden" name="id" value="{{ atc_variant.id }}" data-atc-variant>
+        <input type="hidden" name="quantity" value="1" data-atc-quantity>
+
+        <button class="lf-atc__button" type="submit" data-atc-submit{% unless product.available %} disabled{% endunless %}>
+          <span class="lf-atc__label" data-atc-label>{% if product.available %}{{ 'general.add_to_cart' | t }}{% else %}{{ 'general.sold_out' | t }}{% endif %}</span>
+          <span class="lf-atc__spinner" aria-hidden="true"></span>
+        </button>
+
+        <div class="lf-atc__meta">
+          <div class="lf-qty" data-qty role="group" aria-label="{{ 'general.quantity' | t }}">
+            <button type="button" data-qty-minus aria-label="{{ 'general.decrease_quantity' | t }}">&minus;</button>
+            <span class="lf-qty__value" data-qty-value aria-live="polite">1</span>
+            <button type="button" data-qty-plus aria-label="{{ 'general.increase_quantity' | t }}">+</button>
+          </div>
+          <p class="lf-atc__stock" data-atc-stock>
+            {%- if product.available -%}<span class="lf-dot" aria-hidden="true"></span> {{ 'general.in_stock' | t }}
+            {%- else -%}<span class="lf-dot is-off" aria-hidden="true"></span> {{ 'general.currently_unavailable' | t }}{%- endif -%}
+          </p>
+        </div>
+
+        <div class="lf-atc__payments">{{ form | payment_button }}</div>
+        <p class="lf-atc__message" data-atc-message role="status" aria-live="polite"></p>
+      {% endform %}
+
+      {%- comment -%} ==================== limited offer + countdown ==================== {%- endcomment -%}
+      {%- if section.settings.show_offer -%}
+        <div class="lf-offerpanel">
+          <div class="lf-offerpanel__top">
+            <span class="lf-offerpanel__eyebrow">{% render 'icon', icon: 'diamond' %}{{ section.settings.offer_eyebrow | escape }}</span>
+            <h2 class="lf-offerpanel__title">{{ section.settings.offer_title | escape }}</h2>
+            <p class="lf-offerpanel__sub">{{ section.settings.offer_text | escape }}</p>
+            <div class="lf-timer" data-timer data-timer-seconds="{{ section.settings.timer_seconds }}" role="timer" aria-label="{{ 'general.offer_countdown' | t }}">
+              <span class="lf-timer__unit"><span class="lf-timer__num" data-timer-h>00</span><span class="lf-timer__label">{{ 'general.hours' | t }}</span></span>
+              <span class="lf-timer__sep" aria-hidden="true">:</span>
+              <span class="lf-timer__unit"><span class="lf-timer__num" data-timer-m>00</span><span class="lf-timer__label">{{ 'general.minutes' | t }}</span></span>
+              <span class="lf-timer__sep" aria-hidden="true">:</span>
+              <span class="lf-timer__unit"><span class="lf-timer__num" data-timer-s>00</span><span class="lf-timer__label">{{ 'general.seconds' | t }}</span></span>
+            </div>
+          </div>
+          <ul class="lf-offertrust">
+            <li class="lf-offertrust__item">
+              <span class="lf-offertrust__icon">{% render 'icon', icon: 'truck' %}</span>
+              <span class="lf-offertrust__title">{{ 'general.delivery_information' | t }}</span>
+              <span class="lf-offertrust__copy">{{ 'general.delivery_note' | t }}</span>
+            </li>
+            <li class="lf-offertrust__item">
+              <span class="lf-offertrust__icon">{% render 'icon', icon: 'shield' %}</span>
+              <span class="lf-offertrust__title">{{ 'sections.footer.secure_payment' | t }}</span>
+              <span class="lf-offertrust__copy">{{ 'sections.footer.payment_note' | t }}</span>
+            </li>
+            <li class="lf-offertrust__item">
+              <span class="lf-offertrust__icon">{% render 'icon', icon: 'return' %}</span>
+              <span class="lf-offertrust__title">{{ 'general.returns' | t }}</span>
+              <span class="lf-offertrust__copy">{{ 'general.returns_note' | t }}</span>
+            </li>
+          </ul>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} ==================== order progress ==================== {%- endcomment -%}
+      {%- if section.settings.show_progress -%}
+        <div class="lf-track" data-track>
+          <span class="lf-track__bar" aria-hidden="true"></span>
+          {%- assign steps = 'bag,অর্ডার করা হয়েছে|truck,অর্ডার প্রস্তুত|box,ডেলিভারি সম্পন্ন' | split: '|' -%}
+          {%- for item in steps -%}
+            {%- assign step = item | split: ',' -%}
+            <div class="lf-track__step">
+              <span class="lf-track__icon">{% render 'icon', icon: step[0] %}</span>
+              <span class="lf-track__date" data-track-date="{{ forloop.index0 }}">—</span>
+              <span class="lf-track__label">{{ step[1] }}</span>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} ==================== description ==================== {%- endcomment -%}
+      {%- if product.description != blank -%}
+        <div class="lf-description" data-description>
+          <div class="lf-description__inner rte" data-description-inner>{{ product.description }}</div>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} ==================== policy accordions ==================== {%- endcomment -%}
+      {%- assign accordions = section.blocks | where: 'type', 'accordion' -%}
+      {%- if accordions.size > 0 -%}
+        <div class="lf-accordions">
+          {%- for block in accordions -%}
+            <details class="lf-accordion" {{ block.shopify_attributes }}>
+              <summary class="lf-accordion__summary">
+                <span class="lf-accordion__title">{% render 'icon', icon: block.settings.icon %}{{ block.settings.heading | escape }}</span>
+                <span class="lf-accordion__sign" aria-hidden="true"></span>
+              </summary>
+              <div class="lf-accordion__panel">
+                <div class="lf-accordion__content rte">{{ block.settings.body }}</div>
+              </div>
+            </details>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} ==================== delivery + support ==================== {%- endcomment -%}
+      <div class="lf-badgecards">
+        <div class="lf-badgecard">
+          <span class="lf-badgecard__icon">{% render 'icon', icon: 'truck' %}</span>
+          <span class="lf-badgecard__text">
+            <strong>{{ section.settings.shipping_title | escape }}</strong>
+            <span>{{ section.settings.shipping_text | escape }}</span>
+          </span>
+        </div>
+        <div class="lf-badgecard lf-badgecard--alt">
+          <span class="lf-badgecard__icon">{% render 'icon', icon: 'headset' %}</span>
+          <span class="lf-badgecard__text">
+            <strong>{{ section.settings.support_title | escape }}</strong>
+            <span>{{ section.settings.support_text | escape }}</span>
+          </span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{%- comment -%} ==================== reviews ==================== {%- endcomment -%}
+<section class="lf-previews">
+  <div class="lf-previews__head">
+    <span class="lf-previews__eyebrow">{{ section.settings.reviews_eyebrow | escape }}</span>
+    <h2 class="lf-previews__title">{{ section.settings.reviews_title | escape }}</h2>
+    <p class="lf-previews__score">
+      <span>{{ section.settings.reviews_score_label | escape }}</span>
+      <strong>{{ rating_value }} / 5</strong>
+      <span class="lf-previews__stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+    </p>
+  </div>
+  {%- assign review_blocks = section.blocks | where: 'type', 'review' -%}
+  <ul class="lf-previews__grid">
+    {%- if review_blocks.size > 0 -%}
+      {%- for block in review_blocks -%}
+        <li class="lf-preview" {{ block.shopify_attributes }}>
+          <span class="lf-preview__stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <span class="lf-preview__badge">{% render 'icon', icon: 'check' %}{{ 'general.reviews_area' | t }}</span>
+          <p class="lf-preview__text">{{ block.settings.text | escape }}</p>
+          <span class="lf-preview__author">{{ block.settings.author | escape }}</span>
+        </li>
+      {%- endfor -%}
+    {%- else -%}
+      {%- for i in (1..3) -%}
+        <li class="lf-preview">
+          <span class="lf-preview__stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <span class="lf-preview__badge">{% render 'icon', icon: 'check' %}{{ 'general.reviews_area' | t }}</span>
+          <p class="lf-preview__text">{{ section.settings.reviews_note | escape }}</p>
+          <span class="lf-preview__author">{{ shop.name }}</span>
+        </li>
+      {%- endfor -%}
+    {%- endif -%}
+  </ul>
+</section>
+
+{%- comment -%} ==================== lower trust ==================== {%- endcomment -%}
+<section class="lf-assurance">
+  <ul class="lf-assurance__grid">
+    {%- assign assurance = 'diamond,বাছাই করা মান,যত্ন নিয়ে বাছাই করা ইলেকট্রনিক্স ও দৈনন্দিন ডিভাইস|truck,ডেলিভারি,কেনার আগেই ডেলিভারির স্পষ্ট তথ্য|lock,নিরাপদ চেকআউট,Shopify-এর মাধ্যমে নিরাপদ চেকআউট|headset,গ্রাহক সহায়তা,প্রয়োজনে আমরা পাশে আছি' | split: '|' -%}
+    {%- for item in assurance -%}
+      {%- assign cell = item | split: ',' -%}
+      <li class="lf-assurance__item">
+        <span class="lf-assurance__icon">{% render 'icon', icon: cell[0] %}</span>
+        <span class="lf-assurance__text"><strong>{{ cell[1] }}</strong><span>{{ cell[2] }}</span></span>
+      </li>
+    {%- endfor -%}
+  </ul>
+</section>
+
+{%- comment -%} ==================== variant data + behaviour ==================== {%- endcomment -%}
+<script type="application/json" data-product-json>
+{
+  "variants": [
+    {%- for variant in product.variants -%}
+      {
+        "id": {{ variant.id }},
+        "title": {{ variant.title | json }},
+        "options": {{ variant.options | json }},
+        "available": {{ variant.available | json }},
+        "price": {{ variant.price }},
+        "compare_at_price": {{ variant.compare_at_price | default: 0 }},
+        "featured_media_id": {{ variant.featured_media.id | default: 0 }},
+        "inventory_management": {{ variant.inventory_management | json }},
+        "inventory_policy": {{ variant.inventory_policy | json }},
+        "inventory_quantity": {{ variant.inventory_quantity | default: 0 }},
+        "quantity_rule_min": {{ variant.quantity_rule.min | default: 1 }},
+        "quantity_rule_max": {{ variant.quantity_rule.max | default: 0 }},
+        "quantity_rule_increment": {{ variant.quantity_rule.increment | default: 1 }}
+      }{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+  ]
+}
+</script>
+<script src="{{ 'product.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Main product",
+  "settings": [
+    {"type": "text", "id": "proof_eyebrow", "label": "Proof eyebrow", "default": "যত্ন নিয়ে বাছাই"},
+    {"type": "text", "id": "proof_text", "label": "Proof text", "default": "বাছাই করা পণ্য"},
+    {"type": "image_picker", "id": "proof_image_1", "label": "Proof Image 1"},
+    {"type": "image_picker", "id": "proof_image_2", "label": "Proof Image 2"},
+    {"type": "image_picker", "id": "proof_image_3", "label": "Proof Image 3"},
+    {"type": "range", "id": "rating_value", "label": "Rating value", "min": 0, "max": 5, "step": 1, "default": 5},
+    {"type": "text", "id": "rating_text", "label": "Rating text", "default": "ক্রেতাদের রিভিউ"},
+    {"type": "checkbox", "id": "show_highlights", "label": "Show highlights", "default": true},
+    {"type": "text", "id": "offer_badge", "label": "Special offer badge", "default": "বিশেষ অফার"},
+    {"type": "text", "id": "sale_badge", "label": "Sale badge", "default": "বিশেষ মূল্য"},
+    {"type": "text", "id": "payment_note", "label": "Payment note", "default": "চেকআউটে পেমেন্টের পদ্ধতি দেখুন।"},
+    {"type": "text", "id": "offers_heading", "label": "Offers heading", "default": "পরিমাণভিত্তিক অফার"},
+    {"type": "checkbox", "id": "show_offer", "label": "Show limited-time offer", "default": true},
+    {"type": "text", "id": "offer_eyebrow", "label": "Offer eyebrow", "default": "সীমিত সময়ের অফার"},
+    {"type": "text", "id": "offer_title", "label": "Offer title", "default": "বিশেষ সময়ের অফার"},
+    {"type": "textarea", "id": "offer_text", "label": "Offer text", "default": "হাটরাশের বাছাই করা অফারটি সীমিত সময়ের জন্য প্রযোজ্য।"},
+    {"type": "text", "id": "timer_seconds", "label": "Countdown length in seconds", "default": "8119"},
+    {"type": "checkbox", "id": "show_progress", "label": "Show order progress", "default": true},
+    {"type": "text", "id": "shipping_title", "label": "Shipping badge title", "default": "ডেলিভারি তথ্য"},
+    {"type": "text", "id": "shipping_text", "label": "Shipping badge text", "default": "পেমেন্টের আগেই ডেলিভারির বিস্তারিত দেখুন"},
+    {"type": "text", "id": "support_title", "label": "Support badge title", "default": "গ্রাহক সহায়তা"},
+    {"type": "text", "id": "support_text", "label": "Support badge text", "default": "প্রয়োজনে সহায়তা পেতে যোগাযোগ করুন"},
+    {"type": "text", "id": "reviews_eyebrow", "label": "Reviews eyebrow", "default": "ক্রেতাদের রিভিউ"},
+    {"type": "text", "id": "reviews_title", "label": "Reviews title", "default": "ক্রেতারা যা বলছেন"},
+    {"type": "text", "id": "reviews_score_label", "label": "Reviews score label", "default": "রিভিউ"},
+    {"type": "text", "id": "reviews_note", "label": "Reviews placeholder text", "default": "ক্রেতাদের মতামত দেখাতে থিম এডিটরে রিভিউ প্ল্যাটফর্ম যুক্ত করুন।"}
+  ],
+  "blocks": [
+    {
+      "type": "highlight",
+      "name": "Highlight",
+      "limit": 4,
+      "settings": [
+        {"type": "select", "id": "icon", "label": "Icon", "default": "sparkle", "options": [
+          {"value": "sparkle", "label": "Sparkle"},
+          {"value": "star", "label": "Star"},
+          {"value": "diamond", "label": "Diamond"},
+          {"value": "check", "label": "Check"},
+          {"value": "truck", "label": "Truck"},
+          {"value": "gift", "label": "Gift"},
+          {"value": "refresh", "label": "Refresh"},
+          {"value": "shield", "label": "Shield"}
+        ]},
+        {"type": "text", "id": "text", "label": "Text", "default": "ক্রেতাদের পছন্দের পণ্য"}
+      ]
+    },
+    {
+      "type": "tier",
+      "name": "Quantity offer",
+      "limit": 4,
+      "settings": [
+        {"type": "range", "id": "quantity", "label": "Quantity", "min": 1, "max": 10, "step": 1, "default": 1},
+        {"type": "range", "id": "discount", "label": "Discount percent", "min": 0, "max": 70, "step": 1, "default": 0},
+        {"type": "text", "id": "badge", "label": "Badge", "default": "একটি পণ্য"},
+        {"type": "text", "id": "benefit", "label": "Benefit", "default": "ব্যবহারের জন্য উপযোগী"},
+        {"type": "checkbox", "id": "solid_benefit", "label": "Solid benefit style", "default": false},
+        {"type": "checkbox", "id": "featured", "label": "Highlight as best value", "default": false},
+        {"type": "text", "id": "caption", "label": "Caption used when there is no discount", "default": "নিয়মিত মূল্য"}
+      ]
+    },
+    {
+      "type": "accordion",
+      "name": "Policy accordion",
+      "limit": 6,
+      "settings": [
+        {"type": "select", "id": "icon", "label": "Icon", "default": "box", "options": [
+          {"value": "box", "label": "Box"},
+          {"value": "check", "label": "Check"},
+          {"value": "refresh", "label": "Refresh"},
+          {"value": "truck", "label": "Truck"},
+          {"value": "shield", "label": "Shield"},
+          {"value": "star", "label": "Star"}
+        ]},
+        {"type": "text", "id": "heading", "label": "Heading", "default": "ডেলিভারি নীতি"},
+        {"type": "richtext", "id": "body", "label": "Body", "default": "<p>ডেলিভারির এলাকা, সময় ও চার্জ সম্পর্কে বিস্তারিত জানতে <a href=\"/policies/shipping-policy\">ডেলিভারি নীতি</a> দেখুন। অর্ডার করার আগে নীতিটি পড়ে নিন।</p>"}
+      ]
+    },
+    {
+      "type": "review",
+      "name": "Review",
+      "limit": 6,
+      "settings": [
+        {"type": "textarea", "id": "text", "label": "Text", "default": "রিভিউ প্ল্যাটফর্ম যুক্ত হলে এখানে ক্রেতাদের মতামত দেখানো হবে।"},
+        {"type": "text", "id": "author", "label": "Author", "default": "হাটরাশের ক্রেতা"}
+      ]
+    }
+  ],
+  "max_blocks": 20,
+  "presets": [
+    {
+      "name": "Main product",
+      "blocks": [
+        {"type": "highlight", "settings": {"icon": "star", "text": "ক্রেতাদের পছন্দের পণ্য"}},
+        {"type": "highlight", "settings": {"icon": "sparkle", "text": "চাহিদা বেশি—দ্রুত শেষ হচ্ছে"}},
+        {"type": "highlight", "settings": {"icon": "gift", "text": "উপহার দেওয়ার জন্য দারুণ"}},
+        {"type": "tier", "settings": {"quantity": 1, "discount": 0, "badge": "একটি পণ্য", "benefit": "ব্যবহারের জন্য উপযোগী", "caption": "নিয়মিত মূল্য"}},
+        {"type": "tier", "settings": {"quantity": 2, "discount": 2, "badge": "সবচেয়ে জনপ্রিয়", "benefit": "সাশ্রয়ী পছন্দ", "solid_benefit": true, "featured": true, "caption": "নিয়মিত মূল্য"}},
+        {"type": "accordion", "settings": {"icon": "box", "heading": "ডেলিভারি নীতি", "body": "<p>ডেলিভারির এলাকা, সময় ও চার্জ সম্পর্কে বিস্তারিত জানতে <a href=\"/policies/shipping-policy\">ডেলিভারি নীতি</a> দেখুন। অর্ডার করার আগে নীতিটি পড়ে নিন।</p>"}},
+        {"type": "accordion", "settings": {"icon": "check", "heading": "রিটার্ন ও রিফান্ড নীতি", "body": "<p>রিটার্নের যোগ্যতা, সময়সীমা ও অনুরোধের ধাপ জানতে <a href=\"/policies/refund-policy\">রিটার্ন ও রিফান্ড নীতি</a> দেখুন। অর্ডার করার আগে নীতিটি পড়ে নিন।</p>"}},
+        {"type": "review", "settings": {"text": "রিভিউ প্ল্যাটফর্ম যুক্ত হলে এখানে ক্রেতাদের মতামত দেখানো হবে।", "author": "হাটরাশের ক্রেতা"}},
+        {"type": "review", "settings": {"text": "রিভিউ প্ল্যাটফর্ম যুক্ত হলে এখানে ক্রেতাদের মতামত দেখানো হবে।", "author": "হাটরাশের ক্রেতা"}},
+        {"type": "review", "settings": {"text": "রিভিউ প্ল্যাটফর্ম যুক্ত হলে এখানে ক্রেতাদের মতামত দেখানো হবে।", "author": "হাটরাশের ক্রেতা"}}
+      ]
+    }
+  ]
+}
+{% endschema %}

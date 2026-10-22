@@ -2,118 +2,170 @@
   {
     "name": "theme_info",
     "theme_name": "HaatRush",
-    "theme_version": "1.0.0",
+    "theme_version": "2.0.0",
     "theme_author": "HaatRush",
-    "theme_documentation_url": "https://haatrush.com/docs",
-    "theme_support_url": "https://haatrush.com/support"
+    "theme_documentation_url": "https://haatrush.com",
+    "theme_support_url": "https://haatrush.com"
   },
   {
-    "name": "Logo & Branding",
+    "name": "Brand",
     "settings": [
       {
-        "type": "image_picker",
-        "id": "logo",
-        "label": "লোগো"
-      },
-      {
         "type": "text",
-        "id": "logo_text",
-        "label": "লোগো টেক্সট",
-        "default": "HaatRush"
-      },
-      {
-        "type": "text",
-        "id": "tagline",
-        "label": "ট্যাগলাইন",
-        "default": "বিশ্বস্ত ইলেকট্রনিক্স সঙ্গী"
-      }
-    ]
-  },
-  {
-    "name": "Colors",
-    "settings": [
-      {
-        "type": "color",
-        "id": "primary_color",
-        "label": "প্রাইমারি কালার",
-        "default": "#FF6B00"
+        "id": "brand_tagline",
+        "label": "Brand tagline",
+        "default": "ইলেকট্রনিক্স, গ্যাজেট ও প্রতিদিনের প্রয়োজনীয় ডিভাইস"
       },
       {
         "type": "color",
-        "id": "header_color",
-        "label": "হেডার কালার",
-        "default": "#1B3C3C"
-      }
-    ]
-  },
-  {
-    "name": "Contact Information",
-    "settings": [
+        "id": "color_ink",
+        "label": "Ink",
+        "default": "#27183A"
+      },
       {
-        "type": "text",
-        "id": "support_phone",
-        "label": "সাপোর্ট ফোন",
-        "default": "01XXXXXXXXX"
+        "type": "color",
+        "id": "color_accent",
+        "label": "Accent",
+        "default": "#7628D7"
+      },
+      {
+        "type": "color",
+        "id": "color_sand",
+        "label": "হালকা ব্যাকগ্রাউন্ড",
+        "default": "#F8F3FF"
       },
       {
         "type": "text",
-        "id": "support_email",
-        "label": "সাপোর্ট ইমেইল",
+        "id": "contact_email",
+        "label": "Contact email",
         "default": "support@haatrush.com"
-      },
-      {
-        "type": "textarea",
-        "id": "address",
-        "label": "ঠিকানা",
-        "default": "ঢাকা, বাংলাদেশ"
       }
     ]
   },
   {
-    "name": "Social Media",
+    "name": "Hero",
     "settings": [
       {
-        "type": "url",
-        "id": "facebook_url",
-        "label": "ফেসবুক URL"
+        "type": "header",
+        "content": "Homepage hero height"
       },
       {
-        "type": "url",
-        "id": "youtube_url",
-        "label": "ইউটিউব URL"
+        "type": "range",
+        "id": "hero_height_desktop",
+        "label": "Desktop Hero Height",
+        "info": "Height of the homepage hero on screens wider than 989px.",
+        "min": 400,
+        "max": 900,
+        "step": 10,
+        "unit": "px",
+        "default": 620
       },
+      {
+        "type": "range",
+        "id": "hero_height_mobile",
+        "label": "Mobile Hero Height",
+        "info": "Height of the homepage hero on mobile and tablet screens (up to 989px).",
+        "min": 320,
+        "max": 760,
+        "step": 10,
+        "unit": "px",
+        "default": 480
+      }
+    ]
+  },
+  {
+    "name": "Social",
+    "settings": [
       {
         "type": "url",
         "id": "instagram_url",
-        "label": "ইনস্টাগ্রাম URL"
-      },
-      {
-        "type": "text",
-        "id": "whatsapp_number",
-        "label": "হোয়াটসঅ্যাপ নম্বর",
-        "default": "8801875126006"
+        "label": "Instagram URL"
       },
       {
         "type": "url",
-        "id": "x_url",
-        "label": "X / টুইটার URL"
+        "id": "tiktok_url",
+        "label": "TikTok URL"
+      },
+      {
+        "type": "url",
+        "id": "facebook_url",
+        "label": "Facebook URL"
       }
     ]
   },
   {
-    "name": "Delivery Settings",
+    "name": "Cart & promotions",
     "settings": [
       {
-        "type": "text",
-        "id": "delivery_inside_dhaka",
-        "label": "ঢাকার ভিতরে ডেলিভারি চার্জ (৳)",
-        "default": "70"
+        "type": "header",
+        "content": "Cart progress strip"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_promo_enabled",
+        "label": "Show cart progress strip",
+        "info": "Shows a progress bar in the cart drawer and on the cart page. Only enable this once the matching discount or shipping offer is configured in Shopify Admin, and set the label below to match that offer exactly.",
+        "default": false
+      },
+      {
+        "type": "range",
+        "id": "cart_promo_threshold",
+        "label": "Offer threshold (currency units)",
+        "info": "The cart subtotal at which the offer applies. Enter the value in your store currency.",
+        "min": 0,
+        "max": 100000,
+        "step": 100,
+        "default": 7500
       },
       {
         "type": "text",
-        "id": "delivery_outside_dhaka",
-        "label": "ঢাকার বাহিরে ডেলিভারি চার্জ (৳)",
-        "default": "130"
+        "id": "cart_promo_label",
+        "label": "Progress label",
+        "info": "লেবেল লুকাতে ফাঁকা রাখুন। সক্রিয় অফারের সঙ্গে মিল রেখে লিখুন, যেমন: \"৳১,৫০০-এর বেশি অর্ডারে ডেলিভারি সুবিধা\"।",
+        "default": ""
+      },
+      {
+        "type": "text",
+        "id": "cart_promo_reached_label",
+        "label": "Label when the offer is reached",
+        "default": ""
+      }
+    ]
+  },
+  {
+    "name": "Product cards",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Product card width"
+      },
+      {
+        "type": "select",
+        "id": "product_card_width_mode",
+        "label": "Card width mode",
+        "info": "Box Width caps every product card at the pixel width set below. Full Width lets cards fill their grid column with no fixed width.",
+        "options": [
+          {
+            "value": "box",
+            "label": "Box Width"
+          },
+          {
+            "value": "full",
+            "label": "Full Width"
+          }
+        ],
+        "default": "full"
+      },
+      {
+        "type": "range",
+        "id": "product_card_width",
+        "label": "Card width (px)",
+        "info": "Used only when Card width mode is set to Box Width.",
+        "min": 200,
+        "max": 500,
+        "step": 10,
+        "unit": "px",
+        "default": 340
       }
     ]
   }

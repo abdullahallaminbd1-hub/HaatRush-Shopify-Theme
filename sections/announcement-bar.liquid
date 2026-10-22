@@ -1,127 +1,20 @@
-{%- if section.settings.show_announcement -%}
-<div class="announcement-bar">
-  <div class="container">
-    <div class="announcement-bar__inner">
-      <div class="announcement-bar__group">
-        <div class="announcement-bar__item"><span>🚚</span><span>{{ section.settings.item_1 }}</span></div>
-        <span class="announcement-bar__divider">|</span>
-        <div class="announcement-bar__item"><span>💵</span><span>{{ section.settings.item_2 }}</span></div>
-        <span class="announcement-bar__divider">|</span>
-        <div class="announcement-bar__item"><span>🛡️</span><span>{{ section.settings.item_3 }}</span></div>
-        <span class="announcement-bar__divider">|</span>
-        <div class="announcement-bar__item"><span>🎧</span><span>{{ section.settings.item_4 }}</span></div>
-      </div>
-    </div>
+<div class="lf-announcement" role="region" aria-label="{{ 'general.announcements' | t }}">
+  <div class="lf-announcement__track">
+    {%- for i in (1..2) -%}
+      {%- if section.settings.message_1 != blank -%}<span>{{ section.settings.message_1 }}</span>{%- endif -%}
+      {%- if section.settings.message_2 != blank -%}<span>{{ section.settings.message_2 }}</span>{%- endif -%}
+      {%- if section.settings.message_3 != blank -%}<span>{{ section.settings.message_3 }}</span>{%- endif -%}
+    {%- endfor -%}
   </div>
 </div>
-{%- endif -%}
-
-<style>
-  .announcement-bar {
-    background-color: #1B3C3C;
-    color: #fff;
-    font-size: 13px;
-    padding: 7px 0;
-    font-family: var(--font-bengali, 'Hind Siliguri', sans-serif);
-  }
-  .announcement-bar .container {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 20px;
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    flex-wrap: wrap;
-  }
-  .announcement-bar__inner {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 24px;
-  }
-  .announcement-bar__group {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    flex-shrink: 0;
-  }
-  .announcement-bar__item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-  .announcement-bar__divider {
-    color: rgba(255,255,255,0.3);
-    flex-shrink: 0;
-    padding: 0 4px;
-  }
-  /* Mobile: stack items vertically, full width */
-  @media (max-width: 640px) {
-    .announcement-bar .container {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 8px;
-      padding: 0 16px;
-    }
-    .announcement-bar__inner {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 8px;
-    }
-    .announcement-bar__group {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 10px;
-    }
-    .announcement-bar__divider {
-      display: none;
-    }
-    .announcement-bar__item {
-      justify-content: space-between;
-      width: 100%;
-    }
-    .announcement-bar__item span:last-child {
-      flex: 1;
-    }
-  }
-</style>
-
 {% schema %}
 {
-  "name": "📢 অ্যানাউন্সমেন্ট বার",
+  "name": "Announcement bar",
   "settings": [
-    {
-      "type": "checkbox",
-      "id": "show_announcement",
-      "label": "অ্যানাউন্সমেন্ট বার দেখান",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "item_1",
-      "label": "আইটেম ১",
-      "default": "সারাদেশে ডেলিভারি"
-    },
-    {
-      "type": "text",
-      "id": "item_2",
-      "label": "আইটেম ২",
-      "default": "ক্যাশ অন ডেলিভারি"
-    },
-    {
-      "type": "text",
-      "id": "item_3",
-      "label": "আইটেম ৩",
-      "default": "নিরাপদ কেনাকাটা"
-    },
-    {
-      "type": "text",
-      "id": "item_4",
-      "label": "আইটেম ৪",
-      "default": "সকাল ৯টা - রাত ১০টা কাস্টমার সাপোর্ট"
-    }
-  ]
+    {"type":"text","id":"message_1","label":"Message 1","default":"হাটরাশে স্বাগতম — ইলেকট্রনিক্স ও দরকারি গ্যাজেট"},
+    {"type":"text","id":"message_2","label":"Message 2","default":"ক্যাশ অন ডেলিভারি সুবিধা"},
+    {"type":"text","id":"message_3","label":"Message 3","default":"নিরাপদ চেকআউট · গ্রাহক সহায়তা · স্পষ্ট ডেলিভারি তথ্য"}
+  ],
+  "presets": [{"name": "Announcement bar"}]
 }
 {% endschema %}

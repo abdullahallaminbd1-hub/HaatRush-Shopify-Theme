@@ -1,649 +1,194 @@
-<header class="header" id="site-header" data-sticky-header>
-  <div class="container">
-    {%- comment -%} ===== DESKTOP HEADER ===== {%- endcomment -%}
-    <div class="header__desktop">
-      <div class="header__logo">
-        <a href="{{ routes.root_url }}" class="header__logo-link" aria-label="HaatRush হোম">
-          <div class="header__logo-default">
-            <svg class="header__logo-cart-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF6B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-            </svg>
-            <div class="header__logo-text-wrap">
-              <span class="header__logo-name">{{ section.settings.logo_text | default: 'HaatRush' }}</span>
-              <span class="header__logo-tagline">{{ settings.tagline | default: 'বিশ্বস্ত ইলেকট্রনিক্স সঙ্গী' }}</span>
-            </div>
-          </div>
-        </a>
-      </div>
-
-      <div class="header__search">
-        <form action="{{ routes.search_url }}" method="get" role="search" class="header__search-form">
-          <input type="hidden" name="type" value="product">
-          <input
-            type="search"
-            name="q"
-            placeholder="আপনার পছন্দের পণ্যটি খুঁজুন..."
-            class="header__search-input"
-            autocomplete="off"
-            aria-label="পণ্য খুঁজুন"
-          >
-          <button type="submit" class="header__search-btn" aria-label="সার্চ করুন">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
-          </button>
-        </form>
-      </div>
-
-      <div class="header__actions">
-        <a href="{{ routes.account_url }}" class="header__action-link" aria-label="আমার অ্যাকাউন্ট">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-          </svg>
-          <span class="header__action-label">অ্যাকাউন্ট</span>
-        </a>
-        <button type="button" class="header__action-link header__cart-link" aria-label="কার্ট খুলুন" data-cart-drawer-open>
-          <div class="header__cart-icon-wrap">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-            </svg>
-            <span class="header__cart-badge cart-count">{{ cart.item_count }}</span>
-          </div>
-          <span class="header__action-label">কার্ট</span>
-        </button>
-      </div>
+<header class="lf-header" data-header>
+  <div class="lf-header__bar page-width">
+    <div class="lf-header__icons lf-header__icons--left">
+      <button class="lf-header__icon lf-header__icon--menu" data-menu-open aria-label="{{ 'general.menu' | t }}" aria-expanded="false">
+        {% render 'icon', icon: 'menu' %}
+      </button>
+      <button class="lf-header__icon" data-search-open aria-label="{{ 'general.search' | t }}">
+        {% render 'icon', icon: 'search' %}
+      </button>
     </div>
 
-    {%- comment -%} ===== MOBILE HEADER ===== {%- endcomment -%}
-    <div class="header__mobile">
-      <button class="header__hamburger" id="menu-toggle" aria-label="মেনু খুলুন" aria-expanded="false" aria-controls="mobile-menu-drawer">
-        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-        </svg>
-      </button>
+    <a class="lf-header__heading" href="{{ routes.root_url }}" role="heading" aria-level="2">
+      {%- if section.settings.logo != blank -%}
+        <img
+          class="lf-header__logo-img"
+          src="{{ section.settings.logo | image_url: width: 600 }}"
+          srcset="{{ section.settings.logo | image_url: width: 150 }} 150w, {{ section.settings.logo | image_url: width: 300 }} 300w, {{ section.settings.logo | image_url: width: 450 }} 450w, {{ section.settings.logo | image_url: width: 600 }} 600w"
+          sizes="(max-width: 989px) 150px, {{ section.settings.logo_width | default: 180 }}px"
+          alt="{{ section.settings.logo.alt | default: shop.name | escape }}"
+          width="{{ section.settings.logo.width }}"
+          height="{{ section.settings.logo.height }}"
+          loading="eager"
+          style="width:{{ section.settings.logo_width | default: 180 }}px">
+      {%- else -%}
+        <span class="lf-wordmark">Haat<i>Rush</i></span>
+        <span class="lf-wordmark-tag">ইলেকট্রনিক্স ও ডিভাইস</span>
+      {%- endif -%}
+    </a>
 
-      <a href="{{ routes.root_url }}" class="header__mobile-logo" aria-label="HaatRush হোম">
-        <div class="header__logo-default header__logo-default--mobile">
-          <svg class="header__logo-cart-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF6B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-          </svg>
-          <div class="header__logo-text-wrap">
-            <span class="header__logo-name">{{ section.settings.logo_text | default: 'HaatRush' }}</span>
-            <span class="header__logo-tagline">{{ settings.tagline | default: 'বিশ্বস্ত ইলেকট্রনিক্স সঙ্গী' }}</span>
-          </div>
-        </div>
+    {%- comment -%} Desktop-only inline search bar (visible from the 990px breakpoint via CSS).
+      Same action, method and options[prefix] payload as the overlay search below, so
+      submission behaviour is identical; on mobile this form stays display:none and the
+      existing search overlay remains the only search UI. {%- endcomment -%}
+    <form class="lf-header__search" action="{{ routes.search_url }}" method="get" role="search" data-search-suggest-form>
+      <span class="lf-header__search-icon" aria-hidden="true">{% render 'icon', icon: 'search' %}</span>
+      <input type="search" name="q" placeholder="{{ 'general.search_placeholder' | t }}" aria-label="{{ 'general.search' | t }}" autocomplete="off" data-search-suggest-input role="combobox" aria-expanded="false" aria-controls="HaatRushSearchSuggest" aria-autocomplete="list" aria-haspopup="listbox">
+      <input type="hidden" name="options[prefix]" value="last">
+      <button type="submit" aria-label="{{ 'general.search' | t }}">{% render 'icon', icon: 'arrow' %}</button>
+      <div class="lf-search-suggest" id="HaatRushSearchSuggest" data-search-suggest-panel hidden></div>
+    </form>
+
+    {%- comment -%}
+      A small set of real popular products, rendered server-side straight from the
+      live catalog, used only for the focused-but-empty suggestion state. Nothing
+      here is hardcoded and no data is faked. Hidden from layout (script island);
+      ignored entirely on mobile where the desktop field is display:none.
+    {%- endcomment -%}
+    {%- comment -%}
+      Locale island: strings that the predictive-search panel renders with
+      JavaScript. Shipping them from the locale file keeps the suggestion
+      dropdown in the shopper's language instead of always English.
+    {%- endcomment -%}
+    <script type="application/json" data-haatrush-locale>
+      {
+        "view_all_results_for": {{ 'general.view_all_results_for' | t | json }},
+        "view_all_products": {{ 'general.view_all_products' | t | json }},
+        "results_for": {{ 'general.results_for' | t | json }},
+        "popular_products": {{ 'general.popular_products' | t | json }},
+        "no_matching_products": {{ 'general.no_matching_products' | t | json }},
+        "search_our_store": {{ 'general.search_our_store' | t | json }}
+      }
+    </script>
+
+    <script type="application/json" data-haatrush-popular>[
+      {%- for pop in collections.all.products limit: 6 -%}
+      {
+        "title": {{ pop.title | json }},
+        "url": {{ pop.url | json }},
+        "image": {% if pop.featured_image %}{{ pop.featured_image | image_url: width: 120 | json }}{% else %}""{% endif %},
+        "price": {{ pop.price | default: 0 | json }},
+        "compare_at_price": {{ pop.compare_at_price | json }},
+        "available": {{ pop.available | json }}
+      }{%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ]</script>
+
+    <div class="lf-header__icons lf-header__icons--right">
+      <a class="lf-header__icon lf-header__icon--account" href="{{ routes.account_login_url }}" aria-label="{{ 'general.account' | t }}">
+        <span class="lf-header__icon-wrap">{% render 'icon', icon: 'user' %}</span>
+        <span class="lf-header__icon-label">{{ 'general.account' | t }}</span>
       </a>
-
-      <button type="button" class="header__mobile-cart" aria-label="কার্ট খুলুন" data-cart-drawer-open>
-        <div class="header__cart-icon-wrap">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-          </svg>
-          <span class="header__cart-badge cart-count">{{ cart.item_count }}</span>
-        </div>
+      <button class="lf-header__icon cart-trigger" data-cart-open aria-label="{{ 'general.open_cart' | t }}">
+        <span class="lf-header__icon-wrap">{% render 'icon', icon: 'bag' %}<span class="lf-header__cart-count" data-cart-count>{{ cart.item_count }}</span></span>
+        <span class="lf-header__icon-label">{{ 'general.cart' | t }}</span>
       </button>
-    </div>
-    <div class="header__mobile-search">
-      <form action="{{ routes.search_url }}" method="get" role="search" class="header__search-form">
-        <input type="hidden" name="type" value="product">
-        <input type="search" name="q" placeholder="আপনার পছন্দের পণ্যটি খুঁজুন..." class="header__search-input" autocomplete="off" aria-label="পণ্য খুঁজুন">
-        <button type="submit" class="header__search-btn" aria-label="সার্চ করুন">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-        </button>
-      </form>
     </div>
   </div>
+
+  <nav class="lf-header__menu" aria-label="{{ 'general.main_navigation' | t }}">
+    <ul class="lf-header__menu-list" role="list">
+      {%- assign menu = linklists[section.settings.menu] -%}
+      {%- if menu.links.size > 0 -%}
+        {%- for link in menu.links -%}
+          <li><a href="{{ link.url }}" {% if link.active or link.child_active %}aria-current="page"{% endif %}>{{ link.title }}</a></li>
+        {%- endfor -%}
+      {%- else -%}
+        <li><a href="{{ routes.collections_url }}/electronics">ইলেকট্রনিক্স</a></li>
+        <li><a href="{{ routes.collections_url }}/gadgets">গ্যাজেট</a></li>
+        <li><a href="{{ routes.collections_url }}/audio">অডিও</a></li>
+        <li><a href="{{ routes.collections_url }}/smart-devices">স্মার্ট ডিভাইস</a></li>
+        <li><a href="{{ routes.collections_url }}/accessories">অ্যাক্সেসরিজ</a></li>
+        <li><a href="{{ routes.collections_url }}/best-sellers">জনপ্রিয় পণ্য</a></li>
+        <li><a href="{{ routes.collections_url }}/new-arrivals">নতুন পণ্য</a></li>
+        <li><a href="{{ routes.root_url }}pages/about-us">আমাদের সম্পর্কে</a></li>
+      {%- endif -%}
+    </ul>
+    {%- comment -%} Desktop-only Special Offers pill. The theme contains no existing
+      Special Offers page, collection or link to reuse, so this pill is intentionally
+      a non-interactive element (no invented URL). Drop a real destination in here
+      once one exists. {%- endcomment -%}
+    <span class="lf-header__offers">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c.8 5.2 3.8 8.2 9 9-5.2.8-8.2 3.8-9 9-.8-5.2-3.8-8.2-9-9 5.2-.8 8.2-3.8 9-9Z"/></svg>
+      বিশেষ অফার
+      {% render 'icon', icon: 'arrow' %}
+    </span>
+  </nav>
 </header>
 
-<div class="cart-drawer-overlay" id="cart-drawer-overlay" data-cart-drawer-close></div>
-<aside class="cart-drawer" id="cart-drawer" aria-label="আপনার কার্ট" aria-hidden="true">
-  <div class="cart-drawer__header">
-    <h2>🛒 আপনার কার্ট</h2>
-    <button type="button" class="cart-drawer__close" aria-label="কার্ট বন্ধ করুন" data-cart-drawer-close>
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-      </svg>
-    </button>
+<div class="lf-menu-overlay" data-menu-close></div>
+<aside class="lf-menu-drawer" data-menu-drawer aria-hidden="true" aria-label="{{ 'general.menu' | t }}">
+  <div class="lf-menu-drawer__head">
+    <h3>{{ 'general.menu' | t }}</h3>
+    <button class="lf-header__icon" data-menu-close aria-label="{{ 'general.close' | t }}">{% render 'icon', icon: 'close' %}</button>
   </div>
-  <div class="cart-drawer__items" id="cart-drawer-items" aria-live="polite"></div>
-  <div class="cart-drawer__footer">
-    <div class="cart-drawer__subtotal"><span>সাবটোটাল</span><strong id="cart-drawer-subtotal"></strong></div>
-    <a href="/checkout" class="cart-drawer__checkout">🔒 চেকআউট করুন</a>
+  <nav class="lf-menu-drawer__nav" aria-label="{{ 'general.menu' | t }}">
+    <ul role="list">
+      {%- if menu.links.size > 0 -%}
+        {%- for link in menu.links -%}
+          <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+        {%- endfor -%}
+      {%- else -%}
+        <li><a href="{{ routes.collections_url }}/electronics">ইলেকট্রনিক্স</a></li>
+        <li><a href="{{ routes.collections_url }}/gadgets">গ্যাজেট</a></li>
+        <li><a href="{{ routes.collections_url }}/audio">অডিও</a></li>
+        <li><a href="{{ routes.collections_url }}/smart-devices">স্মার্ট ডিভাইস</a></li>
+        <li><a href="{{ routes.collections_url }}/accessories">অ্যাক্সেসরিজ</a></li>
+        <li><a href="{{ routes.collections_url }}/best-sellers">জনপ্রিয় পণ্য</a></li>
+        <li><a href="{{ routes.collections_url }}/new-arrivals">নতুন পণ্য</a></li>
+        <li><a href="{{ routes.root_url }}pages/about-us">আমাদের সম্পর্কে</a></li>
+      {%- endif -%}
+    </ul>
+  </nav>
+  <div class="lf-menu-drawer__utility">
+  <div class="lf-menu-drawer__account">
+    {% if shop.customer_accounts_enabled %}
+      {% if customer %}
+        <a href="{{ routes.account_logout_url }}">{% render 'icon', icon: 'logout' %} {{ 'general.sign_out' | t }}</a>
+      {% else %}
+        <a href="{{ routes.account_login_url }}">{% render 'icon', icon: 'user' %} {{ 'general.sign_in' | t }}</a>
+      {% endif %}
+    {% endif %}
   </div>
+  <a href="{{ routes.search_url }}">{% render 'icon', icon: 'search' %} {{ 'general.search' | t }}</a>
+</div>
 </aside>
 
-{%- comment -%} ===== MOBILE MENU DRAWER ===== {%- endcomment -%}
-<div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
-<nav class="mobile-menu-drawer" id="mobile-menu-drawer" aria-label="মোবাইল মেনু">
-  <div class="mobile-menu-drawer__header">
-    <span class="mobile-menu-drawer__title">মেনু</span>
-    <button class="mobile-menu-drawer__close" id="menu-close" aria-label="মেনু বন্ধ করুন">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-      </svg>
-    </button>
-  </div>
-
-  <div class="mobile-menu-drawer__search">
-    <form action="{{ routes.search_url }}" method="get" role="search" class="header__search-form">
-      <input type="hidden" name="type" value="product">
-      <input
-        type="search"
-        name="q"
-        placeholder="পণ্য খুঁজুন..."
-        class="header__search-input"
-        autocomplete="off"
-        aria-label="পণ্য খুঁজুন"
-      >
-      <button type="submit" class="header__search-btn" aria-label="সার্চ করুন">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-      </button>
+<div class="lf-search-backdrop" data-search-close></div>
+<div class="lf-search-overlay" data-search-overlay aria-hidden="true">
+  <div class="lf-search-overlay__inner page-width">
+    <form action="{{ routes.search_url }}" method="get" role="search" class="lf-search-form">
+      <input type="search" name="q" placeholder="{{ 'general.search_placeholder' | t }}" aria-label="{{ 'general.search' | t }}" autocomplete="off">
+      <input type="hidden" name="options[prefix]" value="last">
+      <button type="submit" class="button button--accent">{{ 'general.search' | t }}</button>
     </form>
+    <button class="lf-header__icon" type="button" data-search-close aria-label="{{ 'general.close' | t }}">{% render 'icon', icon: 'close' %}</button>
   </div>
-
-  <ul class="mobile-menu-drawer__nav">
-    {%- for link in linklists.main-menu.links -%}
-      <li class="mobile-menu-drawer__nav-item">
-        <a href="{{ link.url }}" class="mobile-menu-drawer__nav-link">{{ link.title }}</a>
-        {%- if link.links.size > 0 -%}
-          <ul class="mobile-menu-drawer__subnav">
-            {%- for child_link in link.links -%}
-              <li><a href="{{ child_link.url }}">{{ child_link.title }}</a></li>
-            {%- endfor -%}
-          </ul>
-        {%- endif -%}
-      </li>
-    {%- endfor -%}
-  </ul>
-
-  <div class="mobile-menu-drawer__footer">
-    <a href="{{ routes.account_url }}" class="mobile-menu-drawer__footer-link">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-      </svg>
-      আমার অ্যাকাউন্ট
-    </a>
-  </div>
-</nav>
-
-<style>
-  /* ===== HEADER BASE ===== */
-  .header {
-    background: #fff;
-    border-bottom: 1px solid #eee;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    transition: box-shadow 0.25s ease;
-  }
-  .header.is-scrolled {
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-  }
-  .header .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 16px;
-  }
-
-  /* ===== DESKTOP ===== */
-  .header__desktop {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    min-height: 70px;
-    padding: 8px 0;
-  }
-  .header__logo { flex-shrink: 0; }
-  .header__logo-link {
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    align-items: center;
-  }
-  .header__logo-default {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .header__logo-text-wrap {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.2;
-  }
-  .header__logo-name {
-    font-size: 22px;
-    font-weight: 800;
-    color: #1B3C3C;
-    letter-spacing: -0.5px;
-  }
-  .header__logo-tagline {
-    font-size: 11px;
-    color: #888;
-    font-weight: 400;
-  }
-  .header__logo-img {
-    max-height: 44px;
-    width: auto;
-  }
-
-  /* Search */
-  .header__search {
-    flex: 1;
-    min-width: 0;
-    max-width: none;
-  }
-  .header__search-form {
-    display: flex;
-    border: 2px solid #eee;
-    border-radius: 8px;
-    overflow: hidden;
-    transition: border-color 0.2s;
-  }
-  .header__search-form:focus-within {
-    border-color: #FF6B00;
-  }
-  .header__search-input {
-    flex: 1;
-    border: none;
-    padding: 10px 14px;
-    font-size: 14px;
-    outline: none;
-    background: #f9f9f9;
-    color: #333;
-  }
-  .header__search-input::placeholder {
-    color: #aaa;
-  }
-  .header__search-btn {
-    background: #FF6B00;
-    border: none;
-    padding: 10px 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-  }
-  .header__search-btn:hover {
-    background: #e55e00;
-  }
-
-  /* Actions */
-  .header__actions {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    flex-shrink: 0;
-  }
-  .header__action-link {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    text-decoration: none;
-    color: #333;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    font: inherit;
-    transition: color 0.2s;
-  }
-  .header__action-link:hover {
-    color: #FF6B00;
-  }
-  .header__action-label {
-    font-size: 11px;
-    font-weight: 500;
-  }
-  .header__cart-icon-wrap {
-    position: relative;
-    display: inline-flex;
-  }
-  .header__cart-badge {
-    position: absolute;
-    top: -6px;
-    right: -8px;
-    background: #FF6B00;
-    color: #fff;
-    font-size: 10px;
-    font-weight: 700;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-  }
-
-  /* ===== MOBILE ===== */
-  .header__mobile {
-    display: none;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 0;
-    min-height: 58px;
-  }
-  .header__hamburger {
-    background: none;
-    border: none;
-    padding: 4px;
-    cursor: pointer;
-    color: #333;
-  }
-  .header__mobile-logo {
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    align-items: center;
-  }
-  .header__logo-default--mobile .header__logo-name {
-    font-size: 18px;
-  }
-  .header__mobile-cart {
-    color: #333;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    padding: 4px;
-    border: 0;
-    background: transparent;
-  }
-  .header__mobile-search { display: none; }
-
-  .cart-drawer-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 3000;
-    background: rgba(0,0,0,0.55);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-  }
-  .cart-drawer-overlay.active {
-    opacity: 1;
-    visibility: visible;
-  }
-  .cart-drawer {
-    position: fixed;
-    z-index: 3001;
-    top: 0;
-    right: -420px;
-    display: flex;
-    flex-direction: column;
-    width: 420px;
-    max-width: 100vw;
-    height: 100vh;
-    background: #fff;
-    box-shadow: -8px 0 30px rgba(0,0,0,0.18);
-    transition: right 0.3s ease;
-  }
-  .cart-drawer.active { right: 0; }
-  .cart-drawer__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0;
-    padding: 16px 20px;
-    background: #1B3C3C;
-    color: #fff;
-  }
-  .cart-drawer__header h2 {
-    margin: 0;
-    color: #fff;
-    font-size: 20px;
-  }
-  .cart-drawer__close {
-    display: flex;
-    padding: 4px;
-    color: #fff;
-  }
-  .cart-drawer__items {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px;
-  }
-  .cart-drawer__empty, .cart-drawer__error {
-    padding: 32px 12px;
-    color: #666;
-    text-align: center;
-  }
-  .cart-drawer__error { color: #b42318; }
-  .cart-drawer__item {
-    display: flex;
-    gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid #eee;
-  }
-  .cart-drawer__item-image {
-    width: 76px;
-    height: 76px;
-    flex-shrink: 0;
-    border-radius: 6px;
-    object-fit: cover;
-    background: #f7f7f7;
-  }
-  .cart-drawer__item-info { flex: 1; min-width: 0; }
-  .cart-drawer__item-title { display: block; font-size: 14px; font-weight: 600; }
-  .cart-drawer__item-price { display: block; margin-top: 4px; color: #FF6B00; font-weight: 700; }
-  .cart-drawer__item-controls { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
-  .cart-drawer__quantity {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-  }
-  .cart-drawer__quantity button, .cart-drawer__remove { padding: 4px 8px; }
-  .cart-drawer__remove { color: #b42318; font-size: 12px; }
-  .cart-drawer__footer {
-    flex-shrink: 0;
-    padding: 16px 20px;
-    border-top: 1px solid #eee;
-    background: #fff;
-  }
-  .cart-drawer__subtotal {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 14px;
-    font-size: 16px;
-  }
-  .cart-drawer__subtotal strong { color: #FF6B00; }
-  .cart-drawer__checkout {
-    display: block;
-    width: 100%;
-    padding: 13px 16px;
-    border-radius: 8px;
-    background: #FF6B00;
-    color: #fff;
-    text-align: center;
-    font-weight: 700;
-  }
-
-  @media (max-width: 768px) {
-    .header__desktop {
-      display: none;
-    }
-    .header__mobile {
-      display: flex;
-    }
-    .header__mobile-search {
-      display: block;
-      padding: 0 0 10px;
-    }
-    .header__mobile-search .header__search-form { height: 42px; }
-    .header__mobile-search .header__search-input { min-width: 0; }
-    .cart-drawer { right: -100vw; width: 100vw; }
-  }
-
-  /* ===== MOBILE DRAWER ===== */
-  .mobile-menu-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-    z-index: 2000;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s, visibility 0.3s;
-  }
-  .mobile-menu-overlay.is-active {
-    opacity: 1;
-    visibility: visible;
-  }
-  .mobile-menu-drawer {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 300px;
-    max-width: 85vw;
-    background: #fff;
-    z-index: 2001;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-  }
-  .mobile-menu-drawer.is-active {
-    transform: translateX(0);
-  }
-  .mobile-menu-drawer__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px;
-    border-bottom: 1px solid #eee;
-  }
-  .mobile-menu-drawer__title {
-    font-size: 18px;
-    font-weight: 700;
-    color: #1B3C3C;
-  }
-  .mobile-menu-drawer__close {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #333;
-    padding: 4px;
-  }
-  .mobile-menu-drawer__search {
-    padding: 12px 16px;
-    border-bottom: 1px solid #eee;
-  }
-  .mobile-menu-drawer__search .header__search-form {
-    border-radius: 6px;
-  }
-  .mobile-menu-drawer__nav {
-    list-style: none;
-    padding: 8px 0;
-    margin: 0;
-    flex: 1;
-  }
-  .mobile-menu-drawer__nav-item {
-    border-bottom: 1px solid #f5f5f5;
-  }
-  .mobile-menu-drawer__nav-link {
-    display: block;
-    padding: 14px 16px;
-    color: #333;
-    text-decoration: none;
-    font-size: 15px;
-    font-weight: 500;
-    transition: background 0.15s;
-  }
-  .mobile-menu-drawer__nav-link:hover {
-    background: #f9f9f9;
-    color: #FF6B00;
-  }
-  .mobile-menu-drawer__subnav {
-    list-style: none;
-    padding: 0 0 8px 0;
-    margin: 0;
-  }
-  .mobile-menu-drawer__subnav li a {
-    display: block;
-    padding: 8px 16px 8px 32px;
-    color: #666;
-    text-decoration: none;
-    font-size: 14px;
-  }
-  .mobile-menu-drawer__subnav li a:hover {
-    color: #FF6B00;
-  }
-  .mobile-menu-drawer__footer {
-    padding: 16px;
-    border-top: 1px solid #eee;
-  }
-  .mobile-menu-drawer__footer-link {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #333;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-  }
-  .mobile-menu-drawer__footer-link:hover {
-    color: #FF6B00;
-  }
-</style>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var header = document.getElementById('site-header');
-    var toggle = document.getElementById('menu-toggle');
-    var close = document.getElementById('menu-close');
-    var drawer = document.getElementById('mobile-menu-drawer');
-    var overlay = document.getElementById('mobile-menu-overlay');
-
-    /* Sticky scroll shadow */
-    window.addEventListener('scroll', function() {
-      if (window.scrollY > 10) {
-        header.classList.add('is-scrolled');
-      } else {
-        header.classList.remove('is-scrolled');
-      }
-    });
-
-    /* Mobile menu open/close */
-    function openMenu() {
-      drawer.classList.add('is-active');
-      overlay.classList.add('is-active');
-      toggle.setAttribute('aria-expanded', 'true');
-      document.body.style.overflow = 'hidden';
-    }
-    function closeMenu() {
-      drawer.classList.remove('is-active');
-      overlay.classList.remove('is-active');
-      toggle.setAttribute('aria-expanded', 'false');
-      document.body.style.overflow = '';
-    }
-    if (toggle) toggle.addEventListener('click', openMenu);
-    if (close) close.addEventListener('click', closeMenu);
-    if (overlay) overlay.addEventListener('click', closeMenu);
-  });
-</script>
+</div>
 
 {% schema %}
 {
-  "name": "🛒 হেডার",
+  "name": "Header",
   "settings": [
     {
       "type": "image_picker",
       "id": "logo",
-      "label": "লোগো ইমেজ"
+      "label": "Header logo image",
+      "info": "Optional. Upload a PNG, JPEG or GIF logo. Leave empty to keep the default HaatRush wordmark."
     },
     {
-      "type": "text",
-      "id": "logo_text",
-      "label": "লোগো টেক্সট",
-      "default": "HaatRush"
-    }
-  ]
+      "type": "range",
+      "id": "logo_width",
+      "label": "Header logo width",
+      "min": 60,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "default": 180,
+      "info": "Applied only when a header logo image is selected."
+    },
+    {"type":"link_list","id":"menu","label":"Menu","default":"main-menu"}
+  ],
+  "presets":[{"name":"Header"}]
 }
 {% endschema %}
