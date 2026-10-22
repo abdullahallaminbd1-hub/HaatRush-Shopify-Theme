@@ -531,11 +531,17 @@
   var message = qs('[data-atc-message]', root);
   if (form) {
     form.addEventListener('submit', function (event) {
-      if (!variantField || !variantField.value) { return; }
-      /* the accelerated checkout button runs its own flow straight to /checkout */
       var submitter = event.submitter;
-      if (submitter && submitter.closest && submitter.closest('.shopify-payment, shopify-payment-terms, [name="checkout"]')) { return; }
+      var buyNow = Boolean(submitter && submitter.closest
+        && submitter.closest('.shopify-payment, .shopify-payment-button, .shopify-payment-button__button, shopify-payment-terms, shopify-payment-button, [name="checkout"]'));
       event.preventDefault();
+      if (!variantField || !variantField.value) {
+        if (message) {
+          message.textContent = 'পণ্যটি কার্টে যোগ করা যায়নি। আবার চেষ্টা করুন।';
+          message.className = 'lf-atc__message is-error';
+        }
+        return;
+      }
       var variantId = variantField.value;
       var qty = parseInt(quantityField ? quantityField.value : '1', 10) || 1;
       if (atcSubmit) { atcSubmit.classList.add('is-busy'); atcSubmit.disabled = true; }
@@ -552,6 +558,10 @@
       if (window.LumaCart && typeof window.LumaCart.add === 'function') {
         window.LumaCart.add([{ id: variantId, quantity: qty }])
           .then(function () {
+            if (buyNow) {
+              window.location.assign('/pages/checkout');
+              return;
+            }
             settle(true, 'Added to your cart.');
             if (message) { window.setTimeout(function () { message.textContent = ''; }, 4000); }
           })
@@ -571,6 +581,10 @@
         .then(function (cart) {
           var count = qs('[data-cart-count]');
           if (count) { count.textContent = String(cart.item_count); }
+          if (buyNow) {
+            window.location.assign('/pages/checkout');
+            return;
+          }
           document.body.classList.add('drawer-open');
           var drawer = qs('[data-cart-drawer]');
           if (drawer) { drawer.setAttribute('aria-hidden', 'false'); }
