@@ -79,13 +79,8 @@
           "agent_border_radius": 24
         }
       },
-      "5505325162364479422": {
-        "type": "shopify://apps/cod-king/blocks/cod-form-embed/99553eb5-bf07-4ce0-9263-7e5f10cab22c",
-        "disabled": false,
-        "settings": {}
-      },
-      "1626193551103621034": {
-        "type": "shopify://apps/cod-king/blocks/app-embed/99553eb5-bf07-4ce0-9263-7e5f10cab22c",
+      "17754088914158789468": {
+        "type": "shopify://apps/easysell-cod-form/blocks/app-embed/7bfd0a95-6839-4f02-b2ee-896832dbe67e",
         "disabled": false,
         "settings": {}
       }
