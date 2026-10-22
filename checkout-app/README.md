@@ -44,7 +44,7 @@ https://haatrush-checkout.abdullahallaminbd1.workers.dev/oauth/install?shop=azrg
 
 The app client ID and app API secret must belong to the same newly created Partner app. Before installation, set that app's client ID as `SHOPIFY_CLIENT_ID` and replace the currently stored `SHOPIFY_API_SECRET` with the new app's API secret. The current secret may belong to the previous app and cannot be assumed valid for the new one.
 
-The storefront order form currently collects name, phone, and delivery address but no email. Shopify can create an order without email; a customer email receipt cannot be delivered unless an email field is added and collected. Verify the store's normal staff order notification behavior with the real test order.
+The storefront order form collects name, phone, and delivery address but no email. Because Shopify requires an email address or existing customer ID to upsert a customer, the Worker stores the recipient's name and phone on the order and shipping address without creating or matching a customer profile. Shopify can create the order, but a customer email receipt cannot be delivered unless an email field is added and collected. Verify the store's normal staff order notification behavior with the real test order.
 
 ## Cloudflare setup (no paid plan)
 
@@ -96,7 +96,7 @@ From this folder:
 - `GET https://<worker>.workers.dev/oauth/install?shop=azrgmc-up.myshopify.com` starts the allowlisted Shopify authorization flow; the callback does not return or log access tokens.
 - `GET https://<store>/apps/haatrush-checkout/health` (through Shopify's configured App Proxy) checks the D1 binding, Shopify Admin API access, BDT currency, product access, and inventory access. It must return `200` before enabling order submission.
 - A signed `/config` and a real `/quote` call verify the App Proxy signature and catalog lookup. `write_orders` cannot be proved without creating an order; do not create a test order until the correct store and permissions are confirmed.
-- After deployment, verify location selection, Dhaka Metropolitan Area delivery at ৳70, outside-Dhaka delivery at ৳130, the strict `> ৳1,000` free-shipping threshold, and the 2% discount at two or more units.
+- After deployment, verify location selection, Dhaka Metropolitan Area delivery at ৳70, outside-Dhaka delivery at ৳130, the strict `> ৳1,000` free-shipping threshold, and the 2% discount at two or more units using Shopify-compatible minor-unit rounding.
 - Only the Shopify `orderCreate` response permits the page to show success. An uncertain response remains `processing` in D1 and must be reconciled in Shopify Admin before retrying; the same submission ID is never sent to order creation twice.
 
 ## bKash

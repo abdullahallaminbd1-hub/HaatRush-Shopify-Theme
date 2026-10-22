@@ -29,8 +29,8 @@ export function fromMinorUnits(value) {
   return `${amount / 100n}.${String(amount % 100n).padStart(2, '0')}`;
 }
 
-function roundedPercentage(amount, percentage) {
-  return (amount * BigInt(percentage) + 50n) / 100n;
+function percentageDiscount(amount, percentage) {
+  return amount * BigInt(percentage) / 100n;
 }
 
 export function normalizePhone(value) {
@@ -170,7 +170,7 @@ export function buildQuote(lines, variants, district, division, upazila) {
   }
   if (itemCount >= BUNDLE_MINIMUM_ITEMS) {
     bundleDiscount = quoteLines.reduce((sum, line) => (
-      sum + roundedPercentage(BigInt(line.unitPriceMinor) * BigInt(line.quantity), BUNDLE_PERCENTAGE)
+      sum + percentageDiscount(BigInt(line.unitPriceMinor) * BigInt(line.quantity), BUNDLE_PERCENTAGE)
     ), 0n);
   }
 
@@ -360,15 +360,7 @@ export function buildOrderInput({ quote, lines, customer, submissionId, bkashEna
     : quote.upazila === 'Dhaka City' ? 'ঢাকা মহানগরে ডেলিভারি' : 'ঢাকার বাইরে ডেলিভারি';
   const order = {
     currency: 'BDT',
-    customer: {
-      toUpsert: {
-        firstName,
-        lastName: lastNameParts.join(' '),
-        phone
-      }
-    },
     financialStatus: 'PENDING',
-    fulfillmentStatus: 'UNFULFILLED',
     lineItems: quote.lines.map((line) => ({
       variantId: `gid://shopify/ProductVariant/${line.variantId}`,
       quantity: line.quantity,

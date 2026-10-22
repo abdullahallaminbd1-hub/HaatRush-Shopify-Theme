@@ -491,6 +491,21 @@ test('quote applies the strict free-shipping threshold, bundle saving, and Dhaka
   assert.equal(outsideDhaka.bundleDiscount, '0.00');
 });
 
+test('fractional percentage discounts match Shopify currency rounding', async () => {
+  const { fetchImpl } = createShopifyFetch({ price: '14.99' });
+  const env = await testEnvironment({ fetchImpl });
+  const quote = await quoteFor(env, [{ variantId: '101', quantity: 5 }], {
+    division: 'Khulna',
+    district: 'Khulna',
+    upazila: 'Digholia'
+  });
+
+  assert.equal(quote.subtotal, '74.95');
+  assert.equal(quote.bundleDiscount, '1.49');
+  assert.equal(quote.shipping, '130.00');
+  assert.equal(quote.total, '203.46');
+});
+
 test('order creation is server-priced, pending, tagged for COD, and deduplicated without storing customer data', async () => {
   const db = new MemoryD1();
   const shopify = createShopifyFetch();
@@ -526,6 +541,11 @@ test('order creation is server-priced, pending, tagged for COD, and deduplicated
   assert.equal(confirmation.total, '1050.00');
   assert.equal(shopify.state.mutations, 1);
   assert.equal(shopify.state.orderVariables.order.financialStatus, 'PENDING');
+  assert.equal('fulfillmentStatus' in shopify.state.orderVariables.order, false);
+  assert.equal('customer' in shopify.state.orderVariables.order, false);
+  assert.equal(shopify.state.orderVariables.order.phone, '+8801712345678');
+  assert.equal(shopify.state.orderVariables.order.shippingAddress.firstName, 'রহিম');
+  assert.equal(shopify.state.orderVariables.order.shippingAddress.lastName, 'উদ্দিন');
   assert.equal(shopify.state.orderVariables.order.shippingLines[0].priceSet.shopMoney.amount, '70.00');
   assert.equal(shopify.state.orderVariables.order.shippingLines[0].code, 'DHAKA-METRO-70');
   assert.equal(shopify.state.orderVariables.order.transactions[0].gateway, 'ক্যাশ অন ডেলিভারি');
@@ -545,6 +565,48 @@ test('order creation is server-priced, pending, tagged for COD, and deduplicated
   const status = await runRequest(new Request(statusUrl), env);
   assert.equal(status.status, 200);
   assert.equal((await status.json()).status, 'created');
+});
+
+test('definitive Shopify GraphQL errors close the submission without leaving it processing', async () => {
+  const db = new MemoryD1();
+  const shopify = createShopifyFetch();
+  const env = await testEnvironment({
+    db,
+    fetchImpl: async (url, options) => {
+      const payload = JSON.parse(options.body);
+      if (payload.query.includes('mutation CreateHaatRushCodOrder')) {
+        return new Response(JSON.stringify({
+          errors: [{ message: "Field 'invalidField' doesn't exist on type 'OrderCreateOrderInput'." }]
+        }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+      }
+      return shopify.fetchImpl(url, options);
+    }
+  });
+  const lines = [{ variantId: '101', quantity: 2, properties: {} }];
+  const quote = await quoteFor(env, lines);
+  const requestUrl = await proxyUrl('/proxy/orders');
+  const response = await runRequest(new Request(requestUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      submissionId,
+      quoteToken: quote.quoteToken,
+      lines,
+      customer: {
+        name: 'Test Customer',
+        phone: '01712345678',
+        address: 'House 1, Road 2',
+        division: 'Dhaka',
+        district: 'Dhaka',
+        upazila: 'Dhaka City',
+        paymentMethod: 'cod'
+      }
+    })
+  }), env);
+
+  assert.equal(response.status, 422);
+  assert.equal((await response.json()).code, 'shopify_rejected');
+  assert.equal(db.rows.get(submissionId).status, 'failed');
 });
 
 test('different requests cannot reuse a submission ID', async () => {

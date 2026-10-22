@@ -394,11 +394,18 @@ async function adminGraphql(env, query, variables, fetchImpl) {
   if (!response.ok) {
     const error = new Error('Shopify Admin API rejected the request.');
     error.status = response.status;
+    error.adminStage = 'http';
     throw error;
   }
   const result = await response.json();
   if (result.errors?.length) {
-    throw new Error('Shopify Admin API returned GraphQL errors.');
+    const error = new Error('Shopify Admin API returned GraphQL errors.');
+    error.adminStage = 'graphql';
+    error.graphqlCodes = [...new Set(result.errors
+      .map((item) => item.extensions?.code)
+      .filter((code) => typeof code === 'string' && /^[A-Z][A-Z0-9_]{0,63}$/.test(code)))]
+      .slice(0, 5);
+    throw error;
   }
   return result.data;
 }
@@ -676,6 +683,20 @@ export async function handleRequest(request, env, dependencies = {}) {
     }, fetchImpl);
     orderData = result?.orderCreate;
     if (orderData?.userErrors?.length || !orderData?.order) {
+      const customerValues = Object.values(customer)
+        .filter((value) => typeof value === 'string' && value.length >= 3);
+      const safeUserErrors = (orderData?.userErrors || []).slice(0, 5).map((item) => {
+        let message = String(item.message || '');
+        for (const value of customerValues) {
+          message = message.replaceAll(value, '[redacted]');
+        }
+        return {
+          field: Array.isArray(item.field) ? item.field.slice(0, 6) : [],
+          code: typeof item.code === 'string' ? item.code : null,
+          message: message.replace(/\+?\d[\d\s().-]{7,}\d/g, '[redacted]').slice(0, 180)
+        };
+      });
+      console.error('Shopify rejected order input.', { userErrors: safeUserErrors });
       const resultMessage = orderData?.userErrors?.some((item) => /inventory|stock|available/i.test(item.message))
         ? 'পণ্যের স্টক বদলে গেছে। কার্ট যাচাই করে আবার চেষ্টা করুন।'
         : 'Shopify অর্ডারটি গ্রহণ করেনি। আবার চেষ্টা করুন।';
@@ -684,12 +705,22 @@ export async function handleRequest(request, env, dependencies = {}) {
       return errorResponse(422, failure.code, failure.error, { retryable: true });
     }
   } catch (error) {
+    if (error.adminStage === 'graphql') {
+      const failure = { code: 'shopify_rejected', error: 'Shopify অর্ডারটি গ্রহণ করেনি। আবার চেষ্টা করুন।' };
+      await updateSubmission(env.DB, submissionId, 'failed', null, failure);
+      console.error('Shopify order mutation returned GraphQL errors.', { codes: error.graphqlCodes || [] });
+      return errorResponse(422, failure.code, failure.error, { retryable: true });
+    }
     if (error.status && error.status >= 400 && error.status < 500) {
       const failure = { code: 'shopify_rejected', error: 'Shopify অর্ডারটি গ্রহণ করেনি। আবার চেষ্টা করুন।' };
       await updateSubmission(env.DB, submissionId, 'failed', null, failure);
       return errorResponse(503, failure.code, failure.error, { retryable: true });
     }
-    console.error('Order creation outcome unknown; submission remains reserved.', submissionId);
+    console.error('Order creation outcome unknown; submission remains reserved.', {
+      submissionId,
+      stage: error.adminStage || 'network_or_token',
+      status: Number.isInteger(error.status) ? error.status : null
+    });
     return jsonResponse({ status: 'processing', submissionId }, 202);
   }
 
