@@ -202,7 +202,7 @@
         "show_arrow": true,
         "button_style": "filled",
         "button_label": "কার্টে যোগ করুন",
-        "tone": "ivory",
+        "tone": "plain",
         "view_all_label": "সব জনপ্রিয় পণ্য দেখুন",
         "view_all_link": ""
       }
