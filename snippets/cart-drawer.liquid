@@ -2,14 +2,10 @@
 <aside class="cart-drawer" aria-label="{{ 'general.cart' | t }}" data-cart-drawer>
   <header class="drawer__header"><h2 class="drawer__title">{{ 'general.your_cart' | t }} <span class="drawer__meta"><span data-cart-count>{{ cart.item_count }}</span> {{ 'sections.cart.items' | t }}</span></h2><button class="icon-button" data-drawer-close aria-label="{{ 'general.close' | t }}">{% render 'icon', icon: 'close' %}</button></header>
   <div class="drawer__body" data-cart-body>
-    {%- assign ship_threshold = 100001 -%}
-    {%- assign bundle_target = 2 -%}
+    {%- assign ship_threshold = 100000 -%}
     {%- assign ship_done = false -%}
     {%- if cart.original_total_price >= ship_threshold -%}{%- assign ship_done = true -%}{%- endif -%}
-    {%- assign bundle_done = false -%}
-    {%- if cart.item_count >= bundle_target -%}{%- assign bundle_done = true -%}{%- endif -%}
     {%- assign ship_left = ship_threshold | minus: cart.original_total_price -%}
-    {%- assign bundle_progress = cart.item_count | at_most: bundle_target -%}
     {%- assign shipping_progress = cart.original_total_price | at_most: ship_threshold -%}
     {%- assign ship_pct = 0 -%}
     {%- if ship_done -%}
@@ -18,23 +14,18 @@
       {%- assign ship_pct = cart.original_total_price | times: 100.0 | divided_by: ship_threshold | round -%}
       {%- if ship_pct > 99 -%}{%- assign ship_pct = 99 -%}{%- endif -%}
     {%- endif -%}
-    {%- assign bundle_pct = cart.item_count | times: 100.0 | divided_by: bundle_target | round -%}
-    {%- if bundle_pct > 100 -%}{%- assign bundle_pct = 100 -%}{%- endif -%}
-    <div class="drawer-offers" data-cart-offers data-bundle-target="{{ bundle_target }}" data-shipping-threshold="{{ ship_threshold }}">
-      <section class="drawer-offer{% if bundle_done %} is-complete{% endif %}" data-bundle-offer{% if bundle_done %} data-complete="true"{% endif %}>
-        <div class="drawer-offer__track" role="progressbar" aria-valuemin="0" aria-valuemax="{{ bundle_target }}" aria-valuenow="{{ bundle_progress }}" aria-label="বান্ডেল সেভিংসের অগ্রগতি">
-          <i class="drawer-offer__fill" data-bundle-fill style="width:{{ bundle_pct }}%"></i>
-        </div>
-        <p class="drawer-offer__label">বান্ডেল সেভিংস</p>
-        <p class="drawer-offer__subtitle">২টি পণ্য কিনুন, ২% ছাড় পান</p>
-        <p class="drawer-offer__status" data-bundle-status aria-live="polite">{% if bundle_done %}অভিনন্দন! আপনি ২% ছাড়ের জন্য যোগ্য।{% else %}আর {{ bundle_target | minus: cart.item_count }}টি পণ্য যোগ করুন{% endif %}</p>
+    <div class="drawer-offers" data-cart-offers data-shipping-threshold="{{ ship_threshold }}">
+      <section class="drawer-offer" data-cart-discount>
+        <p class="drawer-offer__label">Shopify ছাড়</p>
+        <p class="drawer-offer__subtitle" data-cart-discount-name>কার্টে প্রযোজ্য সক্রিয় ছাড়</p>
+        <p class="drawer-offer__status" data-cart-discount-status aria-live="polite">{% if cart.total_discount > 0 %}{{ cart.total_discount | money }} ছাড় প্রয়োগ হয়েছে{% else %}কোনো ছাড় প্রয়োগ হয়নি{% endif %}</p>
       </section>
       <section class="drawer-offer{% if ship_done %} is-complete{% endif %}" data-shipping-offer{% if ship_done %} data-complete="true"{% endif %}>
         <div class="drawer-offer__track" role="progressbar" aria-valuemin="0" aria-valuemax="{{ ship_threshold }}" aria-valuenow="{{ shipping_progress }}" aria-label="ফ্রি শিপিংয়ের অগ্রগতি">
           <i class="drawer-offer__fill" data-shipping-fill style="width:{{ ship_pct }}%"></i>
         </div>
         <p class="drawer-offer__label">ফ্রি শিপিং</p>
-        <p class="drawer-offer__subtitle">৳১,০০০-এর বেশি কেনাকাটায় ফ্রি ডেলিভারি</p>
+        <p class="drawer-offer__subtitle">ঢাকা ৳৭০ · অন্যান্য জেলা ৳১৩০ · ৳১,০০০ বঀ তায বূ৖ি অয্ডযূ ফ্যি ডূলিভাযি</p>
         <p class="drawer-offer__status" data-shipping-status aria-live="polite">{% if ship_done %}অভিনন্দন! আপনার অর্ডারে ফ্রি ডেলিভারি প্রযোজ্য।{% else %}আর {{ ship_left | money }} খরচ করুন{% endif %}</p>
       </section>
     </div>
@@ -64,5 +55,5 @@
       </div>
     </div>
   </div>
-  <footer class="drawer__footer"><div class="drawer-total"><span>{{ 'sections.cart.subtotal' | t }}</span><strong>{{ cart.total_price | money }}</strong></div><a class="button button--accent button--full drawer__checkout" href="{{ routes.root_url }}pages/checkout">চেকআউট · {{ cart.total_price | money }}</a><p class="payment-note">{{ 'sections.cart.note' | t }}</p></footer>
+  <footer class="drawer__footer"><div class="drawer-total"><span>{{ 'sections.cart.subtotal' | t }}</span><strong>{{ cart.total_price | money }}</strong></div><a class="button button--accent button--full drawer__checkout" href="/checkout">চেকআউট · {{ cart.total_price | money }}</a></footer>
 </aside>

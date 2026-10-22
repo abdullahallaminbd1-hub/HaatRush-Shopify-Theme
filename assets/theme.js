@@ -161,31 +161,10 @@
   var paintCartOffers = function (cart) {
     var root = qs('[data-cart-offers]');
     if (!root || !cart) { return; }
-    var bundleTarget = parseInt(root.getAttribute('data-bundle-target'), 10);
     var shippingThreshold = parseInt(root.getAttribute('data-shipping-threshold'), 10);
-    if (!bundleTarget || bundleTarget < 1 || isNaN(shippingThreshold) || shippingThreshold < 1) { return; }
+    if (isNaN(shippingThreshold) || shippingThreshold < 1) { return; }
 
-    var count = Math.max(0, parseInt(cart.item_count, 10) || 0);
     var subtotal = Math.max(0, Number(cart.original_total_price != null ? cart.original_total_price : cart.total_price) || 0);
-    var bundleOffer = qs('[data-bundle-offer]', root);
-    var bundleFill = qs('[data-bundle-fill]', root);
-    var bundleTrack = qs('[data-bundle-offer] [role="progressbar"]', root);
-    var bundleStatus = qs('[data-bundle-status]', root);
-    var bundleComplete = count >= bundleTarget;
-    var bundleValue = Math.min(count, bundleTarget);
-    if (bundleOffer) { bundleOffer.classList.toggle('is-complete', bundleComplete); }
-    if (bundleFill) { bundleFill.style.width = Math.min(100, Math.round(bundleValue * 100 / bundleTarget)) + '%'; }
-    if (bundleTrack) { bundleTrack.setAttribute('aria-valuenow', String(bundleValue)); }
-    if (bundleStatus) {
-      bundleStatus.textContent = bundleComplete
-        ? 'অভিনন্দন! আপনি ২% ছাড়ের জন্য যোগ্য।'
-        : 'আর ' + (bundleTarget - count) + 'টি পণ্য যোগ করুন';
-    }
-    if (bundleOffer) {
-      if (bundleComplete) { bundleOffer.setAttribute('data-complete', 'true'); }
-      else { bundleOffer.removeAttribute('data-complete'); }
-    }
-
     var shippingOffer = qs('[data-shipping-offer]', root);
     var shippingFill = qs('[data-shipping-fill]', root);
     var shippingTrack = qs('[data-shipping-offer] [role="progressbar"]', root);
@@ -193,7 +172,8 @@
     var shippingComplete = subtotal >= shippingThreshold;
     var shippingValue = Math.min(subtotal, shippingThreshold);
     if (shippingOffer) { shippingOffer.classList.toggle('is-complete', shippingComplete); }
-    if (shippingFill) { shippingFill.style.width = Math.min(100, Math.round(shippingValue * 100 / shippingThreshold)) + '%'; }
+    var shippingPct = shippingComplete ? 100 : Math.min(99, Math.round(shippingValue * 100 / shippingThreshold));
+    if (shippingFill) { shippingFill.style.width = shippingPct + '%'; }
     if (shippingTrack) { shippingTrack.setAttribute('aria-valuenow', String(shippingValue)); }
     if (shippingStatus) {
       shippingStatus.textContent = shippingComplete
