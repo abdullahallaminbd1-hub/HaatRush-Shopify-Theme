@@ -80,12 +80,15 @@ function normalizeLines(lines) {
   });
 }
 
-function buildQuote(lines, variants, district, division) {
+function buildQuote(lines, variants, district, division, upazila) {
   if (division && !DIVISION_VALUES.has(division)) {
     throw new Error('বিভাগ নির্বাচন করুন।');
   }
   if (district && (!DISTRICT_VALUES.has(district) || !division || DISTRICT_BY_VALUE.get(district).division !== division)) {
     throw new Error('জেলা নির্বাচন করুন।');
+  }
+  if (upazila && !UPAZILA_VALUES.has(`${district}\0${upazila}`)) {
+    throw new Error('নির্বাচিত জেলার সঠিক উপজেলা বা থানা নির্বাচন করুন।');
   }
 
   const byId = new Map(variants.map((variant) => [variant.legacyResourceId, variant]));
@@ -132,12 +135,17 @@ function buildQuote(lines, variants, district, division) {
   }
 
   const shippingFree = subtotal > FREE_SHIPPING_THRESHOLD;
-  const shipping = shippingFree ? 0n : !district ? null : district === 'Dhaka' ? 7000n : 13000n;
+  const shipping = shippingFree
+    ? 0n
+    : !district || (district === 'Dhaka' && !upazila)
+      ? null
+      : district === 'Dhaka' && upazila === 'Dhaka City' ? 7000n : 13000n;
   const total = shipping === null ? null : subtotal - bundleDiscount + shipping;
 
   return {
     division: division || '',
     district,
+    upazila: upazila || '',
     itemCount,
     subtotal: fromMinorUnits(subtotal),
     bundleEligible: itemCount >= BUNDLE_MINIMUM_ITEMS,
@@ -193,6 +201,7 @@ function createQuoteToken(quote, secret, now = Date.now()) {
   const payload = {
     division: quote.division,
     district: quote.district,
+    upazila: quote.upazila,
     exp: Math.floor(now / 1000) + 600,
     lines: quote.lines.map((line) => ({
       variantId: line.variantId,
@@ -256,7 +265,7 @@ function buildOrderInput({ quote, lines, customer, submissionId }) {
   }));
   const shippingTitle = quote.shippingFree
     ? 'ফ্রি ডেলিভারি'
-    : quote.district === 'Dhaka' ? 'ঢাকার ভেতরে ডেলিভারি' : 'ঢাকার বাইরে ডেলিভারি';
+    : quote.upazila === 'Dhaka City' ? 'ঢাকা মহানগরে ডেলিভারি' : 'ঢাকার বাইরে ডেলিভারি';
   const order = {
     currency: 'BDT',
     customer: {
@@ -282,7 +291,7 @@ function buildOrderInput({ quote, lines, customer, submissionId }) {
     phone,
     shippingLines: [{
       title: shippingTitle,
-      code: quote.shippingFree ? 'FREE' : quote.district === 'Dhaka' ? 'DHAKA-70' : 'OUTSIDE-DHAKA-130',
+      code: quote.shippingFree ? 'FREE' : quote.upazila === 'Dhaka City' ? 'DHAKA-METRO-70' : 'OUTSIDE-DHAKA-130',
       priceSet: { shopMoney: { amount: quote.shipping, currencyCode: 'BDT' } }
     }],
     tags: ['haatrush-cod', 'haatrush-custom-checkout'],

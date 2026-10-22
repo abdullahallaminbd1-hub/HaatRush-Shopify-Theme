@@ -106,6 +106,7 @@ function sameLines(left, right) {
 function sameQuote(snapshot, fresh) {
   return snapshot.division === fresh.division
     && snapshot.district === fresh.district
+    && snapshot.upazila === fresh.upazila
     && snapshot.subtotal === fresh.subtotal
     && snapshot.bundleDiscount === fresh.bundleDiscount
     && snapshot.shipping === fresh.shipping
@@ -201,7 +202,13 @@ function createApp({ config, pool, fetchImpl = fetch, now = Date.now }) {
       return safeError(res, 503, 'quote_unavailable', 'দাম ও স্টক যাচাই করা যাচ্ছে না। কিছুক্ষণ পর আবার চেষ্টা করুন।');
     }
     try {
-      const quote = buildQuote(lines, variants, req.body && req.body.district, req.body && req.body.division);
+      const quote = buildQuote(
+        lines,
+        variants,
+        req.body && req.body.district,
+        req.body && req.body.division,
+        req.body && req.body.upazila
+      );
       return res.json({
         ...quote,
         quoteToken: createQuoteToken(quote, config.quoteSecret, now())
@@ -227,7 +234,11 @@ function createApp({ config, pool, fetchImpl = fetch, now = Date.now }) {
     } catch (error) {
       return safeError(res, 422, 'invalid_checkout', error.message, { retryable: true });
     }
-    if (!snapshot || snapshot.division !== customer.division || snapshot.district !== customer.district || !sameLines(snapshot.lines, lines)) {
+    if (!snapshot
+      || snapshot.division !== customer.division
+      || snapshot.district !== customer.district
+      || snapshot.upazila !== customer.upazila
+      || !sameLines(snapshot.lines, lines)) {
       return safeError(res, 409, 'quote_expired', 'দাম বা কার্টের তথ্য বদলেছে। অর্ডার দেওয়ার আগে সারাংশটি আবার যাচাই করুন।', { retryable: true });
     }
 
@@ -273,7 +284,7 @@ function createApp({ config, pool, fetchImpl = fetch, now = Date.now }) {
     let freshQuote;
     try {
       variants = await loadCatalog(lines);
-      freshQuote = buildQuote(lines, variants, customer.district, customer.division);
+      freshQuote = buildQuote(lines, variants, customer.district, customer.division, customer.upazila);
       if (!sameQuote(snapshot, freshQuote)) {
         await pool.query(
           `UPDATE checkout_submissions

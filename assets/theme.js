@@ -555,9 +555,9 @@
     if (emptyCart) { emptyCart.hidden = false; }
     itemsNode.replaceChildren();
     setText('[data-checkout-count]', bengaliCount(0));
-    setText('[data-checkout-subtotal]', '—');
-    setText('[data-checkout-discount]', '—');
-    setText('[data-checkout-shipping-total]', '—');
+    setText('[data-checkout-subtotal]', money(0));
+    setText('[data-checkout-discount]', money(0));
+    setText('[data-checkout-shipping-total]', money(0));
     setText('[data-checkout-total]', '৳০.০০');
     state.quote = null;
     submit.disabled = true;
@@ -588,11 +588,14 @@
       });
     }
     var shippingFree = subtotalPaisa > 100000;
-    var shippingPaisa = shippingFree ? 0 : !district.value ? null : district.value === 'Dhaka' ? 7000 : 13000;
+    var shippingPaisa = shippingFree ? 0
+      : !district.value || (district.value === 'Dhaka' && !upazila.value) ? null
+        : district.value === 'Dhaka' && upazila.value === 'Dhaka City' ? 7000 : 13000;
     var totalPaisa = shippingPaisa == null ? null : subtotalPaisa - discountPaisa + shippingPaisa;
     return {
       division: division.value,
       district: district.value,
+      upazila: upazila.value,
       itemCount: itemCount,
       subtotal: (subtotalPaisa / 100).toFixed(2),
       bundleEligible: bundleEligible,
@@ -706,17 +709,13 @@
     if (shippingStatus) { shippingStatus.textContent = shippingDone ? 'সম্পন্ন' : money(quote.shippingRemaining) + ' বাকি'; }
     setText('[data-shipping-message]', shippingDone
       ? 'অভিনন্দন! আপনার অর্ডারে ফ্রি ডেলিভারি প্রযোজ্য।'
-      : '৳১,০০০-এর বেশি পণ্যমূল্য হলে ডেলিভারি চার্জ ৳০ হবে।');
+      : '৳১,০০০-এর বেশি কেনাকাটায় ডেলিভারি ফ্রি।');
 
     submit.disabled = state.busy || !state.proxyReady || !quote.quoteToken || !division.value || !district.value || !upazila.value || quote.total == null || state.confirmed;
     if (!state.busy && !state.confirmed) {
-      submitLabel.textContent = !state.proxyReady
-        ? 'এই মুহূর্তে অর্ডার নেওয়া যাচ্ছে না'
-        : !division.value || !district.value || !upazila.value
-          ? 'ডেলিভারির এলাকা নির্বাচন করুন'
-          : quote.quoteToken
-            ? 'ক্যাশ অন ডেলিভারিতে অর্ডার করুন'
-            : 'দাম ও স্টক যাচাই হচ্ছে…';
+      submitLabel.textContent = !division.value || !district.value || !upazila.value
+        ? 'ডেলিভারির এলাকা নির্বাচন করুন'
+        : 'ক্যাশ অন ডেলিভারিতে অর্ডার করুন';
     }
   };
 
@@ -726,7 +725,7 @@
     clearError();
     var preview = null;
     submit.disabled = true;
-    if (submitLabel && !state.busy) { submitLabel.textContent = 'দাম ও স্টক যাচাই হচ্ছে…'; }
+    if (submitLabel && !state.busy) { submitLabel.textContent = 'ক্যাশ অন ডেলিভারিতে অর্ডার করুন'; }
     var cartPromise = providedCart ? Promise.resolve(providedCart) : getCart();
     return cartPromise.then(function (cart) {
       if (sequence !== state.sequence) { return null; }
@@ -746,7 +745,8 @@
         body: JSON.stringify({
           lines: lines,
           division: division.value,
-          district: district.value
+          district: district.value,
+          upazila: upazila.value
         })
       }).then(function (result) {
         if (sequence !== state.sequence) { return null; }
@@ -774,8 +774,6 @@
       state.proxyReady = false;
       if (preview) {
         renderQuote(preview);
-      } else {
-        itemsNode.replaceChildren(create('p', 'hr-checkout__loading', 'কার্টের পণ্যগুলো এই মুহূর্তে লোড করা যাচ্ছে না।'));
       }
       setServiceNotice(true);
       return null;
@@ -816,7 +814,7 @@
           return;
         }
         if (result.response.status === 202) {
-          if (submitLabel) { submitLabel.textContent = 'আপনার অর্ডারের তথ্য যাচাই হচ্ছে…'; }
+          if (submitLabel) { submitLabel.textContent = 'আপনার অর্ডারটি সম্পন্ন হচ্ছে…'; }
           window.setTimeout(function () { pollSubmission(submissionId); }, 2000);
           return;
         }
@@ -875,7 +873,7 @@
     loadQuote();
   });
   upazila.addEventListener('change', function () {
-    if (state.quote) { renderQuote(state.quote); }
+    loadQuote();
   });
   document.addEventListener('haatrush:cart-updated', function (event) {
     if (!state.confirmed && event.detail && event.detail.cart) { loadQuote(event.detail.cart); }
@@ -940,7 +938,7 @@
   if (pendingSubmission) {
     state.busy = true;
     submit.disabled = true;
-    submitLabel.textContent = 'আগের অর্ডারের অবস্থা যাচাই হচ্ছে…';
+    submitLabel.textContent = 'আপনার আগের অর্ডারটি দেখা হচ্ছে…';
     pollSubmission(pendingSubmission);
   }
   loadLocations().catch(function () {
@@ -955,7 +953,7 @@
       state.lines = lines;
       renderQuote(cartPreview(cart));
     }).catch(function () {
-      itemsNode.replaceChildren(create('p', 'hr-checkout__loading', 'কার্টের পণ্যগুলো এই মুহূর্তে লোড করা যাচ্ছে না।'));
+      itemsNode.replaceChildren();
     });
   });
 }());

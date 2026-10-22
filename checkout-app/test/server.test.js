@@ -125,12 +125,12 @@ test('mocked Admin API order creation is pending COD and idempotent', async (t) 
   const locations = await configResponse.json();
   assert.equal(locations.divisions.length, 8);
   assert.equal(locations.districts.length, 64);
-  assert.ok(locations.upazilas.some((upazila) => upazila.value === 'Dhamrai' && upazila.district === 'Dhaka'));
+  assert.ok(locations.upazilas.some((upazila) => upazila.value === 'Dhaka City' && upazila.type === 'delivery_zone'));
 
   const quoteResponse = await fetch(`${base}/proxy/quote${proxyQuery()}`, {
     method: 'POST',
     headers,
-    body: JSON.stringify({ lines, division: 'Dhaka', district: 'Dhaka' })
+    body: JSON.stringify({ lines, division: 'Dhaka', district: 'Dhaka', upazila: 'Dhaka City' })
   });
   assert.equal(quoteResponse.status, 200);
   const quote = await quoteResponse.json();
@@ -145,9 +145,19 @@ test('mocked Admin API order creation is pending COD and idempotent', async (t) 
       address: 'বাড়ি ১, সড়ক ২',
       division: 'Dhaka',
       district: 'Dhaka',
-      upazila: 'Dhamrai'
+      upazila: 'Dhaka City'
     }
   };
+  const wrongDeliveryAreaResponse = await fetch(`${base}/proxy/orders${proxyQuery()}`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      ...orderRequest,
+      customer: { ...orderRequest.customer, upazila: 'Savar' }
+    })
+  });
+  assert.equal(wrongDeliveryAreaResponse.status, 409);
+
   const firstResponse = await fetch(`${base}/proxy/orders${proxyQuery()}`, {
     method: 'POST',
     headers,
@@ -160,6 +170,7 @@ test('mocked Admin API order creation is pending COD and idempotent', async (t) 
   assert.equal(firstResult.total, '1050.00');
   assert.equal(createdOrderInput.order.financialStatus, 'PENDING');
   assert.equal(createdOrderInput.order.shippingLines[0].priceSet.shopMoney.amount, '70.00');
+  assert.equal(createdOrderInput.order.shippingLines[0].code, 'DHAKA-METRO-70');
   assert.equal(createdOrderInput.order.discountCode.itemPercentageDiscountCode.percentage, 2);
   assert.ok(createdOrderInput.order.customAttributes.some((attribute) =>
     attribute.key === 'delivery_division' && attribute.value === 'Dhaka'
