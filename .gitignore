@@ -2,3 +2,7 @@
 /HaatRush Bengali Electronics Storefront-1.png
 /HaatRush Bengali Electronics Storefront-2.png
 /HaatRush Neon Rope Light Storefront.png
+/checkout-app/.env
+/checkout-app/.env.*
+!/checkout-app/.env.example
+/checkout-app/node_modules/

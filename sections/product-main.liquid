@@ -12,7 +12,7 @@
   endif
 -%}
 
-<section class="product-main-section" id="productMainSection" data-product-id="{{ product.id }}" data-variant-id="{{ current_variant.id }}" data-price-cents="{{ current_variant.price }}" data-currency="{{ cart.currency.iso_code | default: shop.currency }}">
+<section class="product-main-section" id="productMainSection" data-product-id="{{ product.id }}" data-variant-id="{{ current_variant.id }}" data-price-cents="{{ current_variant.price }}" data-currency="{{ cart.currency.iso_code | default: shop.currency }}" data-checkout-url="{{ routes.root_url }}pages/checkout">
   <div class="container">
     {%- render 'breadcrumb' -%}
 
@@ -150,7 +150,7 @@
                   <line x1="2" y1="10" x2="22" y2="10"></line>
                   <circle cx="12" cy="15" r="2"></circle>
                 </svg>
-                <span>এখনই কিনুন</span>
+                <span>এখনই অর্ডার করুন</span>
               </button>
 
               <!-- Secondary Cart CTA -->

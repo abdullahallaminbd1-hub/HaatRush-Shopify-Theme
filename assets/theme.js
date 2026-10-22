@@ -252,7 +252,10 @@
   };
   var applyCartSnapshot = function (cart, anchorLine) {
     paintCount(cart.item_count);
-    return refreshDrawer(anchorLine).then(function () { paintCartOffers(cart); });
+    return refreshDrawer(anchorLine).then(function () {
+      paintCartOffers(cart);
+      document.dispatchEvent(new CustomEvent('haatrush:cart-updated', { detail: { cart: cart } }));
+    });
   };
 
   var restoreButton = function (button, html) {
@@ -432,6 +435,377 @@
   window.LumaCart = { add: addToCart, open: setDrawer, refresh: refreshDrawer, setCount: paintCount };
 
   bindDrawerInternals();
+}());
+
+/* ---------- HaatRush Shopify Admin API COD checkout ---------- */
+(function () {
+  var root = document.querySelector('[data-checkout-app]');
+  if (!root) { return; }
+
+  var form = root.querySelector('[data-checkout-form]');
+  var district = form && form.querySelector('[name="district"]');
+  var submit = root.querySelector('[data-checkout-submit]');
+  var submitLabel = root.querySelector('[data-checkout-submit-label]');
+  var error = root.querySelector('[data-checkout-error]');
+  var itemsNode = root.querySelector('[data-checkout-items]');
+  var confirmation = root.querySelector('[data-checkout-confirmation]');
+  var confirmationMessage = root.querySelector('[data-confirmation-message]');
+  var state = { quote: null, lines: [], sequence: 0, busy: false, confirmed: false, proxyReady: false };
+  var submissionStorageKey = 'haatrush-cod-submission';
+  var base = root.getAttribute('data-proxy-root');
+
+  if (!form || !district || !submit || !itemsNode || !base) { return; }
+
+  var endpoint = function (path) { return base.replace(/\/$/, '') + '/' + path; };
+  var showError = function (message) {
+    if (!error) { return; }
+    error.textContent = message;
+    error.hidden = false;
+  };
+  var clearError = function () {
+    if (!error) { return; }
+    error.textContent = '';
+    error.hidden = true;
+  };
+  var money = function (amount) {
+    var number = Number(amount);
+    if (!Number.isFinite(number)) { return '—'; }
+    return '৳' + new Intl.NumberFormat('bn-BD', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(number);
+  };
+  var requestJson = function (url, options) {
+    return fetch(url, Object.assign({
+      cache: 'no-store',
+      credentials: 'same-origin',
+      headers: { Accept: 'application/json' }
+    }, options || {})).then(function (response) {
+      return response.json().catch(function () { return {}; }).then(function (body) {
+        return { response: response, body: body };
+      });
+    });
+  };
+  var getCart = function () {
+    return fetch('/cart.js', { headers: { Accept: 'application/json' }, cache: 'no-store' })
+      .then(function (response) {
+        if (!response.ok) { throw new Error('কার্ট যাচাই করা যায়নি।'); }
+        return response.json();
+      });
+  };
+  var cartLines = function (cart) {
+    return (cart.items || []).map(function (item) {
+      return {
+        variantId: String(item.variant_id),
+        quantity: Number(item.quantity),
+        properties: item.properties || {}
+      };
+    });
+  };
+  var bengaliCount = function (value) {
+    return Number(value || 0).toLocaleString('bn-BD');
+  };
+  var setText = function (selector, value) {
+    var node = root.querySelector(selector);
+    if (node) { node.textContent = value; }
+  };
+  var create = function (tag, className, text) {
+    var node = document.createElement(tag);
+    if (className) { node.className = className; }
+    if (text != null) { node.textContent = text; }
+    return node;
+  };
+  var createSubmissionId = function () {
+    if (window.crypto && window.crypto.randomUUID) { return window.crypto.randomUUID(); }
+    var bytes = new Uint8Array(16);
+    if (window.crypto && window.crypto.getRandomValues) {
+      window.crypto.getRandomValues(bytes);
+    } else {
+      for (var i = 0; i < bytes.length; i++) { bytes[i] = Math.floor(Math.random() * 256); }
+    }
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    var hex = Array.prototype.map.call(bytes, function (byte) { return byte.toString(16).padStart(2, '0'); }).join('');
+    return hex.slice(0, 8) + '-' + hex.slice(8, 12) + '-' + hex.slice(12, 16) + '-' + hex.slice(16, 20) + '-' + hex.slice(20);
+  };
+
+  var renderLines = function (quote) {
+    itemsNode.replaceChildren();
+    quote.lines.forEach(function (line, index) {
+      var row = create('article', 'hr-checkout__item');
+      var image = line.imageUrl ? document.createElement('img') : null;
+      if (image) {
+        image.src = line.imageUrl;
+        image.alt = '';
+        image.loading = 'lazy';
+        image.width = 76;
+        image.height = 76;
+        image.className = 'hr-checkout__item-image';
+        row.appendChild(image);
+      } else {
+        row.appendChild(create('span', 'hr-checkout__item-image hr-checkout__item-placeholder', '◇'));
+      }
+
+      var info = create('div', 'hr-checkout__item-info');
+      info.appendChild(create('strong', 'hr-checkout__item-title', line.title));
+      if (line.variantTitle) { info.appendChild(create('small', 'hr-checkout__item-variant', line.variantTitle)); }
+      var controls = create('div', 'hr-checkout__item-controls');
+      var minus = create('button', 'checkout-qty-btn', '−');
+      minus.type = 'button';
+      minus.setAttribute('data-cart-change', '');
+      minus.setAttribute('data-line', String(index + 1));
+      minus.setAttribute('data-quantity', String(line.quantity - 1));
+      minus.setAttribute('aria-label', 'পরিমাণ কমান');
+      controls.appendChild(minus);
+      controls.appendChild(create('span', 'checkout-qty-val', bengaliCount(line.quantity)));
+      var plus = create('button', 'checkout-qty-btn', '+');
+      plus.type = 'button';
+      plus.setAttribute('data-cart-change', '');
+      plus.setAttribute('data-line', String(index + 1));
+      plus.setAttribute('data-quantity', String(line.quantity + 1));
+      plus.setAttribute('aria-label', 'পরিমাণ বাড়ান');
+      controls.appendChild(plus);
+      info.appendChild(controls);
+      row.appendChild(info);
+
+      var price = create('strong', 'hr-checkout__item-price', money(line.lineTotal));
+      row.appendChild(price);
+      var remove = create('button', 'checkout-item__remove-btn', '×');
+      remove.type = 'button';
+      remove.setAttribute('data-remove-item', '');
+      remove.setAttribute('data-line', String(index + 1));
+      remove.setAttribute('aria-label', 'কার্ট থেকে ' + line.title + ' সরান');
+      row.appendChild(remove);
+      itemsNode.appendChild(row);
+    });
+  };
+
+  var renderQuote = function (quote) {
+    state.quote = quote;
+    renderLines(quote);
+    setText('[data-checkout-count]', bengaliCount(quote.itemCount));
+    setText('[data-checkout-subtotal]', money(quote.subtotal));
+    setText('[data-checkout-discount]', quote.bundleEligible ? '− ' + money(quote.bundleDiscount) : money(0));
+    setText('[data-checkout-shipping-total]', quote.shipping == null ? 'জেলা নির্বাচন করুন' : quote.shipping === '0.00' ? 'ফ্রি' : money(quote.shipping));
+    setText('[data-checkout-total]', quote.total == null ? '—' : money(quote.total));
+
+    var bundle = root.querySelector('[data-checkout-bundle]');
+    var bundleFill = root.querySelector('[data-bundle-fill]');
+    var bundleTrack = bundle && bundle.querySelector('[role="progressbar"]');
+    var bundleStatus = root.querySelector('[data-bundle-status]');
+    var bundleValue = Math.min(quote.itemCount, 2);
+    var bundleDone = quote.bundleEligible;
+    if (bundle) { bundle.classList.toggle('is-complete', bundleDone); }
+    if (bundleFill) { bundleFill.style.width = (bundleValue * 50) + '%'; }
+    if (bundleTrack) { bundleTrack.setAttribute('aria-valuenow', String(bundleValue)); }
+    if (bundleStatus) { bundleStatus.textContent = bundleDone ? 'সম্পন্ন' : bengaliCount(bundleValue) + ' / ২'; }
+    setText('[data-bundle-message]', bundleDone
+      ? 'অভিনন্দন! আপনার ' + money(quote.bundleDiscount) + ' বান্ডেল ছাড় প্রয়োগ হয়েছে।'
+      : '২টি পণ্য যোগ করলে ২% ছাড় পাবেন।');
+
+    var shipping = root.querySelector('[data-checkout-shipping]');
+    var shippingFill = root.querySelector('[data-shipping-fill]');
+    var shippingTrack = shipping && shipping.querySelector('[role="progressbar"]');
+    var shippingStatus = root.querySelector('[data-shipping-status]');
+    var subtotalPaisa = Math.round(Number(quote.subtotal) * 100);
+    var shippingDone = quote.shippingFree;
+    var progress = Math.min(100, Math.round(subtotalPaisa / 100001 * 100));
+    if (!shippingDone) { progress = Math.min(99, progress); }
+    if (shipping) { shipping.classList.toggle('is-complete', shippingDone); }
+    if (shippingFill) { shippingFill.style.width = progress + '%'; }
+    if (shippingTrack) { shippingTrack.setAttribute('aria-valuenow', String(Math.min(100001, subtotalPaisa))); }
+    if (shippingStatus) { shippingStatus.textContent = shippingDone ? 'সম্পন্ন' : money(quote.shippingRemaining) + ' বাকি'; }
+    setText('[data-shipping-message]', shippingDone
+      ? 'অভিনন্দন! আপনার অর্ডারে ফ্রি ডেলিভারি প্রযোজ্য।'
+      : '৳১,০০০-এর বেশি পণ্যমূল্য হলে ডেলিভারি চার্জ ৳০ হবে।');
+
+    submit.disabled = state.busy || !quote.quoteToken || !district.value || quote.total == null || state.confirmed;
+    if (!state.busy && !state.confirmed) {
+      submitLabel.textContent = state.quote && district.value ? 'ক্যাশ অন ডেলিভারিতে অর্ডার করুন' : 'প্রথমে জেলা নির্বাচন করুন';
+    }
+  };
+
+  var loadQuote = function (providedCart) {
+    var sequence = ++state.sequence;
+    state.quote = null;
+    clearError();
+    submit.disabled = true;
+    if (submitLabel && !state.busy) { submitLabel.textContent = 'দাম ও স্টক যাচাই হচ্ছে…'; }
+    setText('[data-checkout-subtotal]', '—');
+    setText('[data-checkout-discount]', '—');
+    setText('[data-checkout-shipping-total]', district.value ? 'যাচাই হচ্ছে…' : 'জেলা নির্বাচন করুন');
+    setText('[data-checkout-total]', '—');
+    var cartPromise = providedCart ? Promise.resolve(providedCart) : getCart();
+    return cartPromise.then(function (cart) {
+      if (sequence !== state.sequence) { return null; }
+      var lines = cartLines(cart);
+      if (!lines.length) {
+        itemsNode.replaceChildren(create('p', 'hr-checkout__loading', 'আপনার কার্ট খালি। পণ্য যোগ করে আবার চেষ্টা করুন।'));
+        state.quote = null;
+        submit.disabled = true;
+        return null;
+      }
+      state.lines = lines;
+      return requestJson(endpoint('quote'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ lines: lines, district: district.value })
+      }).then(function (result) {
+        if (sequence !== state.sequence) { return null; }
+        if (!result.response.ok) {
+          throw new Error(result.body.error || 'কার্টের দাম ও স্টক যাচাই করা যায়নি।');
+        }
+        clearError();
+        renderQuote(result.body);
+        return result.body;
+      });
+    }).catch(function (requestError) {
+      if (sequence !== state.sequence) { return null; }
+      state.quote = null;
+      submit.disabled = true;
+      setText('[data-checkout-total]', '—');
+      itemsNode.replaceChildren(create('p', 'hr-checkout__loading', 'কার্টের পণ্য ও বর্তমান দাম যাচাই করা যায়নি।'));
+      showError(requestError.message || 'চেকআউট সেবা এখন অনুপলভ্য। আপনার অর্ডার জমা হয়নি।');
+      return null;
+    });
+  };
+
+  var showConfirmation = function (result) {
+    state.confirmed = true;
+    state.busy = false;
+    submit.disabled = true;
+    submitLabel.textContent = 'অর্ডার সফলভাবে তৈরি হয়েছে';
+    if (result.discount != null) { setText('[data-checkout-discount]', result.discount === '0.00' ? money(0) : '− ' + money(result.discount)); }
+    if (result.shipping != null) { setText('[data-checkout-shipping-total]', result.shipping === '0.00' ? 'ফ্রি' : money(result.shipping)); }
+    if (result.total != null) { setText('[data-checkout-total]', money(result.total)); }
+    if (confirmation) { confirmation.hidden = false; }
+    if (confirmationMessage) {
+      confirmationMessage.textContent = 'আপনার অর্ডার নম্বর ' + result.orderName + '। অর্ডারের মোট ' + money(result.total) + '।';
+    }
+    form.hidden = true;
+    window.sessionStorage.removeItem(submissionStorageKey);
+    fetch('/cart/clear.js', { method: 'POST', headers: { Accept: 'application/json' } })
+      .then(function (response) {
+        if (!response.ok) { throw new Error('cart clear failed'); }
+        if (window.LumaCart) {
+          window.LumaCart.setCount(0);
+          window.LumaCart.refresh();
+        }
+      })
+      .catch(function () {});
+  };
+
+  var pollSubmission = function (submissionId) {
+    if (state.confirmed) { return; }
+    requestJson(endpoint('status?submissionId=' + encodeURIComponent(submissionId)))
+      .then(function (result) {
+        if (result.body.status === 'created') {
+          showConfirmation(result.body);
+          return;
+        }
+        if (result.response.status === 202) {
+          if (submitLabel) { submitLabel.textContent = 'অর্ডার Shopify-তে যাচাই হচ্ছে…'; }
+          window.setTimeout(function () { pollSubmission(submissionId); }, 2000);
+          return;
+        }
+        if (result.body.code === 'submission_not_found') {
+          window.sessionStorage.removeItem(submissionStorageKey);
+          state.busy = false;
+          if (state.quote) { renderQuote(state.quote); }
+          return;
+        }
+        window.sessionStorage.removeItem(submissionStorageKey);
+        state.busy = false;
+        showError(result.body.error || 'অর্ডারটি তৈরি হয়নি। আবার চেষ্টা করুন।');
+        if (state.quote) { renderQuote(state.quote); }
+      })
+      .catch(function () {
+        window.setTimeout(function () { pollSubmission(submissionId); }, 4000);
+      });
+  };
+
+  var loadDistricts = function () {
+    return requestJson(endpoint('config')).then(function (result) {
+      if (!result.response.ok || !Array.isArray(result.body.districts)) { throw new Error('জেলার তালিকা লোড করা যায়নি।'); }
+      result.body.districts.forEach(function (entry) {
+        var option = document.createElement('option');
+        option.value = entry.value;
+        option.textContent = entry.label;
+        district.appendChild(option);
+      });
+      state.proxyReady = true;
+      return loadQuote();
+    });
+  };
+
+  district.addEventListener('change', function () { loadQuote(); });
+  document.addEventListener('haatrush:cart-updated', function (event) {
+    if (!state.confirmed && event.detail && event.detail.cart) { loadQuote(event.detail.cart); }
+  });
+
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+    if (state.busy || state.confirmed || !state.quote || !state.quote.quoteToken) { return; }
+    clearError();
+    if (!form.reportValidity()) { return; }
+    if (!district.value) {
+      showError('ডেলিভারির চার্জ ঠিক করতে জেলা নির্বাচন করুন।');
+      district.focus();
+      return;
+    }
+    var submissionId = window.sessionStorage.getItem(submissionStorageKey);
+    if (!submissionId) {
+      submissionId = createSubmissionId();
+      window.sessionStorage.setItem(submissionStorageKey, submissionId);
+    }
+    var customer = {
+      name: form.elements.name.value,
+      phone: form.elements.phone.value,
+      address: form.elements.address.value,
+      district: district.value,
+      upazila: form.elements.upazila.value
+    };
+    state.busy = true;
+    submit.disabled = true;
+    submitLabel.textContent = 'অর্ডার Shopify-তে জমা হচ্ছে…';
+    requestJson(endpoint('orders'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        submissionId: submissionId,
+        quoteToken: state.quote.quoteToken,
+        lines: state.lines,
+        customer: customer
+      })
+    }).then(function (result) {
+      if (result.body.status === 'created') {
+        showConfirmation(result.body);
+      } else if (result.response.status === 202) {
+        pollSubmission(submissionId);
+      } else {
+        window.sessionStorage.removeItem(submissionStorageKey);
+        state.busy = false;
+        showError(result.body.error || 'অর্ডারটি তৈরি হয়নি।');
+        if (result.body.code === 'quote_changed' || result.body.code === 'quote_expired') {
+          loadQuote();
+        } else if (state.quote) {
+          renderQuote(state.quote);
+        }
+      }
+    }).catch(function () {
+      pollSubmission(submissionId);
+    });
+  });
+
+  var pendingSubmission = window.sessionStorage.getItem(submissionStorageKey);
+  if (pendingSubmission) {
+    state.busy = true;
+    submit.disabled = true;
+    submitLabel.textContent = 'আগের অর্ডারের অবস্থা যাচাই হচ্ছে…';
+    pollSubmission(pendingSubmission);
+  }
+  loadDistricts().catch(function () {
+    showError('কাস্টম চেকআউট সেবা এখনো সংযুক্ত হয়নি। অর্ডার জমা হয়নি; অনুগ্রহ করে পরে আবার চেষ্টা করুন।');
+    itemsNode.replaceChildren(create('p', 'hr-checkout__loading', 'চেকআউট সেবা প্রস্তুত নয়।'));
+    submit.disabled = true;
+  });
 }());
 
 /* ============================================================

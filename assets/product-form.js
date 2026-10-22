@@ -108,7 +108,8 @@
       addToCart(variantId, qty)
         .then(function () {
           if (buyNow) {
-            window.location.assign('/checkout');
+            const productMain = document.getElementById('productMainSection');
+            window.location.assign(productMain && productMain.dataset.checkoutUrl || '/pages/checkout');
           } else if (typeof window.openCartDrawer === 'function') {
             window.openCartDrawer();
           }

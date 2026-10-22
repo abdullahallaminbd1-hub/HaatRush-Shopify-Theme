@@ -524,13 +524,9 @@
   }
 
   /* ---------------- add to cart ----------------
-     Shopify's Cart API has no price field: a line item always costs its
-     variant price, so the theme cannot set a discounted price itself. The Buy
-     2 saving is instead carried by a single store-wide Shopify *automatic*
-     discount (2% off, minimum quantity 2). Shopify evaluates it from the cart
-     contents, so it applies on its own to any product bought as a pair and
-     stays applied through cart, checkout and the order. Nothing is sent here:
-     adding two units is all the theme has to do. */
+     Shopify's Cart API has no price field. The custom COD flow revalidates
+     current variant prices on the server and applies its eligible 2% discount
+     through Shopify's Admin orderCreate mutation. */
   var form = qs('.lf-atc', root);
   var message = qs('[data-atc-message]', root);
   if (form) {
