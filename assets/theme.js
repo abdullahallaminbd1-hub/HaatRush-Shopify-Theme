@@ -163,7 +163,7 @@
     if (!bundleTarget || bundleTarget < 1 || isNaN(shippingThreshold) || shippingThreshold < 1) { return; }
 
     var count = Math.max(0, parseInt(cart.item_count, 10) || 0);
-    var subtotal = Math.max(0, parseInt(cart.total_price, 10) || 0);
+    var subtotal = Math.max(0, parseInt(cart.original_total_price, 10) || parseInt(cart.total_price, 10) || 0);
     var bundleOffer = qs('[data-bundle-offer]', root);
     var bundleFill = qs('[data-bundle-fill]', root);
     var bundleTrack = qs('[data-bundle-offer] [role="progressbar"]', root);
