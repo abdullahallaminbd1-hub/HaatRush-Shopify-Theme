@@ -39,13 +39,7 @@ function removeCartItem(lineKey) {
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify({ items: [{ key: lineKey, quantity: 0 }] })
     
-    if (!setFlag('mobile-nav-open', open)) { return; }
-    if (menuDrawer) { menuDrawer.setAttribute('aria-hidden', open ? 'false' : 'true'); }
-    qsa('[data-menu-open]').forEach(function (t) { t.setAttribute('aria-expanded', open ? 'true' : 'false'); });
-  })
-  .then(function (response) {
-    if (!response.ok) { throw new Error('Network response was not ok'); }
-    return response.json();
+    ;
   })
   .then(function () {
     setDrawer(false);
@@ -100,6 +94,7 @@ function changeCartItemQuantity(target) {
     if (target.closest('[data-cart-open]')) { event.preventDefault(); setDrawer(true); return; }
     if (target.closest('[data-drawer-close]')) { event.preventDefault(); setDrawer(false); return; }
     if (target.closest('[data-cart-remove]')) { event.preventDefault(); removeCartItem(target.getAttribute('data-line-key')); return; }
+  if (target.closest('[data-cart-change]')) { event.preventDefault(); changeCartItemQuantity(target); return; }
     if (target.closest('[data-cart-change]')) { event.preventDefault(); changeCartItemQuantity(target); return; }
     if (target.closest('[data-menu-open]')) { event.preventDefault(); setMenu(!body.classList.contains('mobile-nav-open')); return; }
     if (target.closest('[data-menu-close]')) { event.preventDefault(); setMenu(false); return; }
@@ -810,7 +805,6 @@ function changeCartItemQuantity(target) {
       };
     });
   };
-  var bengaliCount = function (value) { return Number(value || 0).toLocaleString('bn-BD'); };
   var setText = function (selector, value) {
     var node = root.querySelector(selector);
     if (node) { node.textContent = value; }
@@ -928,7 +922,7 @@ function changeCartItemQuantity(target) {
         line.cartKey = cart.items[index] && cart.items[index].key || '';
       });
     }
-    setText('[data-checkout-count]', bengaliCount(quote.itemCount));
+    setText('[data-checkout-count]', quote.itemCount || 0);
     setText('[data-checkout-subtotal]', money(quote.subtotal));
     setText('[data-checkout-discount]', quote.bundleEligible ? 'âˆ’ ' + money(quote.bundleDiscount) : money(0));
     setText('[data-checkout-shipping-total]', quote.shipping == null
