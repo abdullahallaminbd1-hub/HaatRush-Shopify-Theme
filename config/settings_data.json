@@ -1,81 +1,53 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
-  "current": {
-    "brand_tagline": "বাংলাদেশের সেরা বিউটি টুলস এবং ডিভাইস, যত্ন সহকারে নির্বাচিত",
-    "color_ink": "#2C2929",
-    "color_accent": "#7A4B50",
-    "color_sand": "#FAF7F3",
-    "contact_email": "support@haatrush.com.bd",
-    "hero_height_desktop": 660,
-    "hero_height_mobile": 590,
-    "instagram_url": "https://facebook.com",
-    "tiktok_url": "",
-    "facebook_url": "",
-    "sections": {
-      "announcement-bar": {
-        "type": "announcement-bar",
-        "settings": {}
-      },
-      "header": {
-        "type": "header",
-        "settings": {
-          "logo_width": 180,
-          "menu": "main-menu"
-        }
-      },
-      "footer": {
-        "type": "footer",
-        "custom_css": [
-          ".lf-footer__inner {padding-left: 10px;}",
-          ".lf-footer__inner {padding-right: 10px;}",
-          ".lf-footer__wave {height: 100px;}",
-          ".lf-footer__wave {background: #fbf5f4;}",
-          ".lf-footer__inner {background: #802f47;}"
-        ],
-        "settings": {
-          "logo_width": 140,
-          "menu_shop": "",
-          "menu_customer_care": "footer"
-        }
-      }
+  "color_accent": "#FF6B00",
+  "color_accent_hover": "#E85D04",
+  "color_text": "#1a1a1a",
+  "color_bg": "#ffffff",
+  "color_surface": "#f8f8f8",
+  "color_muted": "#6b7280",
+  "color_line": "#2a2a2a",
+  "logo": "",
+  "logo_width": 180,
+  "enable_hero": true,
+  "hero_style": "primary",
+  "kicker_default": "HaatRush কালেকশন ২০২৫",
+  "heading_default": "সেরা গ্যাজেট, গেমিং ও ফ্যাশন — <span>সর্বনিম্ন দামে</span>",
+  "text_default": "Power Bank, Game Console, Smart Watch, Earphone সহ ১০০+ প্রোডাক্ট। ক্যাশ_online ডেলিভারিতে অর্ডার করুন।",
+  "button_label_default": "এ kini কিনুন →",
+  "enable_product": true,
+  "enable_value_strip": true,
+  "badge_text": "Special Offer",
+  "value_strip_heading": " grab great deals ",
+  "enable_trust": true,
+  "enable_reviews": true,
+  "enable_footer": true,
+  "about_text": "HaatRush - Premium gadgets, gaming & fashion at affordable prices.",
+  "copyright_text": "HaatRush",
+  "column1_title": "Important links",
+  "column2_title": "Additional links",
+  "column3_title": "More links",
+  "column1_links": [
+    {
+      "name": "Terms of Service",
+      "url": "https://"
     },
-    "content_for_index": [],
-    "blocks": {
-      "15683396631634586217": {
-        "type": "shopify://apps/inbox/blocks/chat/841fc607-4181-4ad1-842d-e24d7f8bad6b",
-        "disabled": false,
-        "settings": {
-          "greeting_message": "",
-          "show_featured_products": true,
-          "featured_products": [],
-          "background_color": "#faf7f3",
-          "font_color": "#2c2929",
-          "agent_invert_activator_colors": true,
-          "button_color": "#000000",
-          "button_icon": "chat_bubble",
-          "button_text": "no_text",
-          "button_horizontal_position": "bottom_right",
-          "button_vertical_position": "lowest",
-          "agent_inherit_fonts": true,
-          "agent_font": "system_ui_n4",
-          "agent_font_size": 14,
-          "agent_activator_font_size": 24,
-          "agent_border_radius": 24
-        }
-      },
-      "13015552501482376882": {
-        "type": "shopify://apps/neo-cod-form-upsell/blocks/app-block/6d1c1f47-a7b1-4fee-af01-4ada7fb162d2",
-        "disabled": false,
-        "settings": {}
-      }
+    {
+      "name": "Privacy Policy",
+      "url": "https://"
     }
-  }
+  ],
+  "column2_links": [
+    {
+      "name": "Contact",
+      "url": "https://"
+    }
+  ],
+  "column3_links": [
+    {
+      "name": "FAQ",
+      "url": "https://"
+    }
+  ],
+  "payment_icons": [],
+  "social_links": []
 }

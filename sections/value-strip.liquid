@@ -1,36 +1,63 @@
-<section class="lf-trust-strip">
-  <div class="lf-trust-strip__container page-width">
-    <div class="lf-trust-card">
-      <span class="lf-trust-card__icon">{% render 'icon', icon: 'star' %}</span>
-      <div><h4>{{ section.settings.title_1 }}</h4><p>{{ section.settings.text_1 }}</p></div>
-    </div>
-    <div class="lf-trust-card">
-      <span class="lf-trust-card__icon">{% render 'icon', icon: 'truck' %}</span>
-      <div><h4>{{ section.settings.title_2 }}</h4><p>{{ section.settings.text_2 }}</p></div>
-    </div>
-    <div class="lf-trust-card">
-      <span class="lf-trust-card__icon">{% render 'icon', icon: 'shield' %}</span>
-      <div><h4>{{ section.settings.title_3 }}</h4><p>{{ section.settings.text_3 }}</p></div>
-    </div>
-    <div class="lf-trust-card">
-      <span class="lf-trust-card__icon">{% render 'icon', icon: 'chat' %}</span>
-      <div><h4>{{ section.settings.title_4 }}</h4><p>{{ section.settings.text_4 }}</p></div>
-    </div>
-  </div>
-</section>
+{%- unless section.settings.enable_value_strip -%}
+  {%- assign show_value = false -%}{%- endunless -%}
+
+  {%- if show_value -%}
+    <section class="value-strip page-width" data-value-strip>
+      <div class="value-strip__content">
+        <div class="value-strip__badge">{{ section.settings.badge_text }}</div>
+        <h2 class="value-strip__heading">{{ section.settings.heading }}</h2>
+        <p class="value-strip__text">{{ section.settings.text }}</p>
+        <div class="value-strip__actions">
+          {%- for block in section.blocks -%}
+            {%- case block.type -%}
+            {%- when 'button' -%}
+              <a href="{{ block.settings.url }}" class="button button--accent">{{ block.settings.label }}</a>
+            {%- endcase -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    </section>
+  {%- endif -%}
+
 {% schema %}
 {
-  "name": "Trust strip",
+  "name": "Value Strip",
+  "class": "value-strip",
   "settings": [
-    {"type":"text","id":"title_1","label":"Card 1 title","default":"বাছাই করা কোয়ালিটি"},
-    {"type":"text","id":"text_1","label":"Card 1 text","default":"সেরা বিউটি টুলস, যত্ন সহকারে নির্বাচিত"},
-    {"type":"text","id":"title_2","label":"Card 2 title","default":"সারাদেশে ডেলিভারি"},
-    {"type":"text","id":"text_2","label":"Card 2 text","default":"নির্দিষ্ট অর্ডারে ফ্রি ডেলিভারি"},
-    {"type":"text","id":"title_3","label":"Card 3 title","default":"নিরাপদ পেমেন্ট"},
-    {"type":"text","id":"text_3","label":"Card 3 text","default":"bKash, Nagad, COD সহ নিরাপদ পেমেন্ট"},
-    {"type":"text","id":"title_4","label":"Card 4 title","default":"কাস্টমার সাপোর্ট"},
-    {"type":"text","id":"text_4","label":"Card 4 text","default":"আমরা সবসময় আপনার পাশে আছি"}
+    {
+      "type": "header",
+      "content": "Value strip settings"
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "default": "Special Offer"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": " grab great deals "
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "default": "Power Bank, Game Console, Smart Watch, Earphone সহ 100+ প্রোডাক্ট। ক্যাশ_online ডেলিভারিতে অর্ডার করুন।"
+    },
+    {
+      "type": "header",
+      "content": "Blocks"
+    },
+    {
+      "type": "button",
+      "id": "button"
+    }
   ],
-  "presets":[{"name":"Trust strip"}]
+  "presets": [
+    {
+      "name": "Default",
+      "settings": []
+    }
+  ]
 }
 {% endschema %}
+</section>

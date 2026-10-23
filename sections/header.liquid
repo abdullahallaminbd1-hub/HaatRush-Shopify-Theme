@@ -1,10 +1,10 @@
 <header class="lf-header" data-header>
   <div class="lf-header__bar page-width">
     <div class="lf-header__icons lf-header__icons--left">
-      <button class="lf-header__icon lf-header__icon--menu" data-menu-open aria-label="Menu" aria-expanded="false">
+      <button class="lf-header__icon lf-header__icon--menu" data-menu-open aria-label="মেনু" aria-expanded="false">
         {% render 'icon', icon: 'menu' %}
       </button>
-      <button class="lf-header__icon" data-search-open aria-label="Search">
+      <button class="lf-header__icon" data-search-open aria-label="খুঁজুন">
         {% render 'icon', icon: 'search' %}
       </button>
     </div>
@@ -23,29 +23,29 @@
           style="width:{{ section.settings.logo_width | default: 180 }}px">
       {%- else -%}
         <span class="lf-wordmark">Haat<i>Rush</i></span>
-        <span class="lf-wordmark-tag">বিউটি টুলস &amp; ডিভাইস</span>
+        <span class="lf-wordmark-tag">গ্যাজেট · গেমিং · ফ্যাশন</span>
       {%- endif -%}
     </a>
 
-    {%- comment -%} Desktop-only inline search bar (visible from the 990px breakpoint via CSS).
-      Same action, method and options[prefix] payload as the overlay search below, so
-      submission behaviour is identical; on mobile this form stays display:none and the
-      existing search overlay remains the only search UI. {%- endcomment -%}
+    {%- comment -%}
+      A small set of real popular products, rendered server-side straight from the
+      live catalog, used only for the focused-but-empty suggestion state. Nothing
+      here is hardcoded and no data is faked. Hidden from layout (script island); ignored entirely on mobile where the desktop field is display:none.
+    {%- endcomment -%}
     <form class="lf-header__search" action="{{ routes.search_url }}" method="get" role="search" data-search-suggest-form>
       <span class="lf-header__search-icon" aria-hidden="true">{% render 'icon', icon: 'search' %}</span>
-      <input type="search" name="q" placeholder="বিউটি টুলস, ডিভাইস এবং আরও কিছু খুঁজুন..." aria-label="Search" autocomplete="off" data-search-suggest-input role="combobox" aria-expanded="false" aria-controls="HaatRushSearchSuggest" aria-autocomplete="list" aria-haspopup="listbox">
+      <input type="search" name="q" placeholder="গ্যাজেট, গেমিং, ফ্যাশন খুঁজুন..." aria-label="খুঁজুন" autocomplete="off" data-search-suggest-input role="combobox" aria-expanded="false" aria-controls="HaatRushSearchSuggest" aria-autocomplete="list" aria-haspopup="listbox">
       <input type="hidden" name="options[prefix]" value="last">
-      <button type="submit" aria-label="Search">{% render 'icon', icon: 'arrow' %}</button>
+      <button type="submit" aria-label="খুঁজুন">{% render 'icon', icon: 'arrow' %}</button>
       <div class="lf-search-suggest" id="HaatRushSearchSuggest" data-search-suggest-panel hidden></div>
     </form>
 
     {%- comment -%}
       A small set of real popular products, rendered server-side straight from the
       live catalog, used only for the focused-but-empty suggestion state. Nothing
-      here is hardcoded and no data is faked. Hidden from layout (script island);
-      ignored entirely on mobile where the desktop field is display:none.
+      here is hardcoded and no data is faked. Hidden from layout (script island); ignored entirely on mobile where the desktop field is display:none.
     {%- endcomment -%}
-    <script type="application/json" data-haatrush-popular>[
+    <script type="application/json" data-haatrush-popular>
       {%- for pop in collections.all.products limit: 6 -%}
       {
         "title": {{ pop.title | json }},
@@ -54,127 +54,50 @@
         "price": {{ pop.price | default: 0 | json }},
         "compare_at_price": {{ pop.compare_at_price | json }},
         "available": {{ pop.available | json }}
-      }{%- unless forloop.last -%},{%- endunless -%}
+      }{%- unless forloop.last -%},{%- enduntil -%}
       {%- endfor -%}
     ]</script>
 
     <div class="lf-header__icons lf-header__icons--right">
       <a class="lf-header__icon lf-header__icon--account" href="{{ routes.account_login_url }}" aria-label="Log in">
         <span class="lf-header__icon-wrap">{% render 'icon', icon: 'user' %}</span>
-        <span class="lf-header__icon-label">Account</span>
+        <span class="lf-header__icon-wrap"></span>
       </a>
-      <button class="lf-header__icon cart-trigger" data-cart-open aria-label="Open cart">
-        <span class="lf-header__icon-wrap">{% render 'icon', icon: 'bag' %}<span class="lf-header__cart-count" data-cart-count>{{ cart.item_count }}</span></span>
-        <span class="lf-header__icon-label">Cart</span>
-      </button>
+      <a class="lf-header__icon lf-header__icon--cart" href="{{ cart.url }}" aria-label="কার্ট">
+        <span class="lf-header__icon-wrap">{% render 'icon', icon: 'cart' %}</span>
+        <span class="lf-header__cart-count">{{ cart.item_count }}</span>
+      </a>
     </div>
   </div>
 
-  <nav class="lf-header__menu" aria-label="Main navigation">
-    <ul class="lf-header__menu-list" role="list">
-      {%- assign menu = linklists[section.settings.menu] -%}
-      {%- if menu.links.size > 0 -%}
-        {%- for link in menu.links -%}
-          <li><a href="{{ link.url }}" {% if link.active or link.child_active %}aria-current="page"{% endif %}>{{ link.title }}</a></li>
-        {%- endfor -%}
-      {%- else -%}
-        <li><a href="{{ routes.collections_url }}/beauty-tools">বিউটি টুলস</a></li>
-        <li><a href="{{ routes.collections_url }}/facial-tools">ফেসিয়াল টুলস</a></li>
-        <li><a href="{{ routes.collections_url }}/skincare-tools">স্কিনকেয়ার টুলস</a></li>
-        <li><a href="{{ routes.collections_url }}/beauty-devices">বিউটি ডিভাইস</a></li>
-        <li><a href="{{ routes.collections_url }}/hair-tools">হেয়ার টুলস</a></li>
-        <li><a href="{{ routes.collections_url }}/personal-grooming-tools">গ্রুমিং টুলস</a></li>
-        <li><a href="{{ routes.collections_url }}/best-sellers">বেস্ট সেলার</a></li>
-        <li><a href="{{ routes.collections_url }}/new-arrivals">নতুন আইটেম</a></li>
-        <li><a href="{{ routes.root_url }}pages/about-us">আমাদের সম্পর্কে</a></li>
-      {%- endif -%}
-    </ul>
-    {%- comment -%} Desktop-only Special Offers pill. The theme contains no existing
-      Special Offers page, collection or link to reuse, so this pill is intentionally
-      a non-interactive element (no invented URL). Drop a real destination in here
-      once one exists. {%- endcomment -%}
-    <span class="lf-header__offers">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c.8 5.2 3.8 8.2 9 9-5.2.8-8.2 3.8-9 9-.8-5.2-3.8-8.2-9-9 5.2-.8 8.2-3.8 9-9Z"/></svg>
-      Special offers
-      {% render 'icon', icon: 'arrow' %}
-    </span>
-  </nav>
-</header>
-
-<div class="lf-menu-overlay" data-menu-close></div>
-<aside class="lf-menu-drawer" data-menu-drawer aria-hidden="true" aria-label="Menu">
+  {%- comment -%}
+    A small set of real popular products, rendered server-side straight from the
+    live catalog, used only for the focused-but-empty suggestion state. Nothing
+    here is hardcoded and no data is faked. Hidden from layout (script island); ignored entirely on mobile where the desktop field is display:none.
+  {%- endcomment -%}
+  <div class="lf-menu-overlay" data-menu-close></div>
+<aside class="lf-menu-drawer" data-menu-drawer aria-hidden="true" aria-label="মেনু">
   <div class="lf-menu-drawer__head">
-    <h3>Menu</h3>
-    <button class="lf-header__icon" data-menu-close aria-label="Close menu">{% render 'icon', icon: 'close' %}</button>
+    <h3>মেনু</h3>
+    <button class="lf-header__icon" data-menu-close aria-label="মেনু বন্ধ করুন">{% render 'icon', icon: 'close' %}</button>
   </div>
-  <nav class="lf-menu-drawer__nav" aria-label="Mobile navigation">
+  <nav class="lf-menu-drawer__nav" aria-label="মোবাইল ন্যাভিগেশন">
     <ul role="list">
       {%- if menu.links.size > 0 -%}
         {%- for link in menu.links -%}
           <li><a href="{{ link.url }}">{{ link.title }}</a></li>
         {%- endfor -%}
       {%- else -%}
-        <li><a href="{{ routes.collections_url }}/beauty-tools">বিউটি টুলস</a></li>
-        <li><a href="{{ routes.collections_url }}/facial-tools">ফেসিয়াল টুলস</a></li>
-        <li><a href="{{ routes.collections_url }}/skincare-tools">স্কিনকেয়ার টুলস</a></li>
-        <li><a href="{{ routes.collections_url }}/beauty-devices">বিউটি ডিভাইস</a></li>
-        <li><a href="{{ routes.collections_url }}/hair-tools">হেয়ার টুলস</a></li>
-        <li><a href="{{ routes.collections_url }}/personal-grooming-tools">গ্রুমিং টুলস</a></li>
+        <li><a href="{{ routes.collections_url }}/smart-gadgets">স্মার্ট গ্যাজেট</a></li>
+        <li><a href="{{ routes.collections_url }}/gaming">গেমিং</a></li>
+        <li><a href="{{ routes.collections_url }}/fashion">ফ্যাশন</a></li>
+        <li><a href="{{ routes.collections_url }}/decorating">ডেকোরেশন</a></li>
         <li><a href="{{ routes.collections_url }}/best-sellers">বেস্ট সেলার</a></li>
         <li><a href="{{ routes.collections_url }}/new-arrivals">নতুন আইটেম</a></li>
-        <li><a href="{{ routes.root_url }}pages/about-us">আমাদের সম্পর্কে</a></li>
+        <li><a href="{{ routes.collections_url }}/special-offers">স্পেশাল অফার</a></li>
+        <li><a href="{{ routes.root_url }}pages/contact">যোগাযোগ</a></li>
       {%- endif -%}
     </ul>
   </nav>
-  <div class="lf-menu-drawer__utility">
-  <div class="lf-menu-drawer__account">
-    {% if shop.customer_accounts_enabled %}
-      {% if customer %}
-        <a href="{{ routes.account_logout_url }}">{% render 'icon', icon: 'logout' %} Sign out</a>
-      {% else %}
-        <a href="{{ routes.account_login_url }}">{% render 'icon', icon: 'user' %} Sign in</a>
-      {% endif %}
-    {% endif %}
-  </div>
-  <a href="{{ routes.search_url }}">{% render 'icon', icon: 'search' %} Search</a>
-</div>
 </aside>
-
-<div class="lf-search-backdrop" data-search-close></div>
-<div class="lf-search-overlay" data-search-overlay aria-hidden="true">
-  <div class="lf-search-overlay__inner page-width">
-    <form action="{{ routes.search_url }}" method="get" role="search" class="lf-search-form">
-      <input type="search" name="q" placeholder="বিউটি টুলস &amp; ডিভাইস খুঁজুন" aria-label="Search" autocomplete="off">
-      <input type="hidden" name="options[prefix]" value="last">
-      <button type="submit" class="button button--accent">Search</button>
-    </form>
-    <button class="lf-header__icon" type="button" data-search-close aria-label="Close search">{% render 'icon', icon: 'close' %}</button>
-  </div>
-</div>
-
-{% schema %}
-{
-  "name": "Header",
-  "settings": [
-    {
-      "type": "image_picker",
-      "id": "logo",
-      "label": "Header logo image",
-      "info": "Optional. Upload a PNG, JPEG or GIF logo. Leave empty to keep the default HaatRush wordmark."
-    },
-    {
-      "type": "range",
-      "id": "logo_width",
-      "label": "Header logo width",
-      "min": 60,
-      "max": 400,
-      "step": 10,
-      "unit": "px",
-      "default": 180,
-      "info": "Applied only when a header logo image is selected."
-    },
-    {"type":"link_list","id":"menu","label":"Menu","default":"main-menu"}
-  ],
-  "presets":[{"name":"Header"}]
-}
-{% endschema %}
+</header>

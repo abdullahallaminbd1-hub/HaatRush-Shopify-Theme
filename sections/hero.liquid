@@ -1,84 +1,146 @@
-{%- comment -%}
-  Hero height resolution: the section range overrides the theme-wide value.
-  A value of 0 (or an unset section setting) falls back to Theme settings.
-{%- endcomment -%}
-{%- assign hero_height_desktop = settings.hero_height_desktop | default: 620 -%}
-{%- assign hero_height_mobile = settings.hero_height_mobile | default: 480 -%}
-{%- if section.settings.height_desktop > 0 -%}{%- assign hero_height_desktop = section.settings.height_desktop -%}{%- endif -%}
-{%- if section.settings.height_mobile > 0 -%}{%- assign hero_height_mobile = section.settings.height_mobile -%}{%- endif -%}
-<section class="lf-hero" data-slideshow data-autoplay="{{ section.settings.autoplay }}" style="--lf-hero-height:{{ hero_height_desktop }}px;--lf-hero-height-mobile:{{ hero_height_mobile }}px;">
-  <div class="lf-hero__slides">
-    {%- if section.blocks.size > 0 -%}
-      {%- for block in section.blocks -%}
-        <div class="lf-hero__slide{% if forloop.first %} is-active{% endif %}" data-slide {{ block.shopify_attributes }}
-          {% if block.settings.image %}style="--slide-image: url({{ block.settings.image | image_url: width: 2200 }})"{% endif %}>
-          <div class="lf-hero__media" aria-hidden="true">
-            {%- if block.settings.image -%}
-              {{ block.settings.image | image_url: width: 2200 | image_tag: loading: 'eager', class: 'lf-hero__image', alt: block.settings.heading }}
-            {%- else -%}
-              <div class="lf-hero__fallback lf-hero__fallback--{{ forloop.index }}"></div>
-            {%- endif -%}
-          </div>
-          <div class="lf-hero__overlay" aria-hidden="true"></div>
-          <div class="lf-hero__content">
-            {%- if block.settings.kicker != blank -%}<span class="lf-eyebrow lf-eyebrow--light">{{ block.settings.kicker }}</span>{%- endif -%}
-            {% if forloop.first %}<h1>{% else %}<h2>{% endif %}
-              {{ block.settings.heading }}
-            {% if forloop.first %}</h1>{% else %}</h2>{% endif %}
-            {%- if block.settings.text != blank -%}<p>{{ block.settings.text }}</p>{%- endif -%}
-            {%- if block.settings.button_label != blank -%}
-              <a class="button button--accent" href="{{ block.settings.link | default: routes.all_products_collection_url }}">{{ block.settings.button_label }}</a>
-            {%- endif -%}
-          </div>
-        </div>
-      {%- endfor -%}
-    {%- else -%}
-      <div class="lf-hero__slide is-active">
-        <div class="lf-hero__media" aria-hidden="true"><div class="lf-hero__fallback lf-hero__fallback--1"></div></div>
-        <div class="lf-hero__overlay" aria-hidden="true"></div>
-        <div class="lf-hero__content">
-          <span class="lf-eyebrow lf-eyebrow--light">HaatRush কালেকশন</span>
-          <h1>আপনার প্রতিদিনের সৌন্দর্যকে নতুন উচ্চতায় নিয়ে যান</h1>
-          <p>সেরা বিউটি টুলস এবং ডিভাইস, বাংলাদেশ মার্কেটের জন্য বিশেষভাবে নির্বাচিত — আপনার প্রতিদিনের রুটিনকে করুন আরও সহজ ও আত্মবিশ্বাসী।</p>
-          <a class="button button--accent" href="{{ routes.all_products_collection_url }}">এখনই কিনুন</a>
-        </div>
+{%- unless section.settings.enable_hero -%}
+  {%- assign show_hero = false -%}{%- endunless -%}
+
+  {%- if show_hero -%}
+    {%- assign collection = collections[section.settings.collection_id] -%}
+    {%- if collection -%}
+      {%- assign product = collection.products[section.settings.initial_product_id] -%}
+    {%- endif -%}
+
+    {%- if product -%}
+      <div class="hero__media media media--{{ section.settings.media_type }}"
+        style="background-image: {{ product.featured_media | image_url: width: 1800 }};">
+        {%- if section.settings.media_type == 'image' -%}
+          {%- if product.featured_media -%}
+            <a href="{{ product.url }}">
+              {% capture media_ratio -%}{{ product.featured_media.image.height | divided_by: product.featured_media.image.width }}{%- endcapture -%}
+              {%- capture ratio_width -%}{{ 1800 | divided_by: product.featured_media.image.width }}{%- endcapture -%}
+              {%- capture ratio_height -%}{{ 1800 | divided_by: product.featured_media.image.width | times: product.featured_media.image.height }}{%- endcapture -%}
+              {%- if media_ratio > 1.9 -%}
+                <span class="hero__ratio hero__ratio--portrait"></span>
+              {%- elsif media_ratio < 0.7 -%}
+                <span class="hero__ratio hero__ratio--landscape"></span>
+              {%- endif -%}
+              <img src="{{ product.featured_media | image_url: width: 1800 }}"
+                alt="{{ product.featured_media.alt | default: product.title | escape }}"
+                style="width:{{ ratio_width }}%;height:{{ ratio_height }}%;">
+            </a>
+          {%- endif -%}
+        {%- elsif section.settings.media_type == 'model' -%}
+          <a href="{{ product.url }}">
+            <div class="hero__model-placeholder"></div>
+          </a>
+        {%- endif -%}
+        {%- if section.settings.show_vendor -%}
+          <span class="hero__vendor">{{ product.vendor | escape }}</span>
+        {%- endif -%}
       </div>
     {%- endif -%}
-  </div>
-  {%- assign slide_count = section.blocks.size -%}
-  {%- if slide_count > 1 -%}
-    <div class="lf-hero__dots" role="tablist" aria-label="Slides">
-      {%- for block in section.blocks -%}
-        <button type="button" class="lf-hero__dot{% if forloop.first %} is-active{% endif %}" data-slide-dot="{{ forloop.index0 }}" aria-label="Go to slide {{ forloop.index }}" {{ block.shopify_attributes }}></button>
-      {%- endfor -%}
+
+    <div class="hero__content page-width">
+      {%- if product -%}
+        <div class="hero__kicker">{{ product.type | escape }}</div>
+        <h2 class="hero__heading">{{ product.title | escape }}</h2>
+        <p class="hero__text">{{ product.description | truncate: 200 | escape }}</p>
+      {%- else -%}
+        <div class="hero__kicker">{{ section.settings.kicker_default }}</div>
+        <h2 class="hero__heading">{{ section.settings.heading_default }}</h2>
+        <p class="hero__text">{{ section.settings.text_default }}</p>
+      {%- endif -%}
+
+      {%- if product -%}
+        <a href="{{ product.url }}" class="button button--accent">{{ section.settings.button_label_default }}</a>
+      {%- else -%}
+        <a href="{{ routes.collections_url | append: section.settings.collection_id | append: '/products' }}"
+          class="button button--accent">{{ section.settings.button_label_default }}</a>
+      {%- endif -%}
     </div>
   {%- endif -%}
 </section>
 
 {% schema %}
 {
-  "name": "Hero slideshow",
+  "name": "HaatRush Hero",
+  "class": "hero",
   "settings": [
-    {"type":"range","id":"autoplay","label":"Slide duration (seconds)","min":3,"max":10,"step":1,"unit":"s","default":6},
-    {"type":"header","content":"Hero height"},
-    {"type":"range","id":"height_desktop","label":"Desktop height override","info":"Set to 0 to use the theme-wide Desktop Hero Height setting.","min":0,"max":900,"step":10,"unit":"px","default":0},
-    {"type":"range","id":"height_mobile","label":"Mobile height override","info":"Set to 0 to use the theme-wide Mobile Hero Height setting.","min":0,"max":760,"step":10,"unit":"px","default":0}
-  ],
-  "blocks": [
     {
-      "type": "slide",
-      "name": "Slide",
-      "settings": [
-        {"type":"text","id":"kicker","label":"Kicker","default":"HaatRush কালেকশন"},
-        {"type":"text","id":"heading","label":"Heading","default":"আপনার প্রতিদিনের সৌন্দর্যকে নতুন উচ্চতায় নিয়ে যান"},
-        {"type":"textarea","id":"text","label":"Text","default":"সেরা বিউটি টুলস এবং ডিভাইস, বাংলাদেশ মার্কেটের জন্য বিশেষভাবে নির্বাচিত।"},
-        {"type":"text","id":"button_label","label":"Button label","default":"এখনই কিনুন"},
-        {"type":"url","id":"link","label":"Button link"},
-        {"type":"image_picker","id":"image","label":"Background image"}
-      ]
+      "type": "header",
+      "content": "Kicker"
+    },
+    {
+      "type": "text",
+      "id": "kicker_default",
+      "default": "HaatRush কালেকশন ২০২৫"
+    },
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "richtext",
+      "id": "heading_default",
+      "default": "সেরা গ্যাজেট, গেমিং ও ফ্যাশন — <span>সর্বনিম্ন দামে</span>"
+    },
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "richtext",
+      "id": "text_default",
+      "default": "Power Bank, Game Console, Smart Watch, Earphone সহ ১০০+ প্রোডাক্ট। ক্যাশ_online ডেলিভারিতে অর্ডার করুন।"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_label_default",
+      "default": "এ kini কিনুন →"
+    },
+    {
+      "type": "select",
+      "id": "hero_style",
+      "options": [
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        }
+      ],
+      "default": "primary"
+    },
+    {
+      "type": "collection",
+      "id": "collection_id",
+      "default": ""
+    },
+    {
+      "type": "product",
+      "id": "initial_product_id",
+      "default": 1
     }
   ],
-  "max_blocks": 6,
-  "presets":[{"name":"Hero slideshow","blocks":[{"type":"slide"},{"type":"slide"},{"type":"slide"}]}]
+  "presets": [
+    {
+      "name": "Default",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection_id",
+          "default": ""
+        },
+        {
+          "type": "product",
+          "id": "initial_product_id",
+          "default": 1
+        }
+      ]
+    }
+  ]
 }
 {% endschema %}
