@@ -7,6 +7,9 @@
     <title>{{ page_title }}{% unless page_title contains shop.name %} — {{ shop.name }}{% endunless %}</title>
     {{ 'poppins-400.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2' }}
     {{ 'poppins-600.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2' }}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Serif+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
     {{ content_for_header }}
     {{ 'theme.css' | asset_url | stylesheet_tag }}
     {{ 'product-card.css' | asset_url | stylesheet_tag }}

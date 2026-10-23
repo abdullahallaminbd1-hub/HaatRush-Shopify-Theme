@@ -4,7 +4,7 @@
   <div class="drawer__body" data-cart-body>
     {%- comment -%} Two-milestone savings progress: Bundle (2 items) then Free shipping (৳৯৯৯).
       Threshold 7500 reuses the existing hardcoded drawer + cart-page value; no setting exists. {%- endcomment -%}
-    {%- assign ship_threshold = 7500 -%}
+    {%- assign ship_threshold = 100000 -%}
     {%- assign bundle_need = 2 -%}
     {%- assign bundle_count = cart.item_count -%}
     {%- assign bundle_done = false -%}{%- if bundle_count >= bundle_need -%}{%- assign bundle_done = true -%}{%- endif -%}
@@ -16,26 +16,14 @@
     {%- elsif bundle_done -%}{%- assign ship_leg = cart.total_price | times: 50.0 | divided_by: ship_threshold | round -%}{%- assign milestone_pct = 50 | plus: ship_leg -%}{%- if milestone_pct > 99 -%}{%- assign milestone_pct = 99 -%}{%- endif -%}
     {%- elsif bundle_count > 0 -%}{%- assign milestone_pct = bundle_count | times: 50.0 | divided_by: bundle_need | round -%}
     {%- endif -%}
-    <div class="reward-strip" data-cart-milestones data-threshold="{{ ship_threshold }}" data-count="{{ bundle_count }}" data-subtotal="{{ cart.total_price }}"{% if ship_done %} data-complete="true"{% endif %}>
-      {%- if cart.item_count == 0 -%}
-        <p class="reward-strip__lead" data-milestone-lead>Add 2 more items to unlock 2% off</p>
-      {%- elsif bundle_done == false -%}
-        <p class="reward-strip__lead" data-milestone-lead>Add {{ items_left }} more item{% if items_left != 1 %}s{% endif %} to unlock 2% off</p>
-      {%- elsif ship_done == false -%}
-        <p class="reward-strip__lead" data-milestone-lead>Spend {{ ship_left | money }} more to unlock free shipping</p>
-      {%- else -%}
-        <p class="reward-strip__lead" data-milestone-lead>You've unlocked free shipping! Enjoy your savings.</p>
-      {%- endif -%}
-      <div class="reward-strip__track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ milestone_pct }}" aria-label="Savings progress">
-        <i class="reward-strip__fill" data-milestone-fill style="width:{{ milestone_pct }}%"></i>
-        <span class="reward-strip__marker reward-strip__marker--bundle{% if bundle_done %} is-done{% endif %}" aria-hidden="true"><span class="reward-strip__marker-icon">{% render 'icon', icon: 'bag' %}</span><svg class="reward-strip__marker-check" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12.5 4 4 8-9"/></svg></span>
-        <span class="reward-strip__marker reward-strip__marker--ship{% if ship_done %} is-done{% endif %}" aria-hidden="true"><span class="reward-strip__marker-icon">{% render 'icon', icon: 'truck' %}</span><svg class="reward-strip__marker-check" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12.5 4 4 8-9"/></svg></span>
-      </div>
-      <ul class="reward-strip__steps">
-        <li class="reward-step{% if bundle_done %} is-done{% endif %}" data-step="bundle"><span class="reward-step__label">Bundle Savings</span><small>Buy 2, save 2%</small></li>
-        <li class="reward-step{% if ship_done %} is-done{% endif %}" data-step="ship"><span class="reward-step__label">Free Shipping</span><small>On qualifying orders</small></li>
-      </ul>
-    </div>
+    {% assign free_ship_threshold = 100000 %}
+{% assign remaining = free_ship_threshold | minus: cart.total_price %}
+{% if cart.total_price >= free_ship_threshold %}
+  <span>🎉 ফ্রি ডেলিভারি আনলক হয়েছে!</span>
+{% else %}
+  <span>ফ্রি ডেলিভারি পেতে আরও <strong>{{ remaining | money }}</strong> কেনাকাটা করুন</span>
+{% endif %}
+<div class="shipping-bar"><i style="width:{{ cart.total_price | divided_by: 100000.0 | times: 100 | at_most: 100 }}%"></i></div>
     {% if cart.item_count == 0 %}<div class="empty-state"><div class="empty-state__mark">◇</div><h3>Your cart is empty</h3><p>Discover a small upgrade for your daily ritual.</p><a class="button button--dark" href="{{ routes.all_products_collection_url }}">Continue shopping</a></div>{% else %}<div class="cart-items">{% for item in cart.items %}<div class="cart-item"><div class="cart-item__image">{% if item.image %}{{ item.image | image_url: width: 180 | image_tag }}{% endif %}</div><div class="cart-item__main"><div class="cart-item__head"><h3 class="cart-item__title">{{ item.product.title }}</h3><button type="button" class="cart-item__remove" data-remove-item data-line="{{ forloop.index }}" aria-label="Remove {{ item.product.title | escape }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6"/><path d="M6.5 7l.9 11.1A2 2 0 0 0 9.4 20h5.2a2 2 0 0 0 2-1.9L17.5 7"/><path d="M9.5 7V5.2A1.2 1.2 0 0 1 10.7 4h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/></svg></button></div>{% unless item.variant.title == 'Default Title' %}<p class="cart-item__variant">{{ item.variant.title }}</p>{% endunless %}<div class="cart-item__foot"><div class="quantity-control"><button type="button" data-cart-change data-line="{{ forloop.index }}" data-quantity="{{ item.quantity | minus: 1 }}" aria-label="Decrease quantity of {{ item.product.title | escape }}">−</button><span>{{ item.quantity }}</span><button type="button" data-cart-change data-line="{{ forloop.index }}" data-quantity="{{ item.quantity | plus: 1 }}" aria-label="Increase quantity of {{ item.product.title | escape }}">＋</button></div><span class="cart-item__price">{{ item.final_line_price | money }}</span></div></div></div>{% endfor %}</div>{% endif %}
     <div class="drawer-recommendations"><div class="drawer-recommendations__head"><span class="eyebrow">You may also like</span><a class="drawer-recommendations__all" href="{{ routes.all_products_collection_url }}">View all <span aria-hidden="true">→</span></a></div>
       {%- assign drawer_recs = collections.all.products -%}
@@ -62,6 +50,29 @@
       </div>
     </div>
   </div>
-  <footer class="drawer__footer"><p class="cart-note{% if cart.total_discount > 0 %} cart-note--applied{% endif %}" data-discount-note aria-live="polite">{% if cart.total_discount > 0 %}Discount applied — you saved {{ cart.total_discount | money }}{% endif %}</p><form class="discount-form" data-discount-form><input type="text" name="discount" placeholder="Enter your discount code" aria-label="Discount code"><button type="submit">Apply</button></form><div class="drawer-total"><span>Subtotal</span>{% if cart.total_discount > 0 %}<p class="drawer-savings">Includes {{ cart.total_discount | money }} discount</p>{% endif %}<strong>{{ cart.total_price | money }}</strong></div><a class="button button--accent button--full drawer__checkout" href="/checkout">Check out &middot; {{ cart.total_price | money }}</a><p class="payment-note">Taxes and shipping calculated at checkout</p>
+  <footer class="drawer__footer"><p class="cart-note{% if cart.total_discount > 0 %} cart-note--applied{% endif %}" data-discount-note aria-live="polite">{% if cart.total_discount > 0 %}Discount applied — you saved {{ cart.total_discount | money }}{% endif %}</p><form class="discount-form" data-discount-form><input type="text" name="discount" placeholder="Enter your discount code" aria-label="Discount code"><button type="submit">Apply</button></form><div class="drawer-total"><span>Subtotal</span>{% if cart.total_discount > 0 %}<p class="drawer-savings">Includes {{ cart.total_discount | money }} discount</p>{% endif %}<strong>{{ cart.total_price | money }}</strong></div><a class="button button--accent button--full drawer__checkout" href="/checkout">Check out &middot; {{ cart.total_price | money }}</a>
 <div class="drawer__pay" role="group" aria-label="Accepted payment methods">{%- for type in shop.enabled_payment_types -%}{{ type | payment_type_svg_tag }}{%- endfor -%}</div></footer>
+<script>
+(function moveCODButton() {
+  function doMove() {
+    var btn = document.querySelector('.cod-btn-wrapper--cart-drawer');
+    var footer = document.querySelector('.drawer__footer');
+    if (btn && footer) {
+      footer.parentNode.insertBefore(btn, footer.nextSibling);
+    }
+  }
+  document.addEventListener('DOMContentLoaded', doMove);
+  document.addEventListener('cart:refresh', doMove);
+  document.addEventListener('cart:open', doMove);
+  // Also watch for dynamic injection by Neo COD app
+  var observer = new MutationObserver(function(mutations) {
+    var btn = document.querySelector('.cod-btn-wrapper--cart-drawer');
+    var footer = document.querySelector('.drawer__footer');
+    if (btn && footer && footer.nextSibling !== btn) {
+      footer.parentNode.insertBefore(btn, footer.nextSibling);
+    }
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+})();
+</script>
 </aside>
