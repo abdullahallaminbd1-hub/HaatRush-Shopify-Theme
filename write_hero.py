@@ -1,0 +1,154 @@
+import os
+
+hero_content = """{%- unless section.settings.enable_hero -%}
+  {%- assign show_hero = false -%}{%- endunless -%}
+
+  {%- if show_hero -%}
+    {%- assign collection = collections[section.settings.collection_id] -%}
+    {%- if collection -%}
+      {%- assign product = collection.products[section.settings.initial_product_id] -%}
+    {%- endif -%}
+
+    {%- if product -%}
+      <div class="hero__media media media--{{ section.settings.media_type }}"
+        style="background-image: {{ product.featured_media | image_url: width: 1800 }};">
+        {%- if section.settings.media_type == 'image' -%}
+          {%- if product.featured_media -%}
+            <a href="{{ product.url }}">
+              {% capture media_ratio -%}{{ product.featured_media.image.height | divided_by: product.featured_media.image.width }}{%- endcapture -%}
+              {%- capture ratio_width -%}{{ 1800 | divided_by: product.featured_media.image.width }}{%- endcapture -%}
+              {%- capture ratio_height -%}{{ 1800 | divided_by: product.featured_media.image.width | times: product.featured_media.image.height }}{%- endcapture -%}
+              {%- if media_ratio > 1.9 -%}
+                <span class="hero__ratio hero__ratio--portrait"></span>
+              {%- elsif media_ratio < 0.7 -%}
+                <span class="hero__ratio hero__ratio--landscape"></span>
+              {%- endif -%}
+              <img src="{{ product.featured_media | image_url: width: 1800 }}"
+                alt="{{ product.featured_media.alt | default: product.title | escape }}"
+                style="width:{{ ratio_width }}%;height:{{ ratio_height }}%;">
+            </a>
+          {%- endif -%}
+        {%- elsif section.settings.media_type == 'model' -%}
+          <a href="{{ product.url }}">
+            <div class="hero__model-placeholder"></div>
+          </a>
+        {%- endif -%}
+        {%- if section.settings.show_vendor -%}
+          <span class="hero__vendor">{{ product.vendor | escape }}</span>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="hero__content page-width">
+      {%- if product -%}
+        <div class="hero__kicker">{{ product.type | escape }}</div>
+        <h2 class="hero__heading">{{ product.title | escape }}</h2>
+        <p class="hero__text">{{ product.description | truncate: 200 | escape }}</p>
+      {%- else -%}
+        <div class="hero__kicker">{{ section.settings.kicker_default }}</div>
+        <h2 class="hero__heading">{{ section.settings.heading_default }}</h2>
+        <p class="hero__text">{{ section.settings.text_default }}</p>
+      {%- endif -%}
+
+      {%- if product -%}
+        <a href="{{ product.url }}" class="button button--accent">{{ section.settings.button_label_default }}</a>
+      {%- else -%}
+        <a href="{{ routes.collections_url | append: section.settings.collection_id | append: '/products' }}"
+          class="button button--accent">{{ section.settings.button_label_default }}</a>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "HaatRush Hero",
+  "class": "hero",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Kicker"
+    },
+    {
+      "type": "text",
+      "id": "kicker_default",
+      "default": "HaatRush কালেকশন ২০২৫"
+    },
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "richtext",
+      "id": "heading_default",
+      "default": "সেরা গ্যাজেট, গেমিং ও ফ্যাশন — <span>সর্বনিম্ন দামে</span>"
+    },
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "richtext",
+      "id": "text_default",
+      "default": "Power Bank, Game Console, Smart Watch, Earphone সহ ১০০+ প্রোডাক্ট। ক্যাশ_online ডেলিভারিতে অর্ডার করুন।"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_label_default",
+      "default": "এ kini কিনুন →"
+    },
+    {
+      "type": "select",
+      "id": "hero_style",
+      "options": [
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        }
+      ],
+      "default": "primary"
+    },
+    {
+      "type": "collection",
+      "id": "collection_id",
+      "default": ""
+    },
+    {
+      "type": "product",
+      "id": "initial_product_id",
+      "default": 1
+    }
+  ],
+  "presets": [
+    {
+      "name": "Default",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection_id",
+          "default": ""
+        },
+        {
+          "type": "product",
+          "id": "initial_product_id",
+          "default": 1
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}"""
+
+filepath = r"f:\Desktop\Haatrush website\sections\hero.liquid"
+with open(filepath, 'w', encoding='utf-8') as f:
+    f.write(hero_content)
+
+print("hero.liquid created successfully")

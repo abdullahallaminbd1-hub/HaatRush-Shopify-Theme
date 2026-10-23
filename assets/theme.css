@@ -33,8 +33,17 @@
   background: #E85D04 !important;
   border-color: #E85D04 !important;
 }
-/* COD badge */
-.cod-badge-strip {
+/* === HaatRush Orange Brand === */
+.button--accent,
+.button--accent:visited {
+  background: #FF6B00 !important;
+  border-color: #FF6B00 !important;
+  color: #fff !important;
+}
+.button--accent:hover {
+  background: #E85D04 !important;
+  border-color: #E85D04 !important;
+}
   background: #0D1117;
   color: #FF6B00;
   font-weight: 700;

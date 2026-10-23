@@ -1,6 +1,0 @@
-{% assign active_policy = shop.privacy_policy %}
-{% if request.path contains 'shipping-policy' %}{% assign active_policy = shop.shipping_policy %}{% endif %}
-{% if request.path contains 'refund-policy' %}{% assign active_policy = shop.refund_policy %}{% endif %}
-{% if request.path contains 'terms-of-service' %}{% assign active_policy = shop.terms_of_service %}{% endif %}
-<section class="policy-page"><div class="content-page__intro"><span class="eyebrow">HaatRush / information</span><h1>{{ active_policy.title | default: 'Store policy' }}</h1><p>Clear information to help you shop with confidence.</p></div><div class="content-page__body rte">{{ active_policy.body | default: 'This policy will be available after it is configured in Shopify Admin.' }}</div></section>
-{% schema %}{"name":"Policy page","settings":[],"presets":[{"name":"Policy page"}]}{% endschema %}
