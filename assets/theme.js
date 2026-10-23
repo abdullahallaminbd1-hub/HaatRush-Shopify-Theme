@@ -37,12 +37,23 @@ function removeCartItem(lineKey) {
   fetch('/cart/change.js', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify({ items: [{ key: lineKey, quantity: 0 }]); }
+    body: JSON.stringify({ items: [{ key: lineKey, quantity: 0 }] })
     
     if (!setFlag('mobile-nav-open', open)) { return; }
     if (menuDrawer) { menuDrawer.setAttribute('aria-hidden', open ? 'false' : 'true'); }
     qsa('[data-menu-open]').forEach(function (t) { t.setAttribute('aria-expanded', open ? 'true' : 'false'); });
-  };
+  })
+  .then(function (response) {
+    if (!response.ok) { throw new Error('Network response was not ok'); }
+    return response.json();
+  })
+  .then(function () {
+    setDrawer(false);
+  })
+  .catch(function (error) {
+    console.error('Error removing cart item:', error);
+  });
+
 function changeCartItemQuantity(target) {
   var lineKey = target.getAttribute('data-line-key');
   var delta = target.getAttribute('data-cart-delta');
@@ -53,9 +64,17 @@ function changeCartItemQuantity(target) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify({ items: [{ key: lineKey, quantity: newQty }] })
+  })
+  .then(function (response) {
+    if (!response.ok) { throw new Error('Network response was not ok'); }
+    return response.json();
+  })
+  .then(function () {
+    setDrawer(true);
+  })
+  .catch(function (error) {
+    console.error('Error changing cart item quantity:', error);
   });
-  if (cartDrawer) { cartDrawer.setAttribute('aria-hidden', 'false'); }
-  setDrawer(true);
 }
   /* The mobile search overlay closes from three places: the close control, the
      backdrop behind it, and the Escape key handled below. Opening keeps the
@@ -843,9 +862,8 @@ function changeCartItemQuantity(target) {
       return typeof entry.value === 'string' && typeof entry.label === 'string' && districtValues.has(entry.district);
     });
   };
-  var renderLines = function (lines) {
-    itemsNode.replaceChildren();
-    lines.forEach(function (line, index) {
+  
+    
       var row = create('article', 'hr-checkout__item');
       if (line.imageUrl) {
         var image = document.createElement('img');
@@ -910,7 +928,6 @@ function changeCartItemQuantity(target) {
         line.cartKey = cart.items[index] && cart.items[index].key || '';
       });
     }
-    renderLines(state.lines);
     setText('[data-checkout-count]', bengaliCount(quote.itemCount));
     setText('[data-checkout-subtotal]', money(quote.subtotal));
     setText('[data-checkout-discount]', quote.bundleEligible ? 'âˆ’ ' + money(quote.bundleDiscount) : money(0));
