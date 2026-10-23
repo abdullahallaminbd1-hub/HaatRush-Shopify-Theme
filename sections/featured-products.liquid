@@ -56,11 +56,11 @@
             </a>
             <div class="lf-product-card__info">
               {%- if section.settings.show_vendor -%}<span class="lf-product-card__vendor">{{ shop.name }}</span>{%- endif -%}
-              <h3 class="lf-product-card__title"><a href="{{ routes.all_products_collection_url }}" title="নমুনা পণ্যের নাম">{% case i %}{% when 1 %}ওয়্যারলেস ইয়ারবাড{% when 2 %}স্মার্ট ওয়াচ{% when 3 %}পাওয়ার ব্যাংক{% else %}ব্লুটুথ স্পিকার{% endcase %}</a></h3>
-              <p class="lf-product-card__subtitle">{{ 'general.curated_selection' | t }}</p>
-              <div class="lf-product-card__price"><span class="lf-price">৳{{ i | times: 500 | plus: 1500 }}</span></div>
+              <h3 class="lf-product-card__title"><a href="{{ routes.all_products_collection_url }}" title="Sample product title">{% case i %}{% when 1 %}Contour cooling wand{% when 2 %}Sculpting facial roller{% when 3 %}Precision brow trimmer{% else %}Heatless styling set{% endcase %}</a></h3>
+              <p class="lf-product-card__subtitle">Thoughtfully selected</p>
+              <div class="lf-product-card__price"><span class="lf-price">${{ i | plus: 17 }}.00</span></div>
               <div class="lf-product-card__actions">
-                <a class="lf-card-btn lf-card-btn--{{ section.settings.button_style }}" href="{{ routes.all_products_collection_url }}" aria-label="নমুনা পণ্য দেখুন"><span class="lf-card-btn__label">পণ্য দেখুন</span><span class="lf-card-btn__arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12h15M13 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+                <a class="lf-card-btn lf-card-btn--{{ section.settings.button_style }}" href="{{ routes.all_products_collection_url }}" aria-label="View sample product"><span class="lf-card-btn__label">View product</span><span class="lf-card-btn__arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12h15M13 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
               </div>
             </div>
           </article>
@@ -79,22 +79,22 @@
 {
   "name": "Product grid",
   "settings": [
-    {"type":"text","id":"kicker","label":"Kicker","default":"ক্রেতাদের পছন্দ"},
-    {"type":"text","id":"heading","label":"Heading","default":"জনপ্রিয় পণ্য"},
-    {"type":"textarea","id":"text","label":"Text","default":"আধুনিক জীবনের উপযোগী জনপ্রিয় ইলেকট্রনিক্স ও গ্যাজেট দেখুন।"},
+    {"type":"text","id":"kicker","label":"Kicker","default":"Customer favourites"},
+    {"type":"text","id":"heading","label":"Heading","default":"Our <span>Best Sellers</span>"},
+    {"type":"textarea","id":"text","label":"Text","default":"Discover popular picks from across our beauty tools and devices — thoughtfully selected for modern routines."},
     {"type":"collection","id":"collection","label":"Collection"},
     {"type":"range","id":"columns","label":"Columns","min":2,"max":4,"step":1,"default":4},
     {"type":"range","id":"limit","label":"Products shown","min":4,"max":12,"step":4,"default":8},
     {"type":"header","content":"Card width"},
     {"type":"select","id":"product_card_width_mode","label":"Card Width Mode","info":"Full Width lets cards fill their grid column. Box Width caps desktop cards at the exact width set below, centred in the column.","options":[{"value":"box","label":"Box Width"},{"value":"full","label":"Full Width"}],"default":"box"},
     {"type":"range","id":"product_card_width","label":"Card Width (px)","info":"Only applies when Card Width Mode is Box Width. Applies to desktop; mobile is unchanged.","min":200,"max":500,"step":10,"unit":"px","default":340},
-    {"type":"text","id":"badge_label","label":"Badge label","default":"জনপ্রিয়"},
+    {"type":"text","id":"badge_label","label":"Badge label","default":"Best seller"},
     {"type":"checkbox","id":"show_vendor","label":"Show vendor label","default":false},
     {"type":"checkbox","id":"show_arrow","label":"Show corner arrow","default":false},
     {"type":"select","id":"button_style","label":"Card button style","options":[{"value":"filled","label":"Filled"},{"value":"outline","label":"Outline"}],"default":"filled"},
-    {"type":"text","id":"button_label","label":"Card button label","default":"পণ্য দেখুন"},
-    {"type":"select","id":"tone","label":"Background tone","options":[{"value":"plain","label":"White"},{"value":"ivory","label":"Soft blue"},{"value":"blue","label":"Blue"}],"default":"ivory"},
-    {"type":"text","id":"view_all_label","label":"View all label","default":"সব জনপ্রিয় পণ্য দেখুন"},
+    {"type":"text","id":"button_label","label":"Card button label","default":"Add to cart"},
+    {"type":"select","id":"tone","label":"Background tone","options":[{"value":"plain","label":"White"},{"value":"ivory","label":"Ivory"},{"value":"blush","label":"Blush"}],"default":"ivory"},
+    {"type":"text","id":"view_all_label","label":"View all label","default":"View all best sellers"},
     {"type":"url","id":"view_all_link","label":"View all link"}
   ],
   "presets":[{"name":"Product grid"}]

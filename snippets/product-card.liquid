@@ -1,5 +1,5 @@
 <article class="lf-product-card">
-  <a class="lf-product-card__media" href="{{ product.url }}" aria-label="{{ 'products.view_product' | t }}: {{ product.title | escape }}">
+  <a class="lf-product-card__media" href="{{ product.url }}" aria-label="View {{ product.title | escape }}">
     {%- if product.featured_image -%}
       {{ product.featured_image | image_url: width: 800 | image_tag: loading: 'lazy', widths: '360,540,800', sizes: '(max-width: 750px) 50vw, 25vw', class: 'lf-product-card__image lf-product-card__image--primary', alt: product.featured_image.alt | default: product.title }}
       {%- assign card_second = product.images[1] -%}
@@ -7,12 +7,12 @@
         {{ card_second | image_url: width: 800 | image_tag: loading: 'lazy', widths: '360,540,800', sizes: '(max-width: 750px) 50vw, 25vw', class: 'lf-product-card__image lf-product-card__image--secondary', alt: card_second.alt | default: product.title }}
       {%- endif -%}
     {%- else -%}
-      <div class="lf-product-card__placeholder">HR</div>
+      <div class="lf-product-card__placeholder">LF</div>
     {%- endif -%}
     {%- if badge != blank -%}<span class="lf-badge">{{ badge }}</span>
-    {%- elsif product.compare_at_price > product.price -%}<span class="lf-badge">{{ 'products.sale_badge' | t }}</span>
+    {%- elsif product.compare_at_price > product.price -%}<span class="lf-badge">Sale</span>
     {%- endif -%}
-    {%- if product.available == false -%}<span class="lf-badge lf-badge--sold">{{ 'products.sold_out' | t }}</span>{%- endif -%}
+    {%- if product.available == false -%}<span class="lf-badge lf-badge--sold">Sold out</span>{%- endif -%}
     {%- if arrow -%}<span class="lf-card-arrow" aria-hidden="true">↗</span>{%- endif -%}
   </a>
   <div class="lf-product-card__info">
@@ -30,13 +30,48 @@
         <s class="lf-compare">{{ product.compare_at_price | money }}</s>
         {%- assign save_off = product.compare_at_price | minus: product.price -%}
         {%- assign save_pct = save_off | times: 100.0 | divided_by: product.compare_at_price | round -%}
-        <span class="lf-save">{{ 'products.save_percent' | t }} {{ save_pct }}%</span>
+        <span class="lf-save">Save {{ save_pct }}%</span>
       {%- endif -%}
     </div>
+    {%- assign card_features = product.metafields.custom.features.value | default: product.metafields.custom.highlights.value -%}
+    {%- capture card_chips -%}
+      {%- assign chip_count = 0 -%}
+      {%- if card_features != blank and card_features.first != blank -%}
+        {%- for feat in card_features -%}
+          {%- if chip_count >= 3 -%}{%- break -%}{%- endif -%}
+          {%- assign feat_text = feat | strip -%}
+          {%- if feat_text == blank -%}{%- continue -%}{%- endif -%}
+          <span class="lf-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 4.6L18.5 9l-4.7 1.4L12 15l-1.8-4.6L5.5 9l4.7-1.4L12 3Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg><span>{{ feat_text | escape | truncate: 16 }}</span></span>
+          {%- assign chip_count = chip_count | plus: 1 -%}
+        {%- endfor -%}
+      {%- elsif card_features != blank -%}
+        {%- assign feat_split = card_features | replace: '|', ',' | split: ',' -%}
+        {%- for feat in feat_split -%}
+          {%- if chip_count >= 3 -%}{%- break -%}{%- endif -%}
+          {%- assign feat_text = feat | strip -%}
+          {%- if feat_text == blank -%}{%- continue -%}{%- endif -%}
+          <span class="lf-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 4.6L18.5 9l-4.7 1.4L12 15l-1.8-4.6L5.5 9l4.7-1.4L12 3Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg><span>{{ feat_text | escape | truncate: 16 }}</span></span>
+          {%- assign chip_count = chip_count | plus: 1 -%}
+        {%- endfor -%}
+      {%- else -%}
+        {%- for tag in product.tags -%}
+          {%- if chip_count >= 3 -%}{%- break -%}{%- endif -%}
+          {%- assign tag_text = tag | strip -%}
+          {%- if tag_text == blank -%}{%- continue -%}{%- endif -%}
+          {%- assign tag_first = tag_text | slice: 0, 1 -%}
+          {%- if tag_first == '_' -%}{%- continue -%}{%- endif -%}
+          {%- if tag_text contains ':' -%}{%- assign tag_parts = tag_text | split: ':' -%}{%- assign tag_text = tag_parts | last | strip -%}{%- endif -%}
+          {%- if tag_text == blank -%}{%- continue -%}{%- endif -%}
+          <span class="lf-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 4.6L18.5 9l-4.7 1.4L12 15l-1.8-4.6L5.5 9l4.7-1.4L12 3Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg><span>{{ tag_text | escape | truncate: 16 }}</span></span>
+          {%- assign chip_count = chip_count | plus: 1 -%}
+        {%- endfor -%}
+      {%- endif -%}
+    {%- endcapture -%}
+    {%- if card_chips contains 'lf-chip' -%}<div class="lf-product-card__chips">{{ card_chips }}</div>{%- endif -%}
     <div class="lf-product-card__actions">
       {%- comment -%} Cards link to the product page; add-to-cart lives on that page. {%- endcomment -%}
-      <a class="lf-card-btn lf-card-btn--{{ button_style | default: 'filled' }}" href="{{ product.url }}" aria-label="{{ 'products.view_product' | t }}: {{ product.title | escape }}"><span class="lf-card-btn__label">{{ 'products.view_product' | t }}</span><span class="lf-card-btn__arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12h15M13 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
-      {%- if show_view_details -%}<a class="lf-card-view" href="{{ product.url }}">{{ 'products.view_details' | t }} <span aria-hidden="true">→</span></a>{%- endif -%}
+      <a class="lf-card-btn lf-card-btn--{{ button_style | default: 'filled' }}" href="{{ product.url }}" aria-label="View {{ product.title | escape }}"><span class="lf-card-btn__label">View product</span><span class="lf-card-btn__arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12h15M13 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+      {%- if show_view_details -%}<a class="lf-card-view" href="{{ product.url }}">View details <span aria-hidden="true">→</span></a>{%- endif -%}
     </div>
   </div>
 </article>

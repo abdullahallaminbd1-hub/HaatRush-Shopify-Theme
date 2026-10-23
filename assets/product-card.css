@@ -1,27 +1,31 @@
-/* HaatRush premium product-card redesign (scoped to .lf-product-card only).
+/* HAATRUSH premium product-card redesign (scoped to .lf-product-card only).
    Shared by homepage grids, collection, search and recommendations. */
 .lf-product-grid,.product-grid{align-items:stretch;}
-.lf-product-card{border-radius:22px;background:#fff;box-shadow:0 18px 40px -30px rgba(15,23,42,.35);}
-.lf-product-card__media{border-radius:22px 22px 0 0;background:#F8F3FF;}
+.lf-product-card{border-radius:22px;background:#fff;box-shadow:0 18px 40px -30px rgba(90,38,63,.35);}
+.lf-product-card__media{border-radius:22px 22px 0 0;background:#FBF5F4;}
 .lf-product-card__info{position:relative;margin-top:-26px;padding:22px 18px 18px;border-radius:26px 26px 0 0;background:#fff;flex:1;}
-.lf-product-card__info::before{content:"";display:block;width:24px;height:3px;border-radius:999px;background:#7628D7;margin:0 0 8px;}
-.lf-badge{background:#EBDFFF;color:#5A1EB0;font-size:12px;font-weight:600;letter-spacing:0;padding:7px 13px;box-shadow:0 8px 18px -10px rgba(90,30,176,.35);}
-.lf-badge--sold{background:#EBDFFF;color:#5A1EB0;}
-.lf-product-card .lf-product-card__title{margin:6px 0 0;font-family:'Noto Sans Bengali','Hind Siliguri',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;font-size:18px;font-weight:600;line-height:1.45;letter-spacing:0;text-rendering:optimizeLegibility;min-width:0;}
+.lf-product-card__info::before{content:"";display:block;width:24px;height:3px;border-radius:999px;background:#B85C78;margin:0 0 8px;}
+.lf-badge{background:#5A263F;color:#fff;font-size:10px;letter-spacing:.1em;padding:7px 13px;box-shadow:0 8px 18px -10px rgba(90,38,63,.7);}
+.lf-badge--sold{background:#2E1A20;color:#fff;}
+.lf-product-card .lf-product-card__title{margin:6px 0 0;font-family:'Poppins',-apple-system,'Segoe UI',Arial,sans-serif;font-size:17.5px;font-weight:700;line-height:1.35;letter-spacing:-.01em;text-rendering:optimizeLegibility;min-width:0;}
 .lf-product-card .lf-product-card__title a{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
-.lf-product-card__subtitle{margin:4px 0 0;min-height:22px;font-size:14px;line-height:22px;color:#64748B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lf-product-card__subtitle{margin:4px 0 0;min-height:20px;font-size:12.5px;line-height:20px;color:#8B536F;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .lf-product-card__subtitle:empty::after{content:"\00a0";}
-.lf-product-card .lf-product-card__price{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;margin-top:10px;font-family:'Noto Sans Bengali','Hind Siliguri',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;font-size:19.5px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums;text-rendering:optimizeLegibility;}
-.lf-product-card .lf-product-card__price .lf-price{color:#27183A;}
-.lf-product-card .lf-product-card__price .lf-compare{font-size:14px;font-weight:400;color:#94A3B8;text-decoration:line-through;}
-.lf-product-card .lf-product-card__price .lf-save{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;background:#EBDFFF;color:#5A1EB0;font-size:12px;font-weight:600;letter-spacing:0;white-space:nowrap;}
+.lf-product-card .lf-product-card__price{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;margin-top:10px;font-family:'Poppins',-apple-system,'Segoe UI',Arial,sans-serif;font-size:19.5px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums;text-rendering:optimizeLegibility;}
+.lf-product-card .lf-product-card__price .lf-price{color:#241820;}
+.lf-product-card .lf-product-card__price .lf-compare{font-size:14px;font-weight:400;color:#9a8f91;text-decoration:line-through;}
+.lf-product-card .lf-product-card__price .lf-save{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;background:#F9DEE3;color:#7A2E44;font-size:11.5px;font-weight:700;letter-spacing:.01em;white-space:nowrap;}
+.lf-product-card__chips{display:flex;gap:6px;margin-top:12px;padding:10px 10px;border-radius:14px;background:#FBF5F4;}
+.lf-chip{flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:5px;font-size:11px;font-weight:500;color:#5A263F;white-space:nowrap;overflow:hidden;}
+.lf-chip + .lf-chip{border-left:1px solid #EEDFE4;padding-left:6px;}
+.lf-chip svg{flex:0 0 auto;width:15px;height:15px;color:#B85C78;}
+.lf-chip > span{min-width:0;overflow:hidden;text-overflow:ellipsis;}
 .lf-product-card__actions{margin-top:auto;padding-top:14px;}
 .lf-product-card__actions .lf-card-btn{position:relative;width:100%;padding:8px 8px 8px 20px;}
 .lf-card-btn__label{flex:1;text-align:center;}
-.lf-card-btn__arrow{flex:0 0 auto;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#EBDFFF;color:#5A1EB0;}
+.lf-card-btn__arrow{flex:0 0 auto;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#F3DCE5;color:#5A263F;}
 .lf-card-btn__arrow svg{width:16px;height:16px;}
-.lf-product-card .lf-card-btn:focus-visible,.lf-product-card a:focus-visible{outline:2px solid #7628D7;outline-offset:2px;}
-.lf-product-card .lf-card-btn{font-size:18px;font-weight:700;letter-spacing:0;line-height:1.4;}
+.lf-product-card .lf-card-btn:focus-visible,.lf-product-card a:focus-visible{outline:2px solid #B85C78;outline-offset:2px;}
 /* Secondary-image hover: cross-fade + restrained zoom on desktop pointers only.
    Single-image cards keep the existing zoom. Honors reduced motion. */
 .lf-product-card__image--secondary{position:absolute;inset:0;opacity:0;}
@@ -53,12 +57,14 @@
   /* Compact info: image stays prominent, content never dominates the card. */
   .lf-product-card__info{margin-top:-20px;padding:16px 12px 14px;border-radius:22px 22px 0 0;}
   .lf-product-card__info::before{width:20px;margin:0 0 6px;}
-  .lf-badge{font-size:12px;padding:6px 10px;}
-  .lf-product-card .lf-product-card__title{font-size:16px;}
-  .lf-product-card__subtitle{font-size:12.5px;min-height:20px;line-height:20px;}
+  .lf-badge{font-size:9px;padding:6px 10px;}
+  .lf-product-card .lf-product-card__title{font-size:15.5px;}
+  .lf-product-card__subtitle{font-size:11.5px;min-height:18px;line-height:18px;}
   .lf-product-card .lf-product-card__price{font-size:18.5px;gap:3px 7px;margin-top:8px;min-width:0;}
   .lf-product-card .lf-product-card__price .lf-compare{font-size:12.5px;}
-  .lf-product-card .lf-product-card__price .lf-save{font-size:12px;padding:3px 8px;}
+  .lf-product-card .lf-product-card__price .lf-save{font-size:10.5px;padding:3px 8px;}
+  .lf-product-card__chips{gap:4px;margin-top:10px;padding:8px 6px;}
+  .lf-chip{font-size:10px;} .lf-chip svg{width:13px;height:13px;}
   .lf-product-card__actions{padding-top:12px;}
   .lf-product-card__actions .lf-card-btn{padding:6px 6px 6px 14px;}
   .lf-card-btn__label{white-space:nowrap;}
@@ -67,10 +73,8 @@
 /* Very narrow phones (320px): sensible sizing so nothing clips or scrolls. */
 @media (max-width:380px){
   .lf-product-grid,.product-grid{gap:16px 10px;}
-  .lf-product-card .lf-product-card__title{font-size:15px;}
+  .lf-product-card .lf-product-card__title{font-size:14px;}
   .lf-product-card .lf-product-card__price{font-size:17px;}
-  .lf-product-card .lf-product-card__price .lf-compare{font-size:12px;}
-}
-@media (max-width:749px){
-  .lf-product-card .lf-card-btn{font-size:16px;font-weight:700;}
+  .lf-product-card .lf-product-card__price .lf-compare{font-size:11.5px;}
+  .lf-chip{font-size:9.5px;}
 }

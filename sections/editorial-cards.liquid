@@ -26,7 +26,7 @@
       {%- endfor -%}
     </div>
     <div class="lf-editorial__promise">
-      <span>{{ 'general.curated_selection' | t }}</span><i></i><span>{{ 'sections.footer.secure_payment' | t }}</span><i></i><span>{{ 'general.delivery_information' | t }}</span>
+      <span>Thoughtfully selected</span><i></i><span>Secure checkout</span><i></i><span>Free US shipping</span>
     </div>
   </div>
 </section>
@@ -34,24 +34,24 @@
 {
   "name": "Editorial cards",
   "settings": [
-    {"type":"text","id":"kicker","label":"Kicker","default":"হাটরাশের বিশেষত্ব"},
-    {"type":"text","id":"heading","label":"Heading","default":"<span>আধুনিক জীবনের</span> উপযোগী বাছাই"},
-    {"type":"textarea","id":"text","label":"Text","default":"প্রতিদিনের প্রয়োজন থেকে স্মার্ট ডিভাইস—আপনার জীবনযাত্রার সঙ্গে মানানসই পণ্য খুঁজে নিন।"}
+    {"type":"text","id":"kicker","label":"Kicker","default":"The HaatRush difference"},
+    {"type":"text","id":"heading","label":"Heading","default":"Thoughtfully Selected for <span>Modern Routines</span>"},
+    {"type":"textarea","id":"text","label":"Text","default":"From everyday beauty rituals to professional-grade devices, discover considered essentials selected to complement the way you live."}
   ],
   "blocks": [
     {"type":"card","name":"Card","settings":[
-      {"type":"text","id":"title","label":"Title","default":"প্রতিদিনের ইলেকট্রনিক্স"},
-      {"type":"textarea","id":"text","label":"Text","default":"দৈনন্দিন কাজ সহজ করতে বাছাই করা ডিভাইস ও অ্যাক্সেসরিজ।"},
-      {"type":"text","id":"link_label","label":"Link label","default":"পণ্য দেখুন"},
+      {"type":"text","id":"title","label":"Title","default":"Curated Beauty Tools"},
+      {"type":"textarea","id":"text","label":"Text","default":"Beauty and self-care tools selected for simple, elevated everyday routines."},
+      {"type":"text","id":"link_label","label":"Link label","default":"Explore tools"},
       {"type":"url","id":"link","label":"Link"},
       {"type":"image_picker","id":"image","label":"Image"}
     ]}
   ],
   "max_blocks": 3,
   "presets":[{"name":"Editorial cards","blocks":[
-    {"type":"card","settings":{"title":"প্রতিদিনের ইলেকট্রনিক্স","link_label":"পণ্য দেখুন"}},
-    {"type":"card","settings":{"title":"স্মার্ট ডিভাইস","link_label":"ডিভাইস দেখুন"}},
-    {"type":"card","settings":{"title":"কাজের উপযোগী প্রযুক্তি","link_label":"আরও জানুন"}}
+    {"type":"card","settings":{"title":"Curated Beauty Tools","link_label":"Explore tools"}},
+    {"type":"card","settings":{"title":"Smarter Skincare Rituals","link_label":"Explore skincare"}},
+    {"type":"card","settings":{"title":"Devices That Deliver","link_label":"Discover devices"}}
   ]}]
 }
 {% endschema %}

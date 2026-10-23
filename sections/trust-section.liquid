@@ -12,8 +12,8 @@
         <div class="lf-confidence__returns">
           <span class="lf-confidence__returns-icon">{% render 'icon', icon: 'return' %}</span>
           <div>
-            <h4>{{ 'general.returns' | t }}</h4>
-            <p>{{ 'general.returns_note' | t }}</p>
+            <h4>৭ দিনের রিটার্ন পলিসি</h4>
+            <p>নিশ্চINCTে কেনাকাটা করুন। যোগ্য পণ্যের ক্ষেত্রে আমাদের রিটার্ন পলিসি অনুযায়ী রিটার্ন গ্রহণ করা হয়।</p>
           </div>
         </div>
       </div>
@@ -32,14 +32,14 @@
         <div class="lf-newsletter-box">
           <span class="lf-newsletter-box__eyebrow">{{ section.settings.newsletter_kicker }}</span>
           <h3>{{ section.settings.newsletter_heading }}</h3>
-          <p>{{ 'general.newsletter_blurb' | t }}</p>
+          <p>Sign up for product updates, curated finds and selected offers.</p>
           {% form 'customer', class: 'lf-newsletter-form' %}
-            {%- if form.posted_successfully? -%}<p class="lf-newsletter-form__success">{{ 'general.subscribe_success' | t }}</p>{%- endif -%}
+            {%- if form.posted_successfully? -%}<p class="lf-newsletter-form__success">Thanks for subscribing.</p>{%- endif -%}
             <input type="hidden" name="contact[tags]" value="newsletter">
-            <input type="email" name="contact[email]" placeholder="{{ 'general.newsletter_email' | t }}" aria-label="{{ 'general.email' | t }}" required>
-            <button class="button button--accent" type="submit">{{ 'general.subscribe' | t }}</button>
+            <input type="email" name="contact[email]" placeholder="Enter your email address" aria-label="Email address" required>
+            <button class="button button--accent" type="submit">সাবস্ক্রাইব করুন</button>
           {% endform %}
-          <small>{{ 'general.newsletter_note' | t }}</small>
+          <small>সাবস্ক্রাইব করে আপনি মার্কেটিং ইমেইল পেতে সম্মত হচ্ছেন। যেকোনো সময় আনসাবস্ক্রাইব করতে পারবেন।</small>
         </div>
       </div>
     </div>
@@ -50,25 +50,25 @@
   "name": "Trust section",
   "settings": [
     {"type":"image_picker","id":"image","label":"Image"},
-    {"type":"text","id":"kicker","label":"Kicker","default":"নিশ্চিন্তে কেনাকাটা করুন"},
-    {"type":"text","id":"heading","label":"Heading","default":"আস্থা নিয়ে <span>কেনাকাটা</span>"},
-    {"type":"textarea","id":"text","label":"Text","default":"বাছাই করা পণ্য, স্পষ্ট ডেলিভারি তথ্য ও নিরাপদ চেকআউট।"},
-    {"type":"text","id":"newsletter_kicker","label":"Newsletter kicker","default":"খবর পেতে থাকুন"},
-    {"type":"text","id":"newsletter_heading","label":"Newsletter heading","default":"নতুন পণ্য ও অফারের খবর পান ইমেইলে।"}
+    {"type":"text","id":"kicker","label":"Kicker","default":"নিশ্চINCTে কেনাকাটা করুন"},
+    {"type":"text","id":"heading","label":"Heading","default":"নিশ্চINCTে <span>কেনাকাটা</span> করুন"},
+    {"type":"textarea","id":"text","label":"Text","default":"সেরা পণ্য, দ্রুত ডেলিভারি এবং নিরাপদ পেমেন্ট — HaatRush-এ কেনাকাটা সবসময়ই নিরাপদ।"},
+    {"type":"text","id":"newsletter_kicker","label":"Newsletter kicker","default":"HaatRush নিউজলেটারে যোগ দিন"},
+    {"type":"text","id":"newsletter_heading","label":"Newsletter heading","default":"নতুন পণ্য ও অফার সরাসরি আপনার ইনবক্সে।"}
   ],
   "blocks": [
     {"type":"item","name":"Trust item","settings":[
       {"type":"text","id":"icon","label":"Icon (character)","default":"✓"},
-      {"type":"text","id":"title","label":"Title","default":"বাছাই করা পণ্য"},
-      {"type":"textarea","id":"text","label":"Text","default":"যত্ন নিয়ে বাছাই করা ইলেকট্রনিক্স ও দৈনন্দিন ডিভাইস।"}
+      {"type":"text","id":"title","label":"Title","default":"Thoughtfully Selected"},
+      {"type":"textarea","id":"text","label":"Text","default":"Beauty tools and everyday essentials chosen with care."}
     ]}
   ],
   "max_blocks": 6,
   "presets":[{"name":"Trust section","blocks":[
-    {"type":"item","settings":{"icon":"✓","title":"বাছাই করা পণ্য","text":"যত্ন নিয়ে বাছাই করা ইলেকট্রনিক্স ও দৈনন্দিন ডিভাইস।"}},
-    {"type":"item","settings":{"icon":"◇","title":"নিরাপদ চেকআউট","text":"Shopify-এর নিরাপদ পেমেন্ট পদ্ধতিতে চেকআউট করুন।"}},
-    {"type":"item","settings":{"icon":"→","title":"ডেলিভারি তথ্য","text":"পেমেন্টের আগেই ডেলিভারির বিস্তারিত দেখুন।"}},
-    {"type":"item","settings":{"icon":"✦","title":"গ্রাহক সহায়তা","text":"অর্ডার সম্পর্কে তথ্যের প্রয়োজনে সহায়তা।"}}
+    {"type":"item","settings":{"icon":"✓","title":"সেরা পণ্য বাছাই","text":"যত্ন সহকারে নির্বাচিত বিউটি টুলস এবং দৈনন্দিন প্রয়োজনীয় পণ্য।"}},
+    {"type":"item","settings":{"icon":"◇","title":"নিরাপদ চেকআউট","text":"bKash, Nagad, Rocket ও COD-সহ সুরক্ষিত পেমেন্ট অভিজ্ঞতা।"}},
+    {"type":"item","settings":{"icon":"→","title":"সারাদেশে ডেলিভারি","text":"নির্দিষ্ট অর্ডারে ফ্রি ডেলিভারি — ঢাকাসহ সারা বাংলাদেশে।"}},
+    {"type":"item","settings":{"icon":"✦","title":"কাস্টমার সাপোর্ট","text":"Helpful assistance when you need information about your order."}}
   ]}]
 }
 {% endschema %}

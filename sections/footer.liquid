@@ -19,63 +19,64 @@
             <span class="lf-wordmark lf-wordmark--footer">Haat<i>Rush</i></span>
           {%- endif -%}
         </a>
-        <p>{{ settings.brand_tagline | default: 'ইলেকট্রনিক্স, গ্যাজেট ও প্রতিদিনের প্রয়োজনীয় ডিভাইস' }}</p>
+        <p>{{ settings.brand_tagline | default: 'বাংলাদেশের সেরা বিউটি টুলস এবং ডিভাইস — আধুনিক জীবনযাত্রার জন্য যত্ন সহকারে নির্বাচিত।' }}</p>
         <div class="lf-footer__social">
-          <a href="{{ settings.instagram_url | default: '#' }}" aria-label="ইনস্টাগ্রাম">{% render 'icon', icon: 'instagram' %}</a>
-          <a href="{{ settings.tiktok_url | default: '#' }}" aria-label="টিকটক">{% render 'icon', icon: 'tiktok' %}</a>
-          <a href="{{ settings.facebook_url | default: '#' }}" aria-label="ফেসবুক">{% render 'icon', icon: 'facebook' %}</a>
+          <a href="{{ settings.instagram_url | default: '#' }}" aria-label="Instagram">{% render 'icon', icon: 'instagram' %}</a>
+          <a href="{{ settings.tiktok_url | default: '#' }}" aria-label="TikTok">{% render 'icon', icon: 'tiktok' %}</a>
+          <a href="{{ settings.facebook_url | default: '#' }}" aria-label="Facebook">{% render 'icon', icon: 'facebook' %}</a>
         </div>
       </div>
 
       <div class="lf-footer__column">
-        <span class="lf-footer__label">{{ 'sections.footer.shop' | t }}</span>
+        <span class="lf-footer__label">শপ</span>
         {%- if section.settings.menu_shop != blank and section.settings.menu_shop.links.size > 0 -%}
           {%- for link in section.settings.menu_shop.links -%}<a href="{{ link.url }}">{{ link.title }}</a>{%- endfor -%}
         {%- else -%}
-          <a href="{{ routes.collections_url }}/electronics">ইলেকট্রনিক্স</a>
-          <a href="{{ routes.collections_url }}/gadgets">গ্যাজেট</a>
-          <a href="{{ routes.collections_url }}/audio">অডিও</a>
-          <a href="{{ routes.collections_url }}/smart-devices">স্মার্ট ডিভাইস</a>
-          <a href="{{ routes.collections_url }}/accessories">অ্যাক্সেসরিজ</a>
-          <a href="{{ routes.collections_url }}/under-2000">৳২,০০০-এর মধ্যে</a>
+          <a href="{{ routes.collections_url }}/beauty-tools">Beauty Tools</a>
+          <a href="{{ routes.collections_url }}/facial-tools">Facial Tools</a>
+          <a href="{{ routes.collections_url }}/skincare-tools">Skincare Tools</a>
+          <a href="{{ routes.collections_url }}/beauty-devices">Beauty Devices</a>
+          <a href="{{ routes.collections_url }}/hair-tools">Hair Tools</a>
+          <a href="{{ routes.collections_url }}/under-1000">১০০০ টাকার নিচে</a>
         {%- endif -%}
       </div>
 
       <div class="lf-footer__column">
-        <span class="lf-footer__label">{{ 'sections.footer.customer_care' | t }}</span>
+        <span class="lf-footer__label">কাস্টমার কেয়ার</span>
         {%- if section.settings.menu_customer_care != blank and section.settings.menu_customer_care.links.size > 0 -%}
           {%- for link in section.settings.menu_customer_care.links -%}<a href="{{ link.url }}">{{ link.title }}</a>{%- endfor -%}
         {%- else -%}
-          <a href="{{ routes.root_url }}pages/contact-us">যোগাযোগ</a>
-          <a href="{{ routes.root_url }}pages/track-order">অর্ডার ট্র্যাক করুন</a>
-          <a href="/policies/shipping-policy">ডেলিভারি নীতি</a>
-          <a href="/policies/refund-policy">রিটার্ন ও রিফান্ড</a>
-          <a href="/policies/privacy-policy">গোপনীয়তা নীতি</a>
-          <a href="/policies/terms-of-service">শর্তাবলি</a>
+          <a href="{{ routes.root_url }}pages/contact-us">Contact Us</a>
+          <a href="{{ routes.root_url }}pages/track-order">Track Your Order</a>
+          <a href="/policies/shipping-policy">Shipping Policy</a>
+          <a href="/policies/refund-policy">Returns &amp; Refunds</a>
+          <a href="/policies/privacy-policy">Privacy Policy</a>
+          <a href="/policies/terms-of-service">Terms of Service</a>
         {%- endif -%}
       </div>
 
       <div class="lf-footer__column lf-footer__column--contact">
-        <span class="lf-footer__label">{{ 'sections.footer.get_in_touch' | t }}</span>
-        <a href="mailto:{{ settings.contact_email | default: 'support@haatrush.com' }}">✉ {{ settings.contact_email | default: 'support@haatrush.com' }}</a>
-        <span>▣ গ্রাহক সহায়তা উপলভ্য</span>
+        <span class="lf-footer__label">যোগাযোগ করুন</span>
+        <a href="mailto:{{ settings.contact_email | default: 'support@haatrush.com.bd' }}">✉ {{ settings.contact_email | default: 'support@haatrush.com.bd' }}</a>
+        <a href="https://wa.me/8801875126006">📱 WhatsApp সাপোর্ট</a>
+        <span>▣ কাস্টমার সাপোর্ট উপলব্ধ</span>
         <div class="lf-footer__pay-box">
-          <strong>{{ 'sections.footer.secure_payment' | t }}</strong>
+          <strong>নিরাপদ পেমেন্ট পদ্ধতি</strong>
           <div class="lf-footer__pay-grid">{%- for type in shop.enabled_payment_types -%}{{ type | payment_type_svg_tag }}{%- endfor -%}</div>
-          <small>{{ 'sections.footer.payment_note' | t }}</small>
+          <small>চেকআউটে bKash, Nagad, Rocket এবং Cash on Delivery উপলব্ধ।</small>
         </div>
       </div>
     </div>
 
     <div class="lf-footer__trust">
-      <div><span>◇</span> {{ 'sections.footer.secure_payment' | t }}</div>
-      <div><span>▣</span> {{ 'general.announcement_3' | t }}</div>
-      <div><span>↺</span> {{ 'general.returns' | t }}</div>
+      <div><span>◇</span> নিরাপদ চেকআউট</div>
+      <div><span>▣</span> দ্রুত ডেলিভারি তথ্য</div>
+      <div><span>↺</span> রিটার্ন পলিসি প্রযোজ্য</div>
     </div>
 
     <div class="lf-footer__bottom">
-      <span>© {{ 'now' | date: '%Y' }} {{ shop.name }}. {{ 'general.copyright' | t }}</span>
-      <span class="lf-footer__bottom-links"><a href="/policies/privacy-policy">{{ 'general.privacy_policy' | t }}</a> • <a href="/policies/terms-of-service">{{ 'general.terms' | t }}</a> • <a href="/policies/refund-policy">{{ 'general.returns' | t }}</a></span>
+      <span>© {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.</span>
+      <span class="lf-footer__bottom-links"><a href="/policies/privacy-policy">Privacy</a> • <a href="/policies/terms-of-service">Terms</a> • <a href="/policies/refund-policy">Returns</a></span>
     </div>
   </div>
 </footer>

@@ -10,7 +10,7 @@
   var qsa = function (sel, ctx) { return Array.prototype.slice.call((ctx || document).querySelectorAll(sel)); };
   var money = function (cents) {
     if (typeof Shopify !== 'undefined' && Shopify.formatMoney) { return Shopify.formatMoney(cents); }
-    return '৳' + (cents / 100).toFixed(2);
+    return '$' + (cents / 100).toFixed(2);
   };
 
   /* ---------------- variant data ---------------- */
@@ -48,7 +48,7 @@
       dot.type = 'button';
       dot.className = 'lf-gallery__dot';
       dot.setAttribute('role', 'tab');
-      dot.setAttribute('aria-label', 'ছবি ' + (i + 1) + ' দেখুন');
+      dot.setAttribute('aria-label', 'Show image ' + (i + 1));
       dot.addEventListener('click', function () { show(i); });
       dotWrap.appendChild(dot);
     });
@@ -209,7 +209,7 @@
         /* The headline saving stacks the product's own discount with the
            Buy 2 saving, so it always matches what the bundle really costs
            less than the two prices combined. */
-        priceSaving.textContent = 'সাশ্রয় ' + money(baseSaving + bundle.saving);
+        priceSaving.textContent = 'You save ' + money(baseSaving + bundle.saving);
         priceSaving.hidden = false;
       }
     } else {
@@ -224,7 +224,7 @@
       }
       if (priceSaving) {
         if (baseSaving > 0) {
-          priceSaving.textContent = 'সাশ্রয় ' + money(baseSaving);
+          priceSaving.textContent = 'You save ' + money(baseSaving);
           priceSaving.hidden = false;
         } else {
           priceSaving.hidden = true;
@@ -238,15 +238,15 @@
       var offerPct = bundle && bundle.original > 0 ? (bundle.saving / bundle.original) * 100 : 0;
       var totalPct = basePct + offerPct;
       if (totalPct > 0) {
-        offPctBadge.textContent = 'সর্বোচ্চ ' + Math.round(totalPct) + '% ছাড়';
+        offPctBadge.textContent = 'Up to ' + Math.round(totalPct) + '% off';
       }
     }
     if (atcSubmit) { atcSubmit.disabled = !variant.available; }
-    if (atcLabel) { atcLabel.textContent = variant.available ? 'কার্টে যোগ করুন' : 'স্টক নেই'; }
+    if (atcLabel) { atcLabel.textContent = variant.available ? 'Add to cart' : 'Sold out'; }
     if (atcStock) {
       atcStock.innerHTML = variant.available
-        ? '<span class="lf-dot" aria-hidden="true"></span> স্টক আছে — ১ কর্মদিবসে পাঠানো হবে'
-        : '<span class="lf-dot is-off" aria-hidden="true"></span> বর্তমানে পাওয়া যাচ্ছে না';
+        ? '<span class="lf-dot" aria-hidden="true"></span> In stock — ships in 1 business day'
+        : '<span class="lf-dot is-off" aria-hidden="true"></span> Currently unavailable';
     }
     /* keep the quantity inside what this variant actually allows */
     if (readQty() > qtyCeiling(variant)) { paintQty(qtyCeiling(variant)); } else { syncQtyControls(); }
@@ -524,23 +524,22 @@
   }
 
   /* ---------------- add to cart ----------------
-     The Bengali checkout page submits orders through the secure Cloudflare
-     Worker; this product form must never create an order in the browser. */
+     Shopify's Cart API has no price field: a line item always costs its
+     variant price, so the theme cannot set a discounted price itself. The Buy
+     2 saving is instead carried by a single store-wide Shopify *automatic*
+     discount (2% off, minimum quantity 2). Shopify evaluates it from the cart
+     contents, so it applies on its own to any product bought as a pair and
+     stays applied through cart, checkout and the order. Nothing is sent here:
+     adding two units is all the theme has to do. */
   var form = qs('.lf-atc', root);
   var message = qs('[data-atc-message]', root);
   if (form) {
     form.addEventListener('submit', function (event) {
+      if (!variantField || !variantField.value) { return; }
+      /* the accelerated checkout button runs its own flow straight to /checkout */
       var submitter = event.submitter;
-      var buyNow = Boolean(submitter && submitter.closest
-        && submitter.closest('.shopify-payment, .shopify-payment-button, .shopify-payment-button__button, shopify-payment-terms, shopify-payment-button, [name="checkout"]'));
+      if (submitter && submitter.closest && submitter.closest('.shopify-payment, shopify-payment-terms, [name="checkout"]')) { return; }
       event.preventDefault();
-      if (!variantField || !variantField.value) {
-        if (message) {
-          message.textContent = 'পণ্যটি কার্টে যোগ করা যায়নি। আবার চেষ্টা করুন।';
-          message.className = 'lf-atc__message is-error';
-        }
-        return;
-      }
       var variantId = variantField.value;
       var qty = parseInt(quantityField ? quantityField.value : '1', 10) || 1;
       if (atcSubmit) { atcSubmit.classList.add('is-busy'); atcSubmit.disabled = true; }
@@ -557,10 +556,6 @@
       if (window.LumaCart && typeof window.LumaCart.add === 'function') {
         window.LumaCart.add([{ id: variantId, quantity: qty }])
           .then(function () {
-            if (buyNow) {
-              window.location.assign('/checkout');
-              return;
-            }
             settle(true, 'Added to your cart.');
             if (message) { window.setTimeout(function () { message.textContent = ''; }, 4000); }
           })
@@ -580,10 +575,6 @@
         .then(function (cart) {
           var count = qs('[data-cart-count]');
           if (count) { count.textContent = String(cart.item_count); }
-          if (buyNow) {
-            window.location.assign('/checkout');
-            return;
-          }
           document.body.classList.add('drawer-open');
           var drawer = qs('[data-cart-drawer]');
           if (drawer) { drawer.setAttribute('aria-hidden', 'false'); }

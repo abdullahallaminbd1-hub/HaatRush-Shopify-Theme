@@ -5,34 +5,31 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="canonical" href="{{ canonical_url }}">
     <title>{{ page_title }}{% unless page_title contains shop.name %} — {{ shop.name }}{% endunless %}</title>
-    {{ 'noto-sans-bengali-bengali.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: 'anonymous' }}
-    {{ 'noto-sans-bengali-latin.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: 'anonymous' }}
+    {{ 'poppins-400.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2' }}
+    {{ 'poppins-600.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2' }}
     {{ content_for_header }}
     {{ 'theme.css' | asset_url | stylesheet_tag }}
     {{ 'product-card.css' | asset_url | stylesheet_tag }}
     <style>
       :root{
-        --ink: {{ settings.color_ink | default: '#27183A' }};
-        --accent: #FF7058;
-        --primary: {{ settings.color_accent | default: '#7628D7' }};
-        --primary-hover: #5A1EB0;
-        --sand: {{ settings.color_sand | default: '#F8F3FF' }};
-        --navy: #7628D7;
-        --navy-deep: #5A1EB0;
-        --blue: #7628D7;
-        --blue-soft: #F8F3FF;
-        --accent-soft: #F8F3FF;
-        --badge: #EBDFFF;
-        --surface-soft: #F8F3FF;
-        --surface: #FFFFFF;
-        --cyan: #FF7058;
-        --charcoal: #7628D7;
-        --muted: #64748B;
-        --line-soft: rgba(118, 40, 215, .14);
-        --shadow-soft: 0 18px 40px -28px rgba(90, 30, 176, .28);
+        --ink: {{ settings.color_ink | default: '#2C2929' }};
+        --accent: {{ settings.color_accent | default: '#7A4B50' }};
+        --sand: {{ settings.color_sand | default: '#FAF7F3' }};
+        --plum: #4A2B33;
+        --plum-deep: #2E1A20;
+        --rose: #C88F96;
+        --rose-soft: #E4B7BC;
+        --blush: #F6ECEC;
+        --blush-soft: #FBF5F4;
+        --ivory: #FBF8F5;
+        --gold: #C9A45C;
+        --charcoal: #2C2929;
+        --muted: #6F6567;
+        --line-rose: rgba(122, 75, 80, .14);
+        --shadow-soft: 0 18px 40px -28px rgba(74, 43, 51, .45);
         --radius-card: 16px;
-        --font-body: 'Noto Sans Bengali', 'Hind Siliguri', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
-        --font-accent: 'Noto Sans Bengali', 'Hind Siliguri', system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --font-body: 'Poppins', -apple-system, 'Segoe UI', Arial, sans-serif;
+        --font-accent: Georgia, 'Times New Roman', serif;
       }
       {% if settings.product_card_width_mode == 'box' %}
       /* Theme settings > Product cards > Card width mode: Box Width.
@@ -43,7 +40,7 @@
     </style>
   </head>
   <body class="template-{{ template.name }}">
-    <a class="skip-link" href="#MainContent">{{ 'general.skip_to_content' | t }}</a>
+    <a class="skip-link" href="#MainContent">Skip to content</a>
     {% section 'announcement-bar' %}
     {% section 'header' %}
     <main id="MainContent" role="main">{{ content_for_layout }}</main>

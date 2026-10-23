@@ -37,19 +37,19 @@
         <div class="lf-hero__media" aria-hidden="true"><div class="lf-hero__fallback lf-hero__fallback--1"></div></div>
         <div class="lf-hero__overlay" aria-hidden="true"></div>
         <div class="lf-hero__content">
-          <span class="lf-eyebrow lf-eyebrow--light">{{ 'general.brand_blurb' | t }}</span>
-          <h1>{{ 'general.hero_heading' | t }}</h1>
-          <p>{{ 'general.hero_text' | t }}</p>
-          <a class="button button--accent" href="{{ routes.all_products_collection_url }}">{{ 'general.view_all' | t }}</a>
+          <span class="lf-eyebrow lf-eyebrow--light">HaatRush কালেকশন</span>
+          <h1>আপনার প্রতিদিনের সৌন্দর্যকে নতুন উচ্চতায় নিয়ে যান</h1>
+          <p>সেরা বিউটি টুলস এবং ডিভাইস, বাংলাদেশ মার্কেটের জন্য বিশেষভাবে নির্বাচিত — আপনার প্রতিদিনের রুটিনকে করুন আরও সহজ ও আত্মবিশ্বাসী।</p>
+          <a class="button button--accent" href="{{ routes.all_products_collection_url }}">এখনই কিনুন</a>
         </div>
       </div>
     {%- endif -%}
   </div>
   {%- assign slide_count = section.blocks.size -%}
   {%- if slide_count > 1 -%}
-    <div class="lf-hero__dots" role="tablist" aria-label="স্লাইড">
+    <div class="lf-hero__dots" role="tablist" aria-label="Slides">
       {%- for block in section.blocks -%}
-        <button type="button" class="lf-hero__dot{% if forloop.first %} is-active{% endif %}" data-slide-dot="{{ forloop.index0 }}" aria-label="{{ forloop.index }} নম্বর স্লাইডে যান" {{ block.shopify_attributes }}></button>
+        <button type="button" class="lf-hero__dot{% if forloop.first %} is-active{% endif %}" data-slide-dot="{{ forloop.index0 }}" aria-label="Go to slide {{ forloop.index }}" {{ block.shopify_attributes }}></button>
       {%- endfor -%}
     </div>
   {%- endif -%}
@@ -69,10 +69,10 @@
       "type": "slide",
       "name": "Slide",
       "settings": [
-        {"type":"text","id":"kicker","label":"Kicker","default":"ইলেকট্রনিক্স ও প্রতিদিনের ডিভাইস"},
-        {"type":"text","id":"heading","label":"Heading","default":"প্রতিদিনের জীবনের উপযোগী প্রযুক্তি"},
-        {"type":"textarea","id":"text","label":"Text","default":"গ্যাজেট, অডিও, অ্যাক্সেসরিজ ও প্রয়োজনীয় ইলেকট্রনিক্স—আপনার দৈনন্দিন জীবনকে সহজ করতে বাছাই করা।"},
-        {"type":"text","id":"button_label","label":"Button label","default":"সব পণ্য দেখুন"},
+        {"type":"text","id":"kicker","label":"Kicker","default":"HaatRush কালেকশন"},
+        {"type":"text","id":"heading","label":"Heading","default":"আপনার প্রতিদিনের সৌন্দর্যকে নতুন উচ্চতায় নিয়ে যান"},
+        {"type":"textarea","id":"text","label":"Text","default":"সেরা বিউটি টুলস এবং ডিভাইস, বাংলাদেশ মার্কেটের জন্য বিশেষভাবে নির্বাচিত।"},
+        {"type":"text","id":"button_label","label":"Button label","default":"এখনই কিনুন"},
         {"type":"url","id":"link","label":"Button link"},
         {"type":"image_picker","id":"image","label":"Background image"}
       ]

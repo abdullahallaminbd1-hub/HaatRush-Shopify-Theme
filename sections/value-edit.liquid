@@ -20,12 +20,12 @@
               <span class="lf-card-arrow" aria-hidden="true">↗</span>
             </a>
             <div class="lf-product-card__info">
-              <span class="lf-product-card__vendor">{{ shop.name }}</span>
-              <h3 class="lf-product-card__title"><a href="{{ routes.all_products_collection_url }}" title="নমুনা পণ্যের নাম">{% case i %}{% when 1 %}ওয়্যারলেস ইয়ারবাড{% when 2 %}স্মার্ট ওয়াচ{% when 3 %}পাওয়ার ব্যাংক{% else %}ব্লুটুথ স্পিকার{% endcase %}</a></h3>
-              <p class="lf-product-card__subtitle">{{ 'general.curated_selection' | t }}</p>
-              <div class="lf-product-card__price"><span class="lf-price">৳{{ i | times: 500 | plus: 1000 }}</span></div>
+              <span class="lf-product-card__vendor">{{ shop.name }} value edit</span>
+              <h3 class="lf-product-card__title"><a href="{{ routes.all_products_collection_url }}" title="Sample product title">{% case i %}{% when 1 %}Precision facial roller{% when 2 %}Cooling ice globes{% when 3 %}LED face mask brush{% else %}Gua sha sculpting stone{% endcase %}</a></h3>
+              <p class="lf-product-card__subtitle">Thoughtfully selected</p>
+              <div class="lf-product-card__price"><span class="lf-price">${{ i | plus: 9 }}.99</span></div>
               <div class="lf-product-card__actions">
-                <a class="lf-card-btn lf-card-btn--{{ section.settings.button_style | default: 'filled' }}" href="{{ routes.all_products_collection_url }}" aria-label="নমুনা পণ্য দেখুন"><span class="lf-card-btn__label">পণ্য দেখুন</span><span class="lf-card-btn__arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12h15M13 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+                <a class="lf-card-btn lf-card-btn--{{ section.settings.button_style | default: 'filled' }}" href="{{ routes.all_products_collection_url }}" aria-label="View sample product"><span class="lf-card-btn__label">View product</span><span class="lf-card-btn__arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12h15M13 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
               </div>
             </div>
           </article>
@@ -41,14 +41,14 @@
 {
   "name": "Value edit",
   "settings": [
-    {"type":"text","id":"kicker","label":"Kicker","default":"হাটরাশের সাশ্রয়ী বাছাই"},
-    {"type":"text","id":"heading","label":"Heading","default":"৳২,০০০-এর মধ্যে পণ্য"},
-    {"type":"textarea","id":"text","label":"Text","default":"দৈনন্দিন ব্যবহারের বাছাই করা ইলেকট্রনিক্স ও প্রয়োজনীয় পণ্য সাশ্রয়ী দামে দেখুন।"},
+    {"type":"text","id":"kicker","label":"Kicker","default":"সাশ্রয়ী খোঁজ / HaatRush দ্বারা নির্বাচিত"},
+    {"type":"text","id":"heading","label":"Heading","default":"১০০০ টাকার নিচে সেরা পণ্য"},
+    {"type":"textarea","id":"text","label":"Text","default":"১০০০ টাকার নিচে বিউটি টুলস এবং দৈনন্দিন প্রয়োজনীয় পণ্য আবিষ্কার করুন"},
     {"type":"collection","id":"collection","label":"Collection"},
-    {"type":"text","id":"badge_label","label":"Badge label","default":"৳২,০০০-এর মধ্যে"},
-    {"type":"text","id":"button_label","label":"Card button label","default":"পণ্য দেখুন"},
+    {"type":"text","id":"badge_label","label":"Badge label","default":"১০০০ টাকার নিচে"},
+    {"type":"text","id":"button_label","label":"Card button label","default":"Add to cart"},
     {"type":"select","id":"button_style","label":"Card button style","options":[{"value":"filled","label":"Filled"},{"value":"outline","label":"Outline"}],"default":"filled"},
-    {"type":"text","id":"view_all_label","label":"View all label","default":"৳২,০০০-এর মধ্যে সব পণ্য"},
+    {"type":"text","id":"view_all_label","label":"View all label","default":"১০০০ টাকার নিচে সব পণ্য দেখুন"},
     {"type":"url","id":"view_all_link","label":"View all link"}
   ],
   "presets":[{"name":"Value edit"}]

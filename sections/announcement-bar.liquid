@@ -1,20 +1,10 @@
-<div class="lf-announcement" role="region" aria-label="{{ 'general.announcements' | t }}">
+<div class="lf-announcement" role="region" aria-label="Store announcements">
   <div class="lf-announcement__track">
     {%- for i in (1..2) -%}
-      {%- if section.settings.message_1 != blank -%}<span>{{ section.settings.message_1 }}</span>{%- endif -%}
-      {%- if section.settings.message_2 != blank -%}<span>{{ section.settings.message_2 }}</span>{%- endif -%}
-      {%- if section.settings.message_3 != blank -%}<span>{{ section.settings.message_3 }}</span>{%- endif -%}
+      <span>HaatRush-এ স্বাগতম — সেরা বিউটি টুলস এবং ডিভাইস, বাছাই করা সংগ্রহ</span>
+      <span>সারাদেশে ফ্রি ডেলিভারি — নির্দিষ্ট অর্ডারে</span>
+      <span>৭ দিনের রিটার্ন পলিসি • নিরাপদ চেকআউট • ক্যাশ অন ডেলিভারি</span>
     {%- endfor -%}
   </div>
 </div>
-{% schema %}
-{
-  "name": "Announcement bar",
-  "settings": [
-    {"type":"text","id":"message_1","label":"Message 1","default":"হাটরাশে স্বাগতম — ইলেকট্রনিক্স ও দরকারি গ্যাজেট"},
-    {"type":"text","id":"message_2","label":"Message 2","default":"ক্যাশ অন ডেলিভারি সুবিধা"},
-    {"type":"text","id":"message_3","label":"Message 3","default":"নিরাপদ চেকআউট · গ্রাহক সহায়তা · স্পষ্ট ডেলিভারি তথ্য"}
-  ],
-  "presets": [{"name": "Announcement bar"}]
-}
-{% endschema %}
+{% schema %}{"name":"Announcement bar","settings":[],"presets":[{"name":"Announcement bar"}]}{% endschema %}
